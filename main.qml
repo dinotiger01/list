@@ -15,6 +15,7 @@ Window {
             id: homeBar
             width: parent.width
             height: 50
+            z: 100
             color: "red"
             Row{
                 anchors{fill: parent}
@@ -33,47 +34,178 @@ Window {
                 }
                 //people
                 Column{
-                    width: parent.width
-                    height: parent.height
+                    id: people
+                    width: 100
+                    y: 1.5
+                    clip: true
+                    // height: 100
                     Button{
-                        width: 100
-                        height: parent.height
+                        width: parent.width
+                        height: 45
                         background: Rectangle{
                             anchors{
                                 fill: parent
-                                margins: 2.5
+                                // margins: 2.5
+                            }
+                            color: "pink"
+                            Text{
+                                text: people.height
                             }
                         }
-                        onClicked{
-
+                        onClicked:{
+                            peopleDrop.peopleIsClosed = !peopleDrop.peopleIsClosed
                         }
                     }
                     Column{
-                        width: parent.width
-                    }
-
+                            id: peopleDrop
+                            width: parent.width
+                            property bool peopleIsClosed: true
+                            state: peopleIsClosed ? "people-closed" : "people-open"
+                            states: [
+                                State{
+                                    name: "people-open"
+                                    // when: listItemDes.visible
+                                    PropertyChanges{
+                                        target: people; height: 45 + peopleMod.model * 30
+                                        // target: listItemDes; height: 150
+                                    }
+                                },
+                                State{
+                                    name: "people-closed"
+                                    // when: !visible
+                                    PropertyChanges{
+                                        target: people; height: 45
+                                    }
+                                }
+                            ]
+                            transitions: Transition{
+                                NumberAnimation{
+                                    properties: "height"
+                                    duration: 250
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
+                            Repeater{
+                                id: peopleMod
+                                model: 6
+                                Rectangle{
+                                    width: parent.width
+                                    height: 30
+                                    color: "green"
+                                    Text{
+                                        text: "name"
+                                    }
+                                }
+                            }
+                        }
                 }
                 //type
-                Button{
+                Column{
                     width: 100
-                    height: parent.height
-                    background: Rectangle{
-                        anchors{
-                            fill: parent
-                            margins: 2.5
+                    y: 2.5
+                    // height: 100
+                    Button{
+                        width: parent.width
+                        height: 45
+                        background: Rectangle{
+                            anchors{
+                                fill: parent
+                                // margins: 2.5
+                            }
+                            color: "blue"
+                        }
+                        onClicked:{
+                            type.typeIsClosed = !type.typeIsClosed
                         }
                     }
+                    Rectangle{
+                        id: type
+                        width: parent.width
+                        height: 0
+                        color: "blue"
+                        property bool typeIsClosed: true
+                        state: typeIsClosed ? "type-closed" : "type-open"
+                        states: [
+                            State{
+                                name: "type-open"
+                                // when: listItemDes.visible
+                                PropertyChanges{
+                                    target: type; height: 300
+                                    // target: listItemDes; height: 150
+                                }
+                            },
+                            State{
+                                name: "type-closed"
+                                // when: !visible
+                                PropertyChanges{
+                                    target: type; height: 0
+                                }
+                            }
+                        ]
+                        transitions: Transition{
+                            NumberAnimation{
+                                properties: "height"
+                                duration: 250
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+
+
                 }
                 //date
-                Button{
+                Column{
                     width: 100
-                    height: parent.height
-                    background: Rectangle{
-                        anchors{
-                            fill: parent
-                            margins: 2.5
+                    y: 2.5
+                    // height: 100
+                    Button{
+                        width: parent.width
+                        height: 45
+                        background: Rectangle{
+                            anchors{
+                                fill: parent
+                                // margins: 2.5
+                            }
+                            color: "orange"
+                        }
+                        onClicked:{
+                            date.dateIsClosed = !date.dateIsClosed
                         }
                     }
+                    Rectangle{
+                        id: date
+                        width: parent.width
+                        height: 0
+                        color: "orange"
+                        property bool dateIsClosed: true
+                        state: dateIsClosed ? "date-closed" : "date-open"
+                        states: [
+                            State{
+                                name: "date-open"
+                                // when: listItemDes.visible
+                                PropertyChanges{
+                                    target: date; height: 300
+                                    // target: listItemDes; height: 150
+                                }
+                            },
+                            State{
+                                name: "date-closed"
+                                // when: !visible
+                                PropertyChanges{
+                                    target: date; height: 0
+                                }
+                            }
+                        ]
+                        transitions: Transition{
+                            NumberAnimation{
+                                properties: "height"
+                                duration: 250
+                                easing.type: Easing.InOutQuad
+                            }
+                        }
+                    }
+
+
                 }
                 // search
                 Button{
@@ -85,6 +217,11 @@ Window {
                             margins: 2.5
                         }
                     }
+                    onClicked: {
+                        people.peopleIsClosed = true
+                        type.typeIsClosed = true
+                        date.dateIsClosed = true
+                    }
                 }
                 // clear
                 Button{
@@ -95,6 +232,11 @@ Window {
                             fill: parent
                             margins: 2.5
                         }
+                    }
+                    onClicked: {
+                        people.peopleIsClosed = true
+                        type.typeIsClosed = true
+                        date.dateIsClosed = true
                     }
                 }
             }
