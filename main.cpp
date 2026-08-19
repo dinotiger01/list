@@ -1,22 +1,24 @@
-#include <QTranslator>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "Engine.h"
+
+using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
 
-    // Loads your QML file from the directory where the app runs
-    const QUrl url(QStringLiteral("main.qml"));
+    Engine::EngineMod Engine;
 
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
 
-    engine.load(url);
+    engine.rootContext()->setContextProperty("engin", &Engine);
+
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml")));
+
+    Engine.setEng(&engine);
+
 
     return app.exec();
 }

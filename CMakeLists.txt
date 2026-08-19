@@ -1,37 +1,53 @@
 cmake_minimum_required(VERSION 3.20)
-project(QtQmlCppApp LANGUAGES CXX)
+project(List LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Find components (Added Core explicitly as it helps LinguistTools)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick LinguistTools)
+if(APPLE)
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/mock_frameworks/AGL.framework")
+    file(WRITE "${CMAKE_BINARY_DIR}/agl_stub.c" "void dummy_agl_symbol(void) {}\n")
+    execute_process(
+            COMMAND clang -x c "${CMAKE_BINARY_DIR}/agl_stub.c" -shared -o "${CMAKE_BINARY_DIR}/mock_frameworks/AGL.framework/AGL"
+            RESULT_VARIABLE CLANG_STUB_RESULT
+    )
+    set(OPENGL_agl_LIBRARY "${CMAKE_BINARY_DIR}/mock_frameworks/AGL.framework/AGL" CACHE FILEPATH "" FORCE)
+    set(WrapOpenGL_FOUND TRUE CACHE BOOL "" FORCE)
+endif()
 
-# Declare your source files explicitly in a list
-set(SOURCES
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets OpenGL)
+
+if(COMMAND qt_policy)
+    qt_policy(SET QTP0001 NEW)
+    qt_policy(SET QTP0004 NEW)
+endif()
+
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE
         main.cpp
-        main.qml
 )
 
-add_executable(List ${SOURCES})
+if(APPLE)
+    target_link_options(${PROJECT_NAME} PRIVATE "-F${CMAKE_BINARY_DIR}/mock_frameworks")
+endif()
 
-# Declare the translation source files
-set(TS_FILES
-        i18n/QtQmlCppApp_de.ts
-        i18n/QtQmlCppApp_es.ts
+qt_add_qml_module(${PROJECT_NAME}
+        URI EngineMod
+        VERSION 1.0
+        RESOURCE_PREFIX "/qt/qml"
+        QML_FILES
+        QML/main.qml
+        SOURCES
+        Engine.h
+        Engine.cpp
 )
 
-# ALTERNATIVE METHOD: Creates the lupdate/lrelease targets safely without
-# matching internal CLion directory strings as build targets
-qt_create_translation(QM_FILES
-        ${SOURCES}
-        ${TS_FILES}
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Quick
+        Qt6::Widgets
 )
-
-# Keep your library links
-target_link_libraries(List PRIVATE Qt6::Gui Qt6::Qml Qt6::Quick)
-configure_file(main.qml ${CMAKE_CURRENT_BINARY_DIR}/main.qml COPYONLY)
