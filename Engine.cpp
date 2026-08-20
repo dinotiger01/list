@@ -3,6 +3,8 @@
 //
 
 #include "Engine.h"
+#include <sstream>
+#include <fstream>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQuickItem>
@@ -12,9 +14,16 @@
 #include <string>
 #include <iostream>
 #include <QObject>
+#include <sqlite3.h>
 using namespace std;
 
 namespace  Engine {
+    struct people {
+        string name;
+        string php;
+        vector<float> reqHr;
+    };
+
     struct task{
         string name;
         int pry;
@@ -23,9 +32,15 @@ namespace  Engine {
         time_t date;
         string notes;
         string type;
-        vector<string> people;
+        vector<people> peoples;
     };
+
     vector<task> all_tasks;
+    vector<people> all_people;
+
+
+
+    QObject* listPar;
     QQmlEngine* eng;
 
     // quick test
@@ -33,54 +48,78 @@ namespace  Engine {
 
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
-        task testTask;
-        testTask.name = "test";
-        testTask.pry = 0;
-        testTask.isReturn = false;
-        testTask.delay = 1;
-        testTask.notes = "asd\nasd";
-        testTask.type = "main";
-        testTask.people = {"red","pink","green"};
-        all_tasks.push_back(testTask);
-
-        task testTask1;
-        testTask1.name = "test1";
-        testTask1.pry = 0;
-        testTask1.isReturn = false;
-        testTask1.delay = 1;
-        testTask1.notes = "yeah\na;aldskf;lksad";
-        testTask1.type = "second";
-        testTask1.people = {"red","blue","green"};
-        all_tasks.push_back(testTask1);
-
-        task testTask2;
-        testTask2.name = "test2";
-        testTask2.pry = 0;
-        testTask2.isReturn = false;
-        testTask2.delay = 1;
-        testTask2.notes = "asdasd\nasd";
-        testTask2.type = "main";
-        testTask2.people = {"purple","pink","green"};
-        all_tasks.push_back(testTask2);
+        sqlAllTask();
     }
     void EngineMod::setPar(QObject *par) {
-        asd(par);
+        listPar = par;
     }
 
-    void EngineMod::asd(QObject* par) {
+    static int callback(void* data, int argc, char** argv, char** azColName)
+    {
+        int i;
+        fprintf(stderr, "%s: ", (const char*)data);
+
+        for (i = 0; i < argc; i++) {
+            printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+        }
+
+        printf("\n");
+        return 0;
+    }
+
+
+    void EngineMod::sqlAllTask() {
+        sqlite3* DB;
+        int exit = 0;
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        // make table
+
+        // string sql =  "CREATE TABLE TASKS("
+        //               "ID INT PRIMARY KEY NOT NULL, "
+        //               "NAME TEXT NOT NULL, "
+        //               "PRY INT NOT NULL, "
+        //               "REPEATE INT NOT NULL, "
+        //               "HOWLONG INT, "
+        //               "WHE TEXT,"
+        //               "NOTE TEXT);";
+
+        // string sql = "DROP TABLE TASKS";
+
+        string query = "select * from TASKS";
+
+        sqlite3_exec(DB, query.c_str(), callback, NULL ,NULL);
+
+        // string sql= "INSERT INTO TASKS VALUES(7, 'one', 1, 0, 2, '1/1/1', 'note');"
+        //        "INSERT INTO TASKS VALUES(8, 'two', 2, 0, 1, '1/1/1', 'notes');"
+        //        "INSERT INTO TASKS VALUES(9, 'three', 3, 1, 4, '1/1/1', 'npter');";
+
+
+        char* messageError;
+        // exit = sqlite3_exec(DB, sql.c_str(),NULL, 0, &messageError);
+
+        if (exit != SQLITE_OK) {
+            cerr << sqlite3_errmsg(DB) << endl;
+
+        }else {
+            cout << "it is open" << endl;
+            sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);
+        }
+        sqlite3_close(DB);
+    }
+
+    void addTask(QObject* par, task addTask) {
+
+        string date = ctime(&all_tasks[ind].date);
 
         QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
 
         QVariantMap taskProp;
         taskProp["taskName"] = QString::fromStdString(all_tasks[ind].name);
-        taskProp["peopleInt"] = static_cast<int>(all_tasks[ind].people.size());
+        // taskProp["peopleInt"] = static_cast<int>(all_tasks[ind].people.size());
         QStringList qPeople;
-        for (const auto& person : all_tasks[ind].people) {
-            qPeople.append(QString::fromStdString(person));
-        }
         taskProp["peopleImgs"] = qPeople;
         taskProp["taskType"] = QString::fromStdString(all_tasks[ind].type);
-        taskProp["taskDate"] = QString::fromStdString(all_tasks[ind].type);
+        taskProp["taskDate"] = QString::fromStdString(date);
         taskProp["taskNotes"] = QString::fromStdString(all_tasks[ind].notes);
 
 

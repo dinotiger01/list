@@ -19,7 +19,9 @@ if(APPLE)
     set(WrapOpenGL_FOUND TRUE CACHE BOOL "" FORCE)
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets OpenGL)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql)
+find_package(SQLite3 REQUIRED)
+
 
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -43,6 +45,7 @@ qt_add_qml_module(${PROJECT_NAME}
         SOURCES
         Engine.h
         Engine.cpp
+        data.db
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -50,4 +53,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Gui
         Qt6::Quick
         Qt6::Widgets
+        Qt6::Sql
 )
+target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
+

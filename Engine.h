@@ -16,9 +16,9 @@ namespace  Engine {
         QML_ELEMENT
     public:
         explicit EngineMod(QObject *parent = nullptr) : QObject(parent){}
-        Q_INVOKABLE void asd(QObject* par);
         Q_INVOKABLE void setPar(QObject* par);
         void setEng(QQmlEngine* engin);
+        void sqlAllTask();
     };
 }
 
