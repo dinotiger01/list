@@ -17,8 +17,21 @@ namespace  Engine {
     public:
         explicit EngineMod(QObject *parent = nullptr) : QObject(parent){}
         Q_INVOKABLE void setPar(QObject* par);
+        Q_INVOKABLE void testing();
+        Q_INVOKABLE void refrechAll();
+        Q_INVOKABLE void creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type);
+        Q_INVOKABLE QString getPersonName(int i);
+        Q_INVOKABLE int getPersonSize();
+        Q_INVOKABLE QString getTypeName(int i);
+        Q_INVOKABLE int getTypeSize();
+        Q_INVOKABLE QString getPryName(int i);
+        Q_INVOKABLE int getPrySize();
         void setEng(QQmlEngine* engin);
-        void sqlAllTask();
+        int sqlPullTask();
+        void sqlPullPeople();
+        void loadTasks();
+        void addTask(QObject* par, int addTask);
+        void sqlComd();
     };
 }
 

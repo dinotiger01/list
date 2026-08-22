@@ -14,17 +14,23 @@
 #include <string>
 #include <iostream>
 #include <QObject>
+// #include <chrono>
+// #include <thread>
 #include <sqlite3.h>
+#include <QtConcurrent>
+
 using namespace std;
 
 namespace  Engine {
     struct people {
+        int dex;
         string name;
         string php;
         vector<float> reqHr;
     };
 
     struct task{
+        int dex;
         string name;
         int pry;
         bool isReturn;
@@ -32,98 +38,330 @@ namespace  Engine {
         time_t date;
         string notes;
         string type;
-        vector<people> peoples;
+        vector<int> peoples;
     };
 
     vector<task> all_tasks;
     vector<people> all_people;
+    vector<string> all_type = {"main", "work", "passoin"};
+    vector<string> all_pry = {"high", "medium", "low"};
+    vector<QObject*> all_loaded;
 
 
 
     QObject* listPar;
     QQmlEngine* eng;
+    // sql
+    sqlite3* DB;
 
     // quick test
-    int ind = 0;
+    int ind = 2;
 
+
+    //returns
+    QString EngineMod::getPersonName(int i) {
+        return QString::fromStdString(all_people[i].php);
+    }
+    int EngineMod::getPersonSize() {
+        return all_people.size();
+    }
+    QString EngineMod::getTypeName(int i) {
+        return QString::fromStdString(all_type[i]);
+    }
+    int EngineMod::getTypeSize() {
+        return all_type.size();
+    }
+    QString EngineMod::getPryName(int i) {
+        return QString::fromStdString(all_pry[i]);
+    }
+    int EngineMod::getPrySize() {
+        return all_pry.size();
+    }
+    // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
-        sqlAllTask();
     }
+    // start
     void EngineMod::setPar(QObject *par) {
         listPar = par;
     }
 
+    //sql
+    // like how do i add a vector
+
+    //TASK
+    // int ID
+    // text NAME
+    // int PRY
+    // int REAPEATE if is 2 it is able to have multi
+    // int HOWLONG
+    // vector pep
+    // text WHE
+    // text NOTE
+
     static int callback(void* data, int argc, char** argv, char** azColName)
     {
-        int i;
-        fprintf(stderr, "%s: ", (const char*)data);
+        //this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
+        //it was edited to conver to c++ variables
+        //data - idk
+        // argc - how many data per thing
+        // argv - vector of the data
+        // azColName - vector name of the data
+        task newTask;
+        struct tm datetime;
 
-        for (i = 0; i < argc; i++) {
-            printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+        for (int i = 0; i < argc; i++) {
+            // cout << azColName[i] << " : " << argv[i] << endl;
+            const string idkman = azColName[i];
+            if (idkman == "ID"){
+                newTask.dex = stoi(argv[i]);
+            }else if (idkman == "NAME") {
+                newTask.name = argv[i];
+            }else if (idkman == "PRY") {
+                newTask.pry = stoi(argv[i]);
+            }else if (idkman == "REPEATE") {
+                newTask.isReturn = stoi(argv[i]);
+            }else if (idkman == "HOWLONG") {
+                newTask.delay = stoi(argv[i]);
+            }else if (idkman == "WHE") {
+                // mm/dd/yyyy/
+                time_t temp;
+                string stringer = argv[i];
+                string tstring;
+                int k = 0;
+                for (int j = 0; j < stringer.size(); j++) {
+                    if (stringer[j] == '/') {
+                        try {
+                            int tint = stoi(tstring);
+                            if (k == 0) {
+                                datetime.tm_mon = tint;
+                            }else if (k == 1) {
+                                datetime.tm_mday = tint;
+                            }else if (k == 2) {
+                                datetime.tm_year = tint;
+                            }else {
+                                cerr << "you messed up ngl";
+                            }
+                            k++;
+                        }catch(exception &e) {
+                            cerr << e.what();
+                        }
+                        tstring = "";
+                    }else {
+                        tstring += stringer[j];
+                    }
+                }
+                temp = mktime(&datetime);
+                newTask.date = temp;
+
+            }else if (idkman == "NOTE") {
+                newTask.notes = argv[i];
+            }else if (idkman == "PEOPLE") {
+                vector<int> tempt;
+                string stringer = argv[i];
+                string tstring;
+                for (int j = 0; j < stringer.size(); j++) {
+                    if (stringer[j] == ',') {
+                        try {
+                            int tint = stoi(tstring);
+                            tempt.push_back(tint);
+
+                        }catch(exception &e) {
+                            cerr << e.what();
+                        }
+                        tstring = "";
+                    }else {
+                        tstring += stringer[j];
+                    }
+                }
+                newTask.peoples = tempt;
+            }else if (idkman == "TYPE") {
+                newTask.type = argv[i];
+            }else {
+                cerr << "idk man good luck : " <<azColName[i] << endl;
+            }
         }
+        all_tasks.push_back(newTask);
 
-        printf("\n");
         return 0;
     }
 
+    static int callbackP(void* data, int argc, char** argv, char** azColName) {
+        people newperson;
+        for (int i = 0; i < argc;i++) {
+            // cout << azColName[i] << " : " << argv[i] << endl;
+            string tempName = azColName[i];
+            if (tempName == "ID") {
+                newperson.dex = stoi(argv[i]);
+            }else if (tempName == "NAME") {
+                newperson.name = argv[i];
+            }else if (tempName == "PFP") {
+                newperson.php = argv[i];
+            }else if (tempName == "REQHR") {
+                // later
+            }else {
+                cerr << "no this is wrong : " << tempName;
+            }
+        }
+        all_people.push_back(newperson);
 
-    void EngineMod::sqlAllTask() {
-        sqlite3* DB;
+        return 0;
+    }
+
+    void EngineMod::sqlPullPeople() {
+        // define stuff
         int exit = 0;
+        // open
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
-        // make table
+        // sql sertch
+        string query = "select * from PEOPLE";
+        sqlite3_exec(DB, query.c_str(), callbackP, NULL , NULL);
 
-        // string sql =  "CREATE TABLE TASKS("
-        //               "ID INT PRIMARY KEY NOT NULL, "
-        //               "NAME TEXT NOT NULL, "
-        //               "PRY INT NOT NULL, "
-        //               "REPEATE INT NOT NULL, "
-        //               "HOWLONG INT, "
-        //               "WHE TEXT,"
-        //               "NOTE TEXT);";
-
-        // string sql = "DROP TABLE TASKS";
-
-        string query = "select * from TASKS";
-
-        sqlite3_exec(DB, query.c_str(), callback, NULL ,NULL);
-
-        // string sql= "INSERT INTO TASKS VALUES(7, 'one', 1, 0, 2, '1/1/1', 'note');"
-        //        "INSERT INTO TASKS VALUES(8, 'two', 2, 0, 1, '1/1/1', 'notes');"
-        //        "INSERT INTO TASKS VALUES(9, 'three', 3, 1, 4, '1/1/1', 'npter');";
-
-
-        char* messageError;
-        // exit = sqlite3_exec(DB, sql.c_str(),NULL, 0, &messageError);
-
+        // debog stuff
         if (exit != SQLITE_OK) {
-            cerr << sqlite3_errmsg(DB) << endl;
+            cerr << "sqlPullPeople: " << sqlite3_errmsg(DB) << endl;
 
         }else {
             cout << "it is open" << endl;
-            sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);
         }
+        // close
         sqlite3_close(DB);
     }
 
-    void addTask(QObject* par, task addTask) {
+    int EngineMod::sqlPullTask() {
+        // define stuff
+        int exit = 0;
+        // open
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        // sql sertch
+        string query = "select * from TASKS";
+        sqlite3_exec(DB, query.c_str(), callback, NULL , NULL);
 
-        string date = ctime(&all_tasks[ind].date);
+        // debog stuff
+        if (exit != SQLITE_OK) {
+            cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
+
+        }else {
+            cout << "it is open" << endl;
+        }
+        // close
+        sqlite3_close(DB);
+        return 0;
+    }
+
+    void EngineMod::refrechAll() {
+
+        QPointer<EngineMod> safeThis(this);
+
+
+        //fixthis when you get back
+        QThreadPool::globalInstance()->start([safeThis]() {
+            if (!safeThis) return;
+
+            all_tasks.clear();
+            all_people.clear();
+            if (!all_loaded.empty()) {
+                for (auto &i: all_loaded) {
+                    i->deleteLater();
+                }
+            }
+
+            all_loaded.clear();
+
+            if (listPar == 0) {
+                // this_thread::sleep_for(chrono::seconds(1));
+                refrechAll();
+            }else {
+                for (int i = 0; i < all_tasks.size(); i++) {
+                    safeThis->addTask(listPar, i);
+                }
+            }
+
+
+        }, Qt::QueuedConnection);
+    }
+
+    void EngineMod::sqlComd() {
+        int exit = 0;
+        char* errorM;
+        // open
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+
+        string sql = "";
+        // sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', 'seconed');";
+        // sql = "alter table TASKS ADD column IDS int AUTO_INCREMENT primary key";
+        // sql = "alter table TASKS DROP CONSTRAINT ID";
+        // sql = "drop table TASKS";
+        // sql = "delete from TASKS where ID = " + to_string(ind);
+        // ind++;
+        // sql = "UPDATE TASKS SET people = '1,3,' where ID = 1";
+
+        // sql = "create table TASKS("
+        //       "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+        //       "NAME text,"
+        //       "PRY int,"
+        //       "REPEATE int,"
+        //       "HOWLONG int,"
+        //       "WHE text,"
+        //       "NOTE text,"
+        //       "PEOPLE text,"
+        //       "TYPE text"
+        //       ");";
+
+        // sql = "create table PEOPLE (ID int PRIMARY KEY,NAME text, PFP TEXT, REQHR text)";
+        // sql = "INSERT INTO PEOPLE VALUES(3, 'bat man','purple','1,1,1,1,1,1,1')";
+
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "sqlcmd: " << sqlite3_errmsg(DB) << endl;
+    }
+
+    void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type) {
+        cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << "\n";
+        int exit = 0;
+        char* errorM;
+
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
+        string end = ");";
+        char com = ',';
+        string startquo = " '";
+        string endquo = "' ";
+        string sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + due.toStdString() + endquo + com + startquo + people.toStdString() + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
+        cout << sql;
+
+            // seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', seconed;
+
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "create task : " << sqlite3_errmsg(DB) << endl;
+        refrechAll();
+    }
+
+    void EngineMod::addTask(QObject* par, int addtask) {
+        cout << "qml: " << all_tasks[addtask].name << endl;
+        task temp = all_tasks[addtask];
+
+        string date = ctime(&temp.date);
 
         QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
 
-        QVariantMap taskProp;
-        taskProp["taskName"] = QString::fromStdString(all_tasks[ind].name);
-        // taskProp["peopleInt"] = static_cast<int>(all_tasks[ind].people.size());
-        QStringList qPeople;
-        taskProp["peopleImgs"] = qPeople;
-        taskProp["taskType"] = QString::fromStdString(all_tasks[ind].type);
-        taskProp["taskDate"] = QString::fromStdString(date);
-        taskProp["taskNotes"] = QString::fromStdString(all_tasks[ind].notes);
+        // all_loaded.push_back(&component);
 
+        QVariantMap taskProp;
+        taskProp["taskName"] =  QString::fromStdString(temp.name);
+        taskProp["peopleInt"] = static_cast<int>(temp.peoples.size());
+        QStringList qPeople;
+        for (int i = 0; i < temp.peoples.size(); i++) {
+            cout << i << " : " << all_people[temp.peoples[i] -1].php << " : "<< all_people[temp.peoples[i] -1].dex<<"\n";
+            qPeople.push_back(QString::fromStdString(all_people[temp.peoples[i]-1].php));
+        }
+        taskProp["peopleImgs"] = qPeople;
+        taskProp["taskType"] = QString::fromStdString(temp.type);
+        taskProp["taskDate"] = QString::fromStdString(date);
+        taskProp["taskNotes"] = QString::fromStdString(temp.notes);
 
         QObject* newTaskQml = component.createWithInitialProperties(taskProp, eng->rootContext());
+
+        all_loaded.push_back(newTaskQml);
 
         if (!newTaskQml) {
             qWarning() << "Failed to create:" << component.errors();
@@ -138,9 +376,16 @@ namespace  Engine {
         if (parentItem && childItem) {
             childItem->setParentItem(parentItem);
         }
-        ind++;
+        // ind++;
     }
 
+    void EngineMod::testing() {
+        // this_thread::sleep_for(chrono::seconds(3));
+        // sqlComd();
+        // for (auto i: all_tasks) {
+        //     cout << i.dex << endl;
+        // }
+    }
 };
 
 

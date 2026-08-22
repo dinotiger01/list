@@ -59,7 +59,7 @@ Item{
                             width: 40
                             height: 40
                             radius: 20
-                            color: peopleImgs[index]
+                            color: peopleImgs[index];
                             anchors{
                                 // verticalCenter: parent.verticalCenter
                             }
@@ -85,7 +85,7 @@ Item{
                     color: "blue"
                     Text{
                         text: taskDate
-                        font.pointSize: parent.height / 2
+                        // font.pointSize: parent.height / 2
                     }
                 }
                 // drop down

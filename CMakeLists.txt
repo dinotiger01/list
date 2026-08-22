@@ -19,7 +19,7 @@ if(APPLE)
     set(WrapOpenGL_FOUND TRUE CACHE BOOL "" FORCE)
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql OpenGL Concurrent)
 find_package(SQLite3 REQUIRED)
 
 
@@ -54,6 +54,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Quick
         Qt6::Widgets
         Qt6::Sql
+        Qt6::Concurrent
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
 
