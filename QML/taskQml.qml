@@ -1,16 +1,22 @@
 import QtQuick
 import QtQuick.Controls
+import EngineMod
 
 Item{
     id:listItem
     width: 950
     height: 60
+    property int dex
     property string taskName: "name"
     property int peopleInt: 1
     property list<string> peopleImgs;
     property string taskType : "main"
     property string taskDate : "today"
     property string taskNotes: ""
+
+    EngineMod{
+        id: engin
+    }
 
     Rectangle{
         anchors{
@@ -34,6 +40,9 @@ Item{
                             fill: parent
                             margins: 5
                         }
+                    }
+                    onClicked:{
+                        engin.deleter(listItem, dex)
                     }
                 }
                 //name
@@ -156,7 +165,7 @@ Item{
                         }
                     }
                     onClicked:{
-                        editer.editIsClosed = false
+                        engin.edit(dex);
                     }
                 }
             }

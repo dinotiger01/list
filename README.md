@@ -5,8 +5,11 @@ idk man
 
 i need to
 
-pry
+struch in da .h
+
+filter
+
 
 edit
 
-deleat
+move time dif to the callback

@@ -18,6 +18,7 @@
 // #include <thread>
 #include <sqlite3.h>
 #include <QtConcurrent>
+#include <QEventLoop>
 
 using namespace std;
 
@@ -41,15 +42,25 @@ namespace  Engine {
         vector<int> peoples;
     };
 
+    struct pryority {
+        int dex;
+        string name;
+        int r;
+        int g;
+        int b;
+        QObject* dir;
+    };
+
     vector<task> all_tasks;
     vector<people> all_people;
     vector<string> all_type = {"main", "work", "passoin"};
-    vector<string> all_pry = {"high", "medium", "low"};
+    vector<pryority> all_pry;
     vector<QObject*> all_loaded;
 
 
 
     QObject* listPar;
+    QObject* crate;
     QQmlEngine* eng;
     // sql
     sqlite3* DB;
@@ -72,7 +83,7 @@ namespace  Engine {
         return all_type.size();
     }
     QString EngineMod::getPryName(int i) {
-        return QString::fromStdString(all_pry[i]);
+        return QString::fromStdString(all_pry[i].name);
     }
     int EngineMod::getPrySize() {
         return all_pry.size();
@@ -82,8 +93,10 @@ namespace  Engine {
         eng = engin;
     }
     // start
-    void EngineMod::setPar(QObject *par) {
+    void EngineMod::setPar(QObject *par, QObject* crat) {
         listPar = par;
+        crate = crat;
+
     }
 
     //sql
@@ -108,7 +121,6 @@ namespace  Engine {
         // argv - vector of the data
         // azColName - vector name of the data
         task newTask;
-        struct tm datetime;
 
         for (int i = 0; i < argc; i++) {
             // cout << azColName[i] << " : " << argv[i] << endl;
@@ -124,7 +136,8 @@ namespace  Engine {
             }else if (idkman == "HOWLONG") {
                 newTask.delay = stoi(argv[i]);
             }else if (idkman == "WHE") {
-                // mm/dd/yyyy/
+                struct tm datetime;
+                // yyyy/mm/dd/
                 time_t temp;
                 string stringer = argv[i];
                 string tstring;
@@ -133,12 +146,13 @@ namespace  Engine {
                     if (stringer[j] == '/') {
                         try {
                             int tint = stoi(tstring);
+                            cout << tint << " : " << k << endl;
                             if (k == 0) {
-                                datetime.tm_mon = tint;
+                                datetime.tm_year = 2026 - 1900;
                             }else if (k == 1) {
-                                datetime.tm_mday = tint;
+                                datetime.tm_mon = 7;
                             }else if (k == 2) {
-                                datetime.tm_year = tint;
+                                datetime.tm_mday = 22;
                             }else {
                                 cerr << "you messed up ngl";
                             }
@@ -151,7 +165,13 @@ namespace  Engine {
                         tstring += stringer[j];
                     }
                 }
+                datetime.tm_hour = 0;
+                datetime.tm_min = 0;
+                datetime.tm_sec = 0;
+                datetime.tm_isdst = -1;
+                cout << datetime.tm_year << " : " << datetime.tm_mon << " : " << datetime.tm_mday << endl;
                 temp = mktime(&datetime);
+                cout << ctime(&temp) << endl;
                 newTask.date = temp;
 
             }else if (idkman == "NOTE") {
@@ -208,6 +228,30 @@ namespace  Engine {
         return 0;
     }
 
+    static int callbackPRY(void* data, int argc, char** argv, char** azColName) {
+        pryority newPry;
+        for (int i = 0; i < argc;i++) {
+            // cout << azColName[i] << " : " << argv[i] << endl;
+            string tempName = azColName[i];
+            if (tempName == "DEX") {
+                newPry.dex = stoi(argv[i]);
+            }else if (tempName == "NAME") {
+                newPry.name = argv[i];
+            }else if (tempName == "R") {
+                newPry.r = stoi(argv[i]);
+            }else if (tempName == "G") {
+                newPry.g = stoi(argv[i]);
+            }else if (tempName == "B") {
+                newPry.b = stoi(argv[i]);
+            }else {
+                cerr << "no this is wrong : " << tempName;
+            }
+        }
+        all_pry.push_back(newPry);
+
+        return 0;
+    }
+
     void EngineMod::sqlPullPeople() {
         // define stuff
         int exit = 0;
@@ -249,36 +293,56 @@ namespace  Engine {
         return 0;
     }
 
+    void EngineMod::sqlPullPry() {
+        int exit = 0;
+        // open
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        // sql sertch
+        string query = "select * from PRY "
+                       "ORDER BY DEX";
+        sqlite3_exec(DB, query.c_str(), callbackPRY, NULL , NULL);
+
+        // debog stuff
+        if (exit != SQLITE_OK) {
+            cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
+
+        }else {
+            cout << "it is open" << endl;
+        }
+        // close
+        sqlite3_close(DB);
+    }
+
     void EngineMod::refrechAll() {
 
-        QPointer<EngineMod> safeThis(this);
+        //clear
+        all_tasks.clear();
+        all_people.clear();
+        all_pry.clear();
+        for (auto &i: all_loaded) {
+            i->deleteLater();
+        }
+        all_loaded.clear();
+        //pull new data
+        sqlPullPeople();
+        sqlPullTask();
+        sqlPullPry();
 
 
-        //fixthis when you get back
-        QThreadPool::globalInstance()->start([safeThis]() {
-            if (!safeThis) return;
+        // display new data
+        for (int i = 0; i < all_pry.size();i++) {
+            addPry(i);
+        }
 
-            all_tasks.clear();
-            all_people.clear();
-            if (!all_loaded.empty()) {
-                for (auto &i: all_loaded) {
-                    i->deleteLater();
-                }
+        if (listPar == 0) {
+            // this_thread::sleep_for(chrono::seconds(1));
+            refrechAll();
+        }else {
+            for (int i = 0; i < all_tasks.size(); i++) {
+                addTask(i);
+
             }
-
-            all_loaded.clear();
-
-            if (listPar == 0) {
-                // this_thread::sleep_for(chrono::seconds(1));
-                refrechAll();
-            }else {
-                for (int i = 0; i < all_tasks.size(); i++) {
-                    safeThis->addTask(listPar, i);
-                }
-            }
-
-
-        }, Qt::QueuedConnection);
+        }
     }
 
     void EngineMod::sqlComd() {
@@ -308,6 +372,18 @@ namespace  Engine {
         //       "TYPE text"
         //       ");";
 
+
+        // sql = "DROP TABLE PRY";
+        // sql = "create table PRY("
+        //       "DEX int PRIMARY KEY,"
+        //       "NAME text,"
+        //       "R int,"
+        //       "G int,"
+        //       "B int"
+        //       ");";
+
+        // sql = "INSERT INTO PRY VALUES(2,'low',0,0,255)";
+
         // sql = "create table PEOPLE (ID int PRIMARY KEY,NAME text, PFP TEXT, REQHR text)";
         // sql = "INSERT INTO PEOPLE VALUES(3, 'bat man','purple','1,1,1,1,1,1,1')";
 
@@ -327,36 +403,47 @@ namespace  Engine {
         string startquo = " '";
         string endquo = "' ";
         string sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + due.toStdString() + endquo + com + startquo + people.toStdString() + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
-        cout << sql;
 
             // seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', seconed;
 
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "create task : " << sqlite3_errmsg(DB) << endl;
+        sqlite3_close(DB);
         refrechAll();
     }
 
-    void EngineMod::addTask(QObject* par, int addtask) {
-        cout << "qml: " << all_tasks[addtask].name << endl;
-        task temp = all_tasks[addtask];
+    void EngineMod::addTask(int addtask) {
+        // cout << "qml: " << all_tasks[addtask].name << endl;
+        task& temp = all_tasks[addtask];
 
-        string date = ctime(&temp.date);
 
         QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
 
         // all_loaded.push_back(&component);
 
         QVariantMap taskProp;
+        taskProp["dex"] = temp.dex;
         taskProp["taskName"] =  QString::fromStdString(temp.name);
         taskProp["peopleInt"] = static_cast<int>(temp.peoples.size());
         QStringList qPeople;
         for (int i = 0; i < temp.peoples.size(); i++) {
-            cout << i << " : " << all_people[temp.peoples[i] -1].php << " : "<< all_people[temp.peoples[i] -1].dex<<"\n";
+            // cout << i << " : " << all_people[temp.peoples[i] -1].php << " : "<< all_people[temp.peoples[i] -1].dex<<"\n";
             qPeople.push_back(QString::fromStdString(all_people[temp.peoples[i]-1].php));
         }
         taskProp["peopleImgs"] = qPeople;
         taskProp["taskType"] = QString::fromStdString(temp.type);
-        taskProp["taskDate"] = QString::fromStdString(date);
+        time_t rn;
+        time(&rn);
+        struct tm dateTime;
+
+        double diff = difftime(rn, temp.date);
+        diff /= 60* 60 * 24;
+        diff = floor(diff);
+        int days = diff;
+        // cout << diff << " : " << ctime(&rn)  << " : "  << ctime(&temp.date)<< endl;
+        // if ()
+
+        taskProp["taskDate"] = QString::fromStdString(to_string(days));
         taskProp["taskNotes"] = QString::fromStdString(temp.notes);
 
         QObject* newTaskQml = component.createWithInitialProperties(taskProp, eng->rootContext());
@@ -367,24 +454,90 @@ namespace  Engine {
             qWarning() << "Failed to create:" << component.errors();
             return;
         }
-        newTaskQml->setParent(par);
+
+        QObject* pryDir = all_pry[temp.pry].dir;
+        newTaskQml->setParent(pryDir);
         QQmlEngine::setObjectOwnership(newTaskQml, QQmlEngine::CppOwnership);
 
-        QQuickItem* parentItem = qobject_cast<QQuickItem*>(par);
+        QQuickItem* parentItem = qobject_cast<QQuickItem*>(pryDir);
         QQuickItem* childItem = qobject_cast<QQuickItem*>(newTaskQml);
 
         if (parentItem && childItem) {
             childItem->setParentItem(parentItem);
         }
+        // cout << childItem->parent() << endl;
         // ind++;
+    }
+
+    void EngineMod::addPry(int addedPry) {
+        pryority& temp = all_pry[addedPry];
+
+        QQmlComponent component(eng, QUrl(QStringLiteral("../QML/pryQml.qml")));
+
+        // define var in pry
+        QVariantMap prop;
+        prop["dex"] = static_cast<int>(temp.dex);
+        prop["pryName"] = QString::fromStdString(temp.name);
+        prop["prr"] = static_cast<int>(temp.r);
+        prop["prg"] = static_cast<int>(temp.g);
+        prop["prb"] = static_cast<int>(temp.b);
+
+        QObject* newPry = component.createWithInitialProperties(prop, eng->rootContext());
+
+        // add in to qml
+        if (!newPry) {
+            qWarning() << "Failed to create:" << component.errors();
+            return;
+        }
+        newPry->setParent(listPar);
+        QQmlEngine::setObjectOwnership(newPry, QQmlEngine::CppOwnership);
+
+        all_loaded.push_back(newPry);
+
+        QQuickItem* parentItem = qobject_cast<QQuickItem*>(listPar);
+        QQuickItem* childItem = qobject_cast<QQuickItem*>(newPry);
+
+        if (parentItem && childItem) {
+            childItem->setParentItem(parentItem);
+        }
+
+        // find dir
+        temp.dir = childItem;
+
+    }
+
+    void EngineMod::edit(int dex) {
+        crate->setProperty("createIsClosed", false);
     }
 
     void EngineMod::testing() {
         // this_thread::sleep_for(chrono::seconds(3));
-        // sqlComd();
+
+        crate->setProperty("createIsClosed", false);
+        sqlComd();
         // for (auto i: all_tasks) {
         //     cout << i.dex << endl;
         // }
+    }
+
+    void EngineMod::deleter(QObject *taskToDelete, int delDex) {
+        taskToDelete->deleteLater();
+
+        // sql stuff
+        int exit = 0;
+        char* errorM;
+        string sql = "delete from TASKS where ID =";
+        sql += to_string(delDex);
+        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+
+
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+
+        cerr << "del: " << sqlite3_errmsg(DB) << endl;
+
+        sqlite3_close(DB);
+
+        refrechAll();
     }
 };
 
