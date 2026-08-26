@@ -26,8 +26,9 @@ namespace  Engine {
         Q_INVOKABLE int getTypeSize();
         Q_INVOKABLE QString getPryName(int i);
         Q_INVOKABLE int getPrySize();
+        Q_INVOKABLE QString getCurrentDate();
         Q_INVOKABLE void deleter(QObject* taskToDelete, int dex);
-        Q_INVOKABLE void edit(int dex);
+        Q_INVOKABLE void editOpen(int dex);
         void setEng(QQmlEngine* engin);
         int sqlPullTask();
         void sqlPullPeople();

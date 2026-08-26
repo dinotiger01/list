@@ -34,7 +34,7 @@ namespace  Engine {
         int dex;
         string name;
         int pry;
-        bool isReturn;
+        int isReturn;
         int delay;
         time_t date;
         string notes;
@@ -70,6 +70,15 @@ namespace  Engine {
 
 
     //returns
+    QString EngineMod::getCurrentDate() {
+        char cDate[50];
+        time_t timeS = time(&timeS);
+        struct tm * date;
+        date = localtime(&timeS);
+        strftime(cDate, 50, "%m/%d/%Y", date);
+        return QString::fromStdString(cDate);
+    }
+
     QString EngineMod::getPersonName(int i) {
         return QString::fromStdString(all_people[i].php);
     }
@@ -112,6 +121,7 @@ namespace  Engine {
     // text WHE
     // text NOTE
 
+
     static int callback(void* data, int argc, char** argv, char** azColName)
     {
         //this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
@@ -123,7 +133,7 @@ namespace  Engine {
         task newTask;
 
         for (int i = 0; i < argc; i++) {
-            // cout << azColName[i] << " : " << argv[i] << endl;
+            cout << azColName[i] << " : " << argv[i] << endl;
             const string idkman = azColName[i];
             if (idkman == "ID"){
                 newTask.dex = stoi(argv[i]);
@@ -138,40 +148,19 @@ namespace  Engine {
             }else if (idkman == "WHE") {
                 struct tm datetime;
                 // yyyy/mm/dd/
+                //substr
                 time_t temp;
                 string stringer = argv[i];
-                string tstring;
-                int k = 0;
-                for (int j = 0; j < stringer.size(); j++) {
-                    if (stringer[j] == '/') {
-                        try {
-                            int tint = stoi(tstring);
-                            cout << tint << " : " << k << endl;
-                            if (k == 0) {
-                                datetime.tm_year = 2026 - 1900;
-                            }else if (k == 1) {
-                                datetime.tm_mon = 7;
-                            }else if (k == 2) {
-                                datetime.tm_mday = 22;
-                            }else {
-                                cerr << "you messed up ngl";
-                            }
-                            k++;
-                        }catch(exception &e) {
-                            cerr << e.what();
-                        }
-                        tstring = "";
-                    }else {
-                        tstring += stringer[j];
-                    }
-                }
+                datetime.tm_year = stoi(stringer.substr(0,4)) - 1900;
+                datetime.tm_mon = stoi(stringer.substr(5,2)) - 1;
+                datetime.tm_mday = stoi(stringer.substr(8,2));
                 datetime.tm_hour = 0;
                 datetime.tm_min = 0;
                 datetime.tm_sec = 0;
                 datetime.tm_isdst = -1;
-                cout << datetime.tm_year << " : " << datetime.tm_mon << " : " << datetime.tm_mday << endl;
+                // cout << datetime.tm_year << " : " << datetime.tm_mon << " : " << datetime.tm_mday << endl;
                 temp = mktime(&datetime);
-                cout << ctime(&temp) << endl;
+                // cout << ctime(&temp) << endl;
                 newTask.date = temp;
 
             }else if (idkman == "NOTE") {
@@ -202,7 +191,6 @@ namespace  Engine {
             }
         }
         all_tasks.push_back(newTask);
-
         return 0;
     }
 
@@ -278,16 +266,11 @@ namespace  Engine {
         // open
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
         // sql sertch
-        string query = "select * from TASKS";
+        string query = "select * from TASKS ORDER BY WHE DESC";
         sqlite3_exec(DB, query.c_str(), callback, NULL , NULL);
 
         // debog stuff
-        if (exit != SQLITE_OK) {
-            cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
-
-        }else {
-            cout << "it is open" << endl;
-        }
+        cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
         // close
         sqlite3_close(DB);
         return 0;
@@ -313,6 +296,104 @@ namespace  Engine {
         sqlite3_close(DB);
     }
 
+    bool dup_fromC(task id) {
+        task& dupTask = id;
+        bool needed = false;
+        // time rn
+        time_t curTim = time(&curTim);
+        struct tm date = *localtime(&curTim);
+
+
+
+        if (dupTask.isReturn == 1 || dupTask.isReturn == 2) {
+            // get due delay
+            struct tm testDate = *localtime(&dupTask.date);
+            testDate.tm_mday += dupTask.delay;
+            time_t testTime = mktime(&testDate);
+            cout << ctime(&curTim);
+            cout << ctime(&testTime);
+            double difff = difftime(curTim, testTime);
+            cout << "diff: " << difff << "\n";
+            float days = difff / (60*60*24);
+            cout << "days: " << days << "\n";
+            if ((difftime(curTim, testTime )/ 60*60*24) > -1) {
+                needed = true;
+            }
+        }else if (dupTask.isReturn == 3) {
+            // make sure date of mark off even if it is in the futre
+            needed = true;
+        }else if (dupTask.isReturn == 4 || dupTask.isReturn == 5 ) {
+            // convert to binary
+
+            // find next date due
+            // check if due is here see above
+        }else if (dupTask.isReturn == 6 || dupTask.isReturn == 7 ) {
+            // find next date due
+            // check if due is here see above
+        }else {
+            cout << "you broke everyting" << "\n";
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        int exit = 0;
+        char* errorM;
+
+
+
+
+
+
+
+
+
+
+        string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
+        string end = ");";
+        char com = ',';
+        string startquo = " '";
+        string endquo = "' ";
+        char rn[50];
+
+        strftime(rn, 50, "%Y/%m/%d", &date);
+
+        string pep;
+        for (auto& i : dupTask.peoples) {
+            pep += to_string(i) + ",";
+        }
+        string sql = start + startquo + dupTask.name + endquo + com + to_string(dupTask.pry) + com + to_string(dupTask.isReturn) + com + to_string(dupTask.delay) + com + startquo + rn + endquo + com + startquo + pep + endquo + com + startquo + dupTask.notes + endquo + com + startquo + dupTask.type + endquo+ end;
+        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+
+        cout << sql << "\n";
+
+        // sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+
+        cerr << "del: " << sqlite3_errmsg(DB) << endl;
+
+        sqlite3_close(DB);
+        return true;
+    };
+
     void EngineMod::refrechAll() {
 
         //clear
@@ -327,6 +408,14 @@ namespace  Engine {
         sqlPullPeople();
         sqlPullTask();
         sqlPullPry();
+
+        // load if rec
+        bool found = false;
+        for (auto& i: all_tasks) {
+            if (i.isReturn > 0 && !found) {
+                found = dup_fromC(i);
+            }
+        }
 
 
         // display new data
@@ -352,7 +441,7 @@ namespace  Engine {
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
 
         string sql = "";
-        // sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', 'seconed');";
+        sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '2026/08/15/', 'this note', '2,3,', 'seconed');";
         // sql = "alter table TASKS ADD column IDS int AUTO_INCREMENT primary key";
         // sql = "alter table TASKS DROP CONSTRAINT ID";
         // sql = "drop table TASKS";
@@ -397,12 +486,14 @@ namespace  Engine {
         char* errorM;
 
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        string newdue = due.toStdString();
+        string fixeddue = newdue.substr(6, 4) + "/" + newdue.substr(0, 2) + "/" + newdue.substr(3, 2);
         string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
         string end = ");";
         char com = ',';
         string startquo = " '";
         string endquo = "' ";
-        string sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + due.toStdString() + endquo + com + startquo + people.toStdString() + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
+        string sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + fixeddue + endquo + com + startquo + people.toStdString() + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
 
             // seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', seconed;
 
@@ -416,7 +507,7 @@ namespace  Engine {
         // cout << "qml: " << all_tasks[addtask].name << endl;
         task& temp = all_tasks[addtask];
 
-
+        // if filter here
         QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
 
         // all_loaded.push_back(&component);
@@ -436,14 +527,30 @@ namespace  Engine {
         time(&rn);
         struct tm dateTime;
 
-        double diff = difftime(rn, temp.date);
+        double diff = difftime(temp.date, rn);
         diff /= 60* 60 * 24;
         diff = floor(diff);
-        int days = diff;
+        int days = diff + 1; // off set
         // cout << diff << " : " << ctime(&rn)  << " : "  << ctime(&temp.date)<< endl;
-        // if ()
+        string preface;
+        if (days > 1) {
+            preface = to_string(abs(days)) + " days until";
+        }else if (days < -1) {
+            preface = to_string(abs(days)) + " days ago";
+        }else if (days == 0) {
+            preface = "today";
+        }else if (days == -1) {
+            preface = "yesterday";
+        }else if (days == 1) {
+            preface = "tomarow";
+        }
 
-        taskProp["taskDate"] = QString::fromStdString(to_string(days));
+        taskProp["taskDate"] = QString::fromStdString(preface);
+        struct tm dueDate = *localtime(&temp.date);
+        char due[12];
+        strftime(due, 12,"%m/%d/%Y", &dueDate);
+        taskProp["taskNoteDate"] = QString::fromStdString(due);
+        // task date in description
         taskProp["taskNotes"] = QString::fromStdString(temp.notes);
 
         QObject* newTaskQml = component.createWithInitialProperties(taskProp, eng->rootContext());
@@ -506,14 +613,14 @@ namespace  Engine {
 
     }
 
-    void EngineMod::edit(int dex) {
+    void EngineMod::editOpen(int dex) {
         crate->setProperty("createIsClosed", false);
     }
 
     void EngineMod::testing() {
         // this_thread::sleep_for(chrono::seconds(3));
 
-        crate->setProperty("createIsClosed", false);
+        // crate->setProperty("createIsClosed", false);
         sqlComd();
         // for (auto i: all_tasks) {
         //     cout << i.dex << endl;

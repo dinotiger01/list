@@ -482,6 +482,7 @@ Window {
                                         assSelect.model = engin.getPersonSize()
                                         typeSelect.model = engin.getTypeSize()
                                         prySelect.model = engin.getPrySize()
+                                        creatDate.text = engin.getCurrentDate()
                                     }
                                 }
                             }
@@ -608,14 +609,322 @@ Window {
                                 color: "pink"
                                 Column{
                                     anchors{fill: parent}
-                                    CheckBox{
+                                    CheckBox {
                                         width: parent.width
-                                        height: 50
+                                        height: 30
                                         text: "reurcering"
                                         onClicked: {
-                                            creater.reped = checked
+                                            if(checked){
+                                                holderForAll.state = "yeah"
+                                            }else{
+                                                holderForAll.state = "eh"
+                                            }
+                                        }
+                                    }
+                                    Column{
+                                        id: holderForAll
+                                        width: parent.width
+                                        clip: true
+                                        height: 0
+                                        Column{
+                                            id: repSelCon
+                                            clip: true
+                                            width: parent.width
+                                            height: 30
+                                            property int recType: 0
+                                            // drop down
+                                            Button{
+                                                width: parent.width;
+                                                id: repTypeDrop
+                                                ButtonGroup{
+                                                    id: repType
+                                                    onClicked: typeRec => {
+                                                        repTypeDrop.text = typeRec.text
+                                                        repSelCon.repSelectColosed = true
+                                                        repSelCon.recType = typeRec.type
+                                                    }
+                                                }
+                                                onClicked:{
+                                                    repSelCon.repSelectColosed = !repSelCon.repSelectColosed
+                                                }
+                                            }
+                                            // after x days from due date 1
+                                            // if multi = flase delet task when due date is over 2
+                                            // number
+                                            Button{
+                                                property int type: 1
+                                                width: parent.width
+                                                ButtonGroup.group: repType
+                                                text: "rep affter due"
+                                            }
+                                            // after x days from mark of 3
+                                            // incapadible with multi 5
+                                            // number
+                                            Button{
+                                                property int type: 3
+                                                width: parent.width
+                                                ButtonGroup.group: repType
+                                                text: "rep affter comp"
+                                            }
+                                            // by week witch days of the week 4
+                                            // if multi = flase delet task when due date is over 5
+                                            // week day (stored as a int that translates to binary)
+                                            Button{
+                                                property int type: 4
+                                                width: parent.width
+                                                ButtonGroup.group: repType
+                                                text: "rep on week day"
+                                            }
+                                            // month day, day of the month 1-28 6
+                                            // if multi = flase delet task when due date is over 7
+                                            // number
+                                            Button{
+                                                property int type: 6
+                                                width: parent.width
+                                                ButtonGroup.group: repType
+                                                text: "rep on month day"
+                                            }
+                                            property bool repSelectColosed: true
+                                            state: repSelectColosed ? "cell-closed" : "cell-open"
+                                            states: [
+                                                State{
+                                                    name: "cell-open"
+                                                    // when: listItemDes.visible
+                                                    PropertyChanges{
+                                                        target: repSelCon; height: undefined
+                                                        // target: listItemDes; height: 150
+                                                    }
+                                                },
+                                                State{
+                                                    name: "cell-closed"
+                                                    // when: !visible
+                                                    PropertyChanges{
+                                                        target: repSelCon; height: 30
+                                                    }
+                                                }
+                                            ]
+                                            transitions: Transition{
+                                                NumberAnimation{
+                                                    properties: "height"
+                                                    duration: 250
+                                                    easing.type: Easing.InOutQuad
+                                                }
+                                            }
+                                        }
+                                        // edit recur type
+                                        Column{
+                                            width: parent.width
+                                            CheckBox{
+                                                id: multiCheck
+                                                clip: true
+                                                width: parent.width
+                                                text: "alowDuplicats"
+                                                onClicked: {
+                                                    creater.multi = checked
+                                                }
+                                            }
+                                            // number
+                                            Row{
+                                                property int num: 0;
+                                                id: repNum
+                                                clip: true
+                                                width: parent.width
+                                                Text{
+                                                    id: numText
+                                                    width: parent.width/3
+                                                    height: parent.height
+                                                    text: "0"
+                                                }
+                                                Button{
+                                                    width: parent.width/3
+                                                    height: parent.height
+                                                    text: "+"
+                                                    onClicked:{
+                                                        repNum.num += 1
+                                                        numText.text = repNum.num.toString()
+                                                    }
+                                                }
+                                                Button{
+                                                    width: parent.width/3
+                                                    height: parent.height
+                                                    text: "-"
+                                                    onClicked:{
+                                                        repNum.num -= 1
+                                                        numText.text = repNum.num.toString()
+                                                    }
+                                                }
+                                            }
+                                            // week day
+                                            Row{
+                                                id: repWeek
+                                                clip: true
+                                                width: parent.width
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        x: 0
+                                                        color: parent.checked ? "green" : "blue"
+                                                    }
+                                                    onClicked: {
+                                                        // parent.isChecked = checked;
+                                                    }
+                                                }
+                                            }
+                                            state: repSelCon.recType === 1 ? "number and check" :
+                                                    repSelCon.recType === 3 ? "just number" :
+                                                    repSelCon.recType === 4 ? "week and check" :
+                                                    repSelCon.recType === 6 ? "number and check" : "null"
+                                            states: [
+                                                State{
+                                                    name: "null"
+                                                    PropertyChanges{
+                                                        multiCheck.height: 0
+                                                        repNum.height: 0
+                                                        repWeek.height: 0
+                                                    }
+                                                },
+                                                State{
+                                                    name: "number and check"
+                                                    PropertyChanges{
+                                                        multiCheck.height: 30
+                                                        repNum.height: 30
+                                                        repWeek.height: 0
+                                                    }
+                                                },
+                                                State{
+                                                    name: "just number"
+                                                    PropertyChanges{
+                                                        multiCheck.height: 0
+                                                        repNum.height: 30
+                                                        repWeek.height: 0
+                                                    }
+                                                },
+                                                State{
+                                                    name: "week and check"
+                                                    PropertyChanges{
+                                                        multiCheck.height: 30
+                                                        repNum.height: 0
+                                                        repWeek.height: undefined
+                                                    }
+                                                }
+                                            ]
 
                                         }
+
+                                        states:[
+                                            State{
+                                                name: "eh"
+                                                PropertyChanges{
+                                                    target: holderForAll; height: 0;
+                                                }
+                                            },
+                                            State{
+                                                name: "yeah"
+                                                PropertyChanges{
+                                                    target: holderForAll; height: undefined;
+                                                }
+                                            }
+                                        ]
+                                        transitions: Transition{
+                                            NumberAnimation{
+                                                properties: "height"
+                                                duration: 250
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    }
+                                    Rectangle{
+                                        width: parent.width
+                                        height: 20
+                                        Text{
+                                            text: "mm/dd/yyyy"
+                                        }
+                                    }
+                                    TextArea{
+                                        // activeFocus: false
+                                        id: creatDate
+                                        text: engin.getCurrentDate()
                                     }
                                 }
                             }
@@ -719,15 +1028,17 @@ Window {
                             width: parent.width
                             height: parent.height - 30
                         }
-
                         Row{
                             width: parent.width
                             height: 30
                             //error
                             Rectangle{
-                                id: errorTextBox
                                 width: parent.width - editButton.width - delButton.width - creater.width - closeButton.width   //ill get there
                                 height: parent.height
+                                Text{
+                                    anchors{fill: parent}
+                                    id: errorTextBox
+                                }
                             }
                             // edit
                             Button{
@@ -740,26 +1051,50 @@ Window {
                                 id: delButton
                                 width: 30
                                 height: parent.height
+                                text: "X"
                             }
                             // create
                             Button{
                                 id: creater
                                 width: 30
                                 height: parent.height
+                                text: "+"
 
-                                property int pry
-                                property string type
+                                property int pry: -1
+                                property string type : "not sett"
                                 property list<bool> peps
-                                property bool reped
+                                property bool multi: false
                                 onClicked:{
+                                    let valid = true
+                                    let errorM = ""
+
+                                    let name = newName.text
+                                    let notes = newNotes.text
+
                                     let pry = creater.pry
-                                    let rep = 0//int 0-1 bool
+                                    let rep = repSelCon.recType//int 0-7 bool
+                                    let multi = creater.multi
                                     if(creater.reped){
                                         rep = 1
                                     }
-                                    let delay = 0// int
-                                    //yyyy/mm/dd
-                                    let due = "2026/08/22/"
+                                    let delay = repNum.num// int
+
+                                    if (rep === 4){
+                                        // binary transform
+                                        delay = 0;
+                                        for(let i = 0; i < 7; i++){
+                                            if(repWeek.children[i].checked){
+                                                //idk
+                                                delay += 2**i
+                                            }
+                                        }
+                                        errorM = delay.toString();
+                                    }
+                                    if((rep === 1 || rep === 3 || rep === 4 || rep === 6) && multi){
+                                        rep++;
+                                    }
+                                    //mm/dd/yyyy
+                                    let due = creatDate.text
                                     let pep = ""
                                     for(let i = 0; i < creater.peps.length; i++){
                                         if(creater.peps[i]){
@@ -767,7 +1102,57 @@ Window {
                                         }
                                     }
                                     let type = creater.type
-                                    engin.creatTask(newName.text, pry, rep, delay, due ,pep, newNotes.text, type)
+
+                                    // vaild date
+                                    if(pry === -1){
+                                        valid = false;
+                                        errorM = "there is no pryority selected"
+                                    }
+
+                                    let duevalid = false
+
+
+                                    if(!isNaN(due[0]) && !isNaN(due[1]) && due[2] === '/' && !isNaN(due[3]) && !isNaN(due[4]) && due[5] === '/' && !isNaN(due[6]) && !isNaN(due[7]) && !isNaN(due[8]) && !isNaN(due[9]) && valid){
+                                        duevalid = true
+                                    }
+
+                                    if(!duevalid && valid){
+                                        valid = false;
+                                        errorM = "there an issue with the date " + isNaN(due[0]);
+                                    }
+                                    if(type === "not sett" && valid){
+                                        valid = false;
+                                        errorM = "there an issue with the type"
+                                    }
+
+                                    if(name === "" && valid){
+                                        errorM = "name can not be blank"
+                                        valid = false
+                                    }else{
+                                        for(let i = 0; i < name.length; i++){
+                                            if(name[i] === "'" || name[i] === ';'){
+                                                valid = false
+                                                errorM = "name can not contain ' or ;"
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(valid){
+                                        for(let i = 0; i < notes.length; i++){
+                                            if(notes[i] === "'" || notes[i] === ';'){
+                                                valid = false
+                                                errorM = "notes can not contain ' or ;"
+                                                break;
+                                            }
+                                        }
+                                    }
+
+
+                                    if(valid){
+                                        errorM = ""
+                                        engin.creatTask(name, pry, rep, delay, due ,pep, notes, type)
+                                    }
+                                    errorTextBox.text = errorM
                                 }
                             }
 
@@ -776,6 +1161,7 @@ Window {
                                 id: closeButton
                                 width: 30
                                 height: parent.height
+                                text: "-"
                                 onClicked: {
                                     createTask.createIsClosed = true;
                                 }
@@ -789,15 +1175,12 @@ Window {
             states: [
                 State{
                     name: "edit-open"
-                    // when: listItemDes.visible
                     PropertyChanges{
                         target: createTask; height: 260
-                        // target: listItemDes; height: 150
                     }
                 },
                 State{
                     name: "edit-closed"
-                    // when: !visible
                     PropertyChanges{
                         target: createTask; height: 0
                     }
@@ -811,67 +1194,5 @@ Window {
                 }
             }
         }
-        }
-    // editer
-    /* Rectangle{
-        id: editer
-        height: parent.height
-        anchors{
-            right: parent.right
-        }
-        color: "pink"
-        clip: true
-        Item{
-            id: editholder
-            anchors{fill: parent}
-
-            Button{
-                width: 60
-                height: 60
-                anchors{
-                    right: parent.right
-                    top: parent.top
-                }
-                background: Rectangle{
-                    anchors{
-                        fill: parent
-                        margins: 5
-                    }
-                }
-                onClicked:{
-                    editer.editIsClosed = true
-                }
-            }
-        }
-
-
-
-
-        property bool editIsClosed: true
-        state: editIsClosed ? "edit-closed" : "edit-open"
-        states: [
-            State{
-                name: "edit-open"
-                // when: listItemDes.visible
-                PropertyChanges{
-                    target: editer; width: 500
-                    // target: listItemDes; height: 150
-                }
-            },
-            State{
-                name: "edit-closed"
-                // when: !visible
-                PropertyChanges{
-                    target: editer; width: 0
-                }
-            }
-        ]
-        transitions: Transition{
-            NumberAnimation{
-                properties: "width"
-                duration: 250
-                easing.type: Easing.InOutQuad
-            }
-        }
-    } */
+    }
 }
