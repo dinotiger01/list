@@ -19,6 +19,7 @@
 #include <sqlite3.h>
 #include <QtConcurrent>
 #include <QEventLoop>
+#include  <bitset>
 
 using namespace std;
 
@@ -56,8 +57,15 @@ namespace  Engine {
     vector<string> all_type = {"main", "work", "passoin"};
     vector<pryority> all_pry;
     vector<QObject*> all_loaded;
+    unordered_map<string, QObject*> bulkCreate;
+    vector<QObject*> pryKidHold;
+    vector<QObject*> typeKidHold;
+    vector<QObject*> peopleKidHold;
 
 
+    int curLook;
+    time_t curentTime = time(&curentTime);
+    struct tm currentDate = *localtime(&curentTime);
 
     QObject* listPar;
     QObject* crate;
@@ -71,42 +79,81 @@ namespace  Engine {
 
     //returns
     QString EngineMod::getCurrentDate() {
-        char cDate[50];
-        time_t timeS = time(&timeS);
-        struct tm * date;
-        date = localtime(&timeS);
-        strftime(cDate, 50, "%m/%d/%Y", date);
+        char cDate[50];;
+        strftime(cDate, 50, "%m/%d/%Y", &currentDate);
         return QString::fromStdString(cDate);
     }
-
-    QString EngineMod::getPersonName(int i) {
+    QString EngineMod::getPersonName(int i, QObject* obj) {
+        peopleKidHold.at(i) = obj;
         return QString::fromStdString(all_people[i].php);
     }
     int EngineMod::getPersonSize() {
+        if (peopleKidHold.empty()) {
+            for (int i=0; i < all_people.size(); i++) {
+                peopleKidHold.push_back(NULL);
+            }
+        }
         return all_people.size();
     }
-    QString EngineMod::getTypeName(int i) {
+    QString EngineMod::getTypeName(int i, QObject* obj) {
+        typeKidHold.at(i) = obj;
         return QString::fromStdString(all_type[i]);
     }
     int EngineMod::getTypeSize() {
+        if (typeKidHold.empty()) {
+            for (int i=0; i < all_type.size(); i++) {
+                typeKidHold.push_back(NULL);
+            }
+        }
         return all_type.size();
     }
-    QString EngineMod::getPryName(int i) {
+    QString EngineMod::getPryName(int i, QObject* obj) {
+        pryKidHold.at(i) = obj;
         return QString::fromStdString(all_pry[i].name);
     }
     int EngineMod::getPrySize() {
+        if (pryKidHold.empty()) {
+            for (int i=0; i < all_pry.size(); i++) {
+                pryKidHold.push_back(NULL);
+            }
+        }
         return all_pry.size();
     }
+    bool isPrev(time_t test) {
+        time_t rn = curentTime;
+        if((difftime(rn, test )/ 60*60*24) > -1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+    bool isPrev(tm testDate) {
+        time_t test = mktime(&testDate);
+        time_t rn = curentTime;
+        if((difftime(rn, test )/ 60*60*24) > -1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
     }
+
+    void EngineMod::setBulkCreate(QObject* obj, QString type) {
+        bulkCreate[type.toStdString()] = obj;
+    }
+
     // start
     void EngineMod::setPar(QObject *par, QObject* crat) {
         listPar = par;
         crate = crat;
 
     }
+
 
     //sql
     // like how do i add a vector
@@ -296,77 +343,9 @@ namespace  Engine {
         sqlite3_close(DB);
     }
 
-    bool dup_fromC(task id) {
-        task& dupTask = id;
-        bool needed = false;
-        // time rn
-        time_t curTim = time(&curTim);
-        struct tm date = *localtime(&curTim);
-
-
-
-        if (dupTask.isReturn == 1 || dupTask.isReturn == 2) {
-            // get due delay
-            struct tm testDate = *localtime(&dupTask.date);
-            testDate.tm_mday += dupTask.delay;
-            time_t testTime = mktime(&testDate);
-            cout << ctime(&curTim);
-            cout << ctime(&testTime);
-            double difff = difftime(curTim, testTime);
-            cout << "diff: " << difff << "\n";
-            float days = difff / (60*60*24);
-            cout << "days: " << days << "\n";
-            if ((difftime(curTim, testTime )/ 60*60*24) > -1) {
-                needed = true;
-            }
-        }else if (dupTask.isReturn == 3) {
-            // make sure date of mark off even if it is in the futre
-            needed = true;
-        }else if (dupTask.isReturn == 4 || dupTask.isReturn == 5 ) {
-            // convert to binary
-
-            // find next date due
-            // check if due is here see above
-        }else if (dupTask.isReturn == 6 || dupTask.isReturn == 7 ) {
-            // find next date due
-            // check if due is here see above
-        }else {
-            cout << "you broke everyting" << "\n";
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    void back_dup(task dup, struct tm newtime, bool oveRide) {
         int exit = 0;
         char* errorM;
-
-
-
-
-
-
-
-
-
 
         string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
         string end = ");";
@@ -375,27 +354,110 @@ namespace  Engine {
         string endquo = "' ";
         char rn[50];
 
-        strftime(rn, 50, "%Y/%m/%d", &date);
+        strftime(rn, 50, "%Y/%m/%d", &newtime);
 
         string pep;
-        for (auto& i : dupTask.peoples) {
+        for (auto& i : dup.peoples) {
             pep += to_string(i) + ",";
         }
-        string sql = start + startquo + dupTask.name + endquo + com + to_string(dupTask.pry) + com + to_string(dupTask.isReturn) + com + to_string(dupTask.delay) + com + startquo + rn + endquo + com + startquo + pep + endquo + com + startquo + dupTask.notes + endquo + com + startquo + dupTask.type + endquo+ end;
+        string sql;
+        sql = start + startquo + dup.name + endquo + com + to_string(dup.pry) + com + to_string(dup.isReturn) + com + to_string(dup.delay) + com + startquo + rn + endquo + com + startquo + dup.notes + endquo + com + startquo + pep + endquo + com + startquo + dup.type + endquo+ end;
         sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
 
-        cout << sql << "\n";
+        cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
 
-        // sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        if (dup.isReturn == 1 || dup.isReturn == 4 || dup.isReturn == 6 || dup.isReturn == 3 || oveRide) {
+            sql = "delete from TASKS where ID = ";
+            sql += to_string(dup.dex);
+        }else if (dup.isReturn == 2|| dup.isReturn == 5 || dup.isReturn == 7) {
+            sql = "UPDATE TASKS SET REPEATE = 0 where ID = ";
+            sql += to_string(dup.dex);
+        }
 
-        cerr << "del: " << sqlite3_errmsg(DB) << endl;
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+
+        cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-        return true;
+
+    }
+
+    bool dup_fromC(task id) {
+        task& dupTask = id;
+        bool needed = false;
+        // time rn
+
+
+        struct tm testDate = *localtime(&dupTask.date);
+        // alllll need to be on compleate
+        if (dupTask.isReturn == 1 || dupTask.isReturn == 2) {
+            // get due delay
+            testDate.tm_mday += dupTask.delay;
+            time_t testTime = mktime(&testDate);
+
+            if (isPrev(testTime)) {
+                needed = true;
+            }
+        }else if (dupTask.isReturn == 3) {
+            // make sure date of mark off even if it is in the futre
+            // needed = true;
+            needed = false;
+
+        }else if (dupTask.isReturn == 4 || dupTask.isReturn == 5 ) {
+            // convert to binary
+
+            bitset<7> binary(dupTask.delay);
+            // find next date due
+
+            testDate.tm_mday++;
+            while (true) {
+                mktime(&testDate);
+                if (binary[testDate.tm_wday] == 1) {
+                    break;
+                }
+                testDate.tm_mday++;
+                // cout << date.tm_wday << " : ";
+            }
+            cout << "\n";
+
+            // check if due is here
+
+            if (isPrev(testDate)) {
+                needed = true;
+            }
+        }else if (dupTask.isReturn == 6 || dupTask.isReturn == 7 ) {
+
+            // find next date due
+
+
+            testDate.tm_mday++;
+            while (true) {
+                mktime(&testDate);
+                if (testDate.tm_mday == dupTask.delay) {
+                    break;
+                }
+                testDate.tm_mday++;
+            }
+            cout << "\n";
+
+            // check if due is here see above
+
+            if (isPrev(testDate)) {
+                needed = true;
+            }
+
+
+        }else {
+            cout << "you broke everyting" << "\n";
+        }
+        if (needed) {
+            back_dup(dupTask, testDate, false);
+        }
+        return needed;
     };
 
     void EngineMod::refrechAll() {
-
         //clear
         all_tasks.clear();
         all_people.clear();
@@ -416,20 +478,22 @@ namespace  Engine {
                 found = dup_fromC(i);
             }
         }
-
-
-        // display new data
-        for (int i = 0; i < all_pry.size();i++) {
-            addPry(i);
-        }
-
-        if (listPar == 0) {
-            // this_thread::sleep_for(chrono::seconds(1));
+        if (found) {
             refrechAll();
         }else {
-            for (int i = 0; i < all_tasks.size(); i++) {
-                addTask(i);
+            // display new data
+            for (int i = 0; i < all_pry.size();i++) {
+                addPry(i);
+            }
 
+            if (listPar == 0) {
+                // this_thread::sleep_for(chrono::seconds(1));
+                refrechAll();
+            }else {
+                for (int i = 0; i < all_tasks.size(); i++) {
+                    addTask(i);
+
+                }
             }
         }
     }
@@ -441,11 +505,11 @@ namespace  Engine {
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
 
         string sql = "";
-        sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '2026/08/15/', 'this note', '2,3,', 'seconed');";
+        // sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '2026/08/15/', 'this note', '2,3,', 'seconed');";
         // sql = "alter table TASKS ADD column IDS int AUTO_INCREMENT primary key";
         // sql = "alter table TASKS DROP CONSTRAINT ID";
         // sql = "drop table TASKS";
-        // sql = "delete from TASKS where ID = " + to_string(ind);
+        sql = "delete from TASKS where ID > 0;";
         // ind++;
         // sql = "UPDATE TASKS SET people = '1,3,' where ID = 1";
 
@@ -480,8 +544,8 @@ namespace  Engine {
         cerr << "sqlcmd: " << sqlite3_errmsg(DB) << endl;
     }
 
-    void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type) {
-        cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << "\n";
+    void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type, bool edit) {
+        cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
         int exit = 0;
         char* errorM;
 
@@ -493,13 +557,30 @@ namespace  Engine {
         char com = ',';
         string startquo = " '";
         string endquo = "' ";
-        string sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + fixeddue + endquo + com + startquo + people.toStdString() + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
-
+        string sql;
+        if (edit == 0) {
+            cout << "wtf" << "\n";
+            sql = start + startquo +name.toStdString() + endquo + com + to_string(pry) + com + to_string(rep) + com + to_string(delay) + com + startquo + fixeddue + endquo + com + startquo + notes.toStdString() + endquo + com + startquo + people.toStdString() + endquo + com + startquo + type.toStdString() + endquo+ end;
+        }else {
+            // UPDATE TASKS SET NAME = 'name' , PRY = pry , REPEATE = rep, HOWLONG = delay, WHE = fixeddue, NOTES = notes, PEOPLE = people, TYPE = type
+            start = "UPDATE TASKS SET ";
+            string NAME = "NAME = ";
+            string PRY = "PRY = ";
+            string REPEATE = "REPEATE = ";
+            string HOWLONG = "HOWLONG = ";
+            string WHE = "WHE = ";
+            string NOTE = "NOTE = ";
+            string PEOPLE = "PEOPLE = ";
+            string TYPE = "TYPE = ";
+            string where = "WHERE ID = " + to_string(curLook);
+            sql = start + NAME + startquo + name.toStdString() + endquo + com + PRY + to_string(pry) + com + REPEATE + to_string(rep) + com + HOWLONG + to_string(delay) + com + WHE + startquo + fixeddue + endquo + com + NOTE + startquo + notes.toStdString() + endquo + com + PEOPLE + startquo + people.toStdString() + endquo + com +TYPE + startquo + type.toStdString() + endquo + where+ ";";
+        }
             // seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', seconed;
 
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "create task : " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
+        crate->setProperty("createIsClosed", true);
         refrechAll();
     }
 
@@ -523,11 +604,9 @@ namespace  Engine {
         }
         taskProp["peopleImgs"] = qPeople;
         taskProp["taskType"] = QString::fromStdString(temp.type);
-        time_t rn;
-        time(&rn);
-        struct tm dateTime;
 
-        double diff = difftime(temp.date, rn);
+
+        double diff = difftime(temp.date, curentTime);
         diff /= 60* 60 * 24;
         diff = floor(diff);
         int days = diff + 1; // off set
@@ -613,15 +692,159 @@ namespace  Engine {
 
     }
 
+    // engin.setBulkCreate(newName, "name")
+    // engin.setBulkCreate(newNotes, "note")
+    // engin.setBulkCreate(prySelect, "pryParent")
+    // engin.setBulkCreate(typeSelect, "typeParent")
+    // engin.setBulkCreate(assSelect, "assParent")
+    // engin.setBulkCreate(delButton, "delButton")
+    // engin.setBulkCreate(creater, "creator")
+    //
+    // engin.setBulkCreate(isRepBox, "isRep")
+    // engin.setBulkCreate(holderForAll, "repSet")
+    // engin.setBulkCreate(repTypeDrop, "repDrop")
+    // "repSel"
+    // engin.setBulkCreate(multiCheck, "multiBox")
+    // engin.setBulkCreate(repNum, "repNum")
+    // engin.setBulkCreate(repWeek, "repWeek")
+    // engin.setBulkCreate(creatDate, "date")
     void EngineMod::editOpen(int dex) {
+        curLook = dex;
+        task temp;
+        for (auto& i : all_tasks) {
+            if (i.dex == dex) {
+                temp = i;
+                break;
+            }
+        }
+
+        bulkCreate["name"]->setProperty("text", QString::fromStdString(temp.name));
+        bulkCreate["note"]->setProperty("text", QString::fromStdString(temp.notes));
+        bulkCreate["pryParent"]->setProperty("model", getPrySize());
+        // check kid
+        pryKidHold[temp.pry]->setProperty("checked", true);
+
+        bulkCreate["typeParent"]->setProperty("model", getTypeSize());
+        // check kid
+        for (int i = 0; i < all_type.size(); i++) {
+            if (all_type[i] == temp.type){
+                typeKidHold[i]->setProperty("checked", true);
+                break;
+            }
+        }
+        bulkCreate["assParent"]->setProperty("model", getPersonSize());
+        // check kid
+        for (int i = 0; i < peopleKidHold.size(); i++) {
+            bool found = false;
+            for (auto& k: temp.peoples) {
+                if (i+1 == k) {
+                    peopleKidHold[i]->setProperty("checked", true);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                peopleKidHold[i]->setProperty("checked", false);
+            }
+        }
+
+        bulkCreate["delButton"]->setProperty("width", 30);
+        bulkCreate["repSel"]->setProperty("recType", temp.isReturn);
+        // convert to string
+        char out[50];
+        tm date = *localtime(&temp.date);
+        strftime(out, 12,"%m/%d/%Y", &date);
+
+        bulkCreate["date"]->setProperty("text", QString::fromStdString(out));
+
+        if (temp.isReturn > 0) {
+            bulkCreate["isRep"]->setProperty("checked", true);
+            bulkCreate["repSet"]->setProperty("state", "yeah");
+
+            if (temp.isReturn == 1 || temp.isReturn == 2) {
+                bulkCreate["repDrop"]->setProperty("text", "rec on due");
+            }
+            if (temp.isReturn == 3) {
+                bulkCreate["repDrop"]->setProperty("text", "rec on comp");
+            }
+            if (temp.isReturn == 4 || temp.isReturn == 5) {
+                bulkCreate["repDrop"]->setProperty("text", "rec on week");
+            }
+            if (temp.isReturn == 6 || temp.isReturn == 7) {
+                bulkCreate["repDrop"]->setProperty("text", "rec on month");
+            }
+
+
+
+            // check
+            if (temp.isReturn == 2 || temp.isReturn == 5 || temp.isReturn == 7) {
+                bulkCreate["multiBox"]->setProperty("checked", true);
+                bulkCreate["creator"]->setProperty("multi", true);
+            }else {
+                bulkCreate["multiBox"]->setProperty("checked", false);
+                bulkCreate["creator"]->setProperty("multi", false);
+            }
+            //number
+            if (temp.isReturn == 2 || temp.isReturn == 3 || temp.isReturn == 7 || temp.isReturn == 1 || temp.isReturn == 6) {
+                bulkCreate["repNum"]->setProperty("num", temp.delay);
+                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(temp.delay)));
+            }else {
+                bulkCreate["repNum"]->setProperty("num", 0);
+                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(0)));
+            }
+
+            if (temp.isReturn == 4 || temp.isReturn == 5) {
+                // um idk
+                // i know now
+                //i know this is the worst way i could do this i dont care
+                bitset<7> binary(temp.delay);
+                for (int i = 0; i < binary.size(); i++) {
+                    if (binary[i] == 1 ) {
+                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", true);
+                    }else {
+                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);
+                    }
+                }
+            }else {
+                for (int i = 0; i < 7; i++) {
+                    bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);
+                }
+            }
+        }else {
+            bulkCreate["isRep"]->setProperty("checked", false);
+            bulkCreate["repSet"]->setProperty("state", "eh");
+        }
+        // creator
+        bulkCreate["creator"]->setProperty("pry", temp.pry);
+        bulkCreate["creator"]->setProperty("edit", true);
+        bulkCreate["creator"]->setProperty("type", QString::fromStdString(temp.type));
+
+        vector<bool> peps = {true, false, true};
+        QVariantList qmlPep;
+        qmlPep.reserve(peps.size());
+        for (bool i : peps) {
+            qmlPep.append(i);
+            cout << "fromC: " << i << "\n";
+        }
+
+
+        bulkCreate["creator"]->setProperty("peps", qmlPep);
+
+
         crate->setProperty("createIsClosed", false);
+    }
+
+    void EngineMod::editClose() {
+        crate->setProperty("createIsClosed", true);
     }
 
     void EngineMod::testing() {
         // this_thread::sleep_for(chrono::seconds(3));
 
         // crate->setProperty("createIsClosed", false);
-        sqlComd();
+        // sqlComd();
+        refrechAll();
+        // cout << "fromQml: " << test << "\n";
         // for (auto i: all_tasks) {
         //     cout << i.dex << endl;
         // }
@@ -630,20 +853,77 @@ namespace  Engine {
     void EngineMod::deleter(QObject *taskToDelete, int delDex) {
         taskToDelete->deleteLater();
 
-        // sql stuff
+        task tempTask;
+        for (auto& i: all_tasks) {
+            if (i.dex == delDex) {
+                tempTask = i;
+                break;
+            }
+        }
+
+        if (tempTask.isReturn > 0) {
+            struct tm newDate = *localtime(&tempTask.date);
+            if (tempTask.isReturn == 1 || tempTask.isReturn == 2) {
+                newDate.tm_mday += tempTask.delay;
+
+            }else if (tempTask.isReturn == 3) {
+                // get date rn
+                newDate.tm_mday = currentDate.tm_mday + tempTask.delay;
+            }else if (tempTask.isReturn == 4 || tempTask.isReturn == 5) {
+                bitset<7> binary(tempTask.delay);
+                newDate.tm_mday++;
+                while (true) {
+                    mktime(&newDate);
+                    if (binary[newDate.tm_wday] == 1) {
+                        break;
+                    }
+                    newDate.tm_mday++;
+                }
+
+            }else if (tempTask.isReturn == 6 || tempTask.isReturn == 7) {
+                newDate.tm_mday++;
+                while (true) {
+                    mktime(&newDate);
+                    if (newDate.tm_mday == tempTask.delay) {
+                        break;
+                    }
+                    newDate.tm_mday++;
+                }
+            }else {
+                cout << "no" << "\n";
+            }
+            mktime(&newDate);
+            back_dup(tempTask, newDate, true);
+        }else {
+            // sql stuff
+            int exit = 0;
+            char* errorM;
+            string sql = "delete from TASKS where ID =";
+            sql += to_string(delDex);
+            sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+
+            sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+
+            cerr << "del: " << sqlite3_errmsg(DB) << endl;
+
+            sqlite3_close(DB);
+
+        }
+        refrechAll();
+    }
+
+    void EngineMod::permDel() {
         int exit = 0;
         char* errorM;
-        string sql = "delete from TASKS where ID =";
-        sql += to_string(delDex);
         sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
 
-
+        string sql = "delete from TASKS where ID =";
+        sql += to_string(curLook);
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
 
-        cerr << "del: " << sqlite3_errmsg(DB) << endl;
+        cerr << "perm: " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-
         refrechAll();
     }
 };

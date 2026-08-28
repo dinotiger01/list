@@ -27,7 +27,10 @@ type menu
 
 edit
 
-recuring
+
+on duedate also on compleate
 
 style
+
+you hace to delete the most curent one throught the editor for it to actaly deleate
 

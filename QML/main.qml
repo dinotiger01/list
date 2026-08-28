@@ -13,7 +13,30 @@ Window {
     EngineMod {
         id: engin
         Component.onCompleted: {
+            // send to c++
             engin.setPar(umpar, createTask)
+            engin.setBulkCreate(newName, "name")
+            engin.setBulkCreate(newNotes, "note")
+            engin.setBulkCreate(prySelect, "pryParent")
+            engin.setBulkCreate(typeSelect, "typeParent")
+            engin.setBulkCreate(assSelect, "assParent")
+            engin.setBulkCreate(delButton, "delButton")
+            engin.setBulkCreate(creater, "creator")
+
+            engin.setBulkCreate(isRepBox, "isRep")
+            engin.setBulkCreate(holderForAll, "repSet")
+            engin.setBulkCreate(repTypeDrop, "repDrop")
+            engin.setBulkCreate(repSelCon, "repSel")
+            engin.setBulkCreate(multiCheck, "multiBox")
+            engin.setBulkCreate(repNum, "repNum")
+            engin.setBulkCreate(numText, "repNumText")
+            engin.setBulkCreate(repWeek, "repWeek")
+            engin.setBulkCreate(creatDate, "date")
+
+            for(let i = 0; i< 7; i++){
+                engin.setBulkCreate(repWeek.children[i], "repWeek" + i.toString())
+            }
+
         }
     }
     Item{
@@ -465,7 +488,7 @@ Window {
                                 height: 75
                                 anchors{
                                     right: parent.right
-                                    bottom: parent.bottom
+                                    top: parent.top
                                 }
                                 Button{
                                     anchors{
@@ -479,11 +502,51 @@ Window {
                                     }
                                     onClicked: {
                                         createTask.createIsClosed = !createTask.createIsClosed
+                                        creater.peps = [false]
+                                        assSelect.model = 0
                                         assSelect.model = engin.getPersonSize()
+                                        typeSelect.model = 0
                                         typeSelect.model = engin.getTypeSize()
+                                        prySelect.model = 0
                                         prySelect.model = engin.getPrySize()
                                         creatDate.text = engin.getCurrentDate()
+                                        delButton.width = 0;
+                                        newName.text = ""
+                                        newNotes.text = ""
+                                        isRepBox.checked = false;
+                                        holderForAll.state = "eh"
+                                        repTypeDrop.text = ""
+                                        repSelCon.recType = 0
+                                        multiCheck.checked = false
+                                        repNum.num = 0
+                                        numText.text = "0"
+                                        // repWeek
+                                        for(let i = 0; i < 7; i++){
+                                            repWeek.children[i].checked = false
+                                        }
+                                        // creator
+                                        creater.edit = false
+                                        creater.pry = -1
+                                        creater.type = ""
+                                        creater.multi = false
                                     }
+                                    // engin.setBulkCreate(newName, "name")
+                                    // engin.setBulkCreate(newNotes, "note")
+                                    // engin.setBulkCreate(prySelect, "pryParent")
+                                    // engin.setBulkCreate(typeSelect, "typeParent")
+                                    // engin.setBulkCreate(assSelect, "assParent")
+                                    // engin.setBulkCreate(delButton, "delButton")
+                                    // engin.setBulkCreate(creater, "creator")
+                                    //
+                                    // engin.setBulkCreate(isRepBox, "isRep")
+                                    // engin.setBulkCreate(holderForAll, "repSet")
+                                    // engin.setBulkCreate(repTypeDrop, "repDrop")
+                                    // engin.setBulkCreate(repSelCon, "repSel")
+                                    // engin.setBulkCreate(multiCheck, "multiBox")
+                                    // engin.setBulkCreate(repNum, "repNum")
+                                    // engin.setBulkCreate(numText, "repNumText")
+                                    // engin.setBulkCreate(repWeek, "repWeek")
+                                    // engin.setBulkCreate(creatDate, "date")
                                 }
                             }
                         }
@@ -610,6 +673,7 @@ Window {
                                 Column{
                                     anchors{fill: parent}
                                     CheckBox {
+                                        id: isRepBox
                                         width: parent.width
                                         height: 30
                                         text: "reurcering"
@@ -617,6 +681,7 @@ Window {
                                             if(checked){
                                                 holderForAll.state = "yeah"
                                             }else{
+                                                repSelCon.recType = 0
                                                 holderForAll.state = "eh"
                                             }
                                         }
@@ -759,6 +824,7 @@ Window {
                                                 id: repWeek
                                                 clip: true
                                                 width: parent.width
+
                                                 CheckBox{
                                                     width: parent.width / 7
                                                     height: width
@@ -851,10 +917,10 @@ Window {
                                                     }
                                                 }
                                             }
-                                            state: repSelCon.recType === 1 ? "number and check" :
-                                                    repSelCon.recType === 3 ? "just number" :
-                                                    repSelCon.recType === 4 ? "week and check" :
-                                                    repSelCon.recType === 6 ? "number and check" : "null"
+                                            state: repSelCon.recType === 1 || repSelCon.recType === 2 ? "number and check" :
+                                                    repSelCon.recType === 3  ? "just number" :
+                                                    repSelCon.recType === 4 || repSelCon.recType === 5 ? "week and check" :
+                                                    repSelCon.recType === 6 || repSelCon.recType === 7 ? "number and check" : "null"
                                             states: [
                                                 State{
                                                     name: "null"
@@ -931,7 +997,7 @@ Window {
                             // pry
                             Rectangle{
                                 width: 125
-                                height:200
+                                height: 200
                                 color: "green"
                                 Column{
                                     width: parent.width
@@ -943,17 +1009,13 @@ Window {
                                     }
                                     Repeater{
                                         id: prySelect
-                                        Row{
+                                        RadioButton{
                                             width: parent.width
                                             height: 30
-                                            RadioButton{
-                                                property int dex: index
-                                                width: parent.width
-                                                height: parent.height
-                                                ButtonGroup.group: prySelectGroup
-                                                text: engin.getPryName(index);
-                                                // color: "black"
-                                            }
+                                            property int dex: index
+                                            ButtonGroup.group: prySelectGroup
+                                            text: engin.getPryName(index, this);
+                                            // color: "black"
                                         }
                                     }
                                 }
@@ -973,18 +1035,15 @@ Window {
                                     }
                                     Repeater{
                                         id: typeSelect
-                                        Row{
+                                        RadioButton{
+                                            property int dex: index
                                             width: parent.width
                                             height: 30
-                                            RadioButton{
-                                                property int dex: index
-                                                width: parent.width
-                                                height: parent.height
-                                                ButtonGroup.group: typeSelectGroup
-                                                text: engin.getTypeName(index)
-                                                // color: "black"
-                                            }
+                                            ButtonGroup.group: typeSelectGroup
+                                            text: engin.getTypeName(index, this)
+                                            // color: "black"
                                         }
+
                                     }
                                 }
                             }
@@ -998,22 +1057,18 @@ Window {
                                     Repeater{
                                         id: assSelect
                                         model: engin.getPersonSize()
-                                        Row{
+                                        CheckBox{
                                             width: parent.width
                                             height: 30
-                                            CheckBox{
-                                                property int dex: index
-                                                width: parent.width
-                                                height: parent.height
-                                                text: engin.getPersonName(index)
-                                                Component.onCompleted:{
-                                                    creater.peps.push(false)
-                                                }
-                                                onClicked:{
-                                                    creater.peps[index] = checked;
-                                                }
-                                                // color: "black"
+                                            property int dex: index
+                                            text: engin.getPersonName(index, this)
+                                            Component.onCompleted:{
+                                                creater.peps.push(false)
                                             }
+                                            onClicked:{
+                                                creater.peps[index] = checked;
+                                            }
+                                            // color: "black"
                                         }
                                     }
                                 }
@@ -1033,18 +1088,12 @@ Window {
                             height: 30
                             //error
                             Rectangle{
-                                width: parent.width - editButton.width - delButton.width - creater.width - closeButton.width   //ill get there
+                                width: parent.width - delButton.width - creater.width - closeButton.width   //ill get there
                                 height: parent.height
                                 Text{
                                     anchors{fill: parent}
                                     id: errorTextBox
                                 }
-                            }
-                            // edit
-                            Button{
-                                id: editButton
-                                width: 30
-                                height: parent.height
                             }
                             // deleate
                             Button{
@@ -1052,6 +1101,10 @@ Window {
                                 width: 30
                                 height: parent.height
                                 text: "X"
+                                onClicked: {
+                                    engin.permDel()
+                                    createTask.createIsClosed = true
+                                }
                             }
                             // create
                             Button{
@@ -1059,10 +1112,10 @@ Window {
                                 width: 30
                                 height: parent.height
                                 text: "+"
-
+                                property bool edit: false
                                 property int pry: -1
                                 property string type : "not sett"
-                                property list<bool> peps
+                                property var peps: [true]
                                 property bool multi: false
                                 onClicked:{
                                     let valid = true
@@ -1074,12 +1127,24 @@ Window {
                                     let pry = creater.pry
                                     let rep = repSelCon.recType//int 0-7 bool
                                     let multi = creater.multi
-                                    if(creater.reped){
-                                        rep = 1
-                                    }
                                     let delay = repNum.num// int
 
-                                    if (rep === 4){
+                                    // multi
+                                    if((rep === 1 || rep === 4 || rep === 6) && multi){
+                                        rep++;
+                                    }
+                                    //mm/dd/yyyy
+                                    let due = creatDate.text
+                                    let pep = ""//
+                                    for(let i = 0; i < creater.peps.length; i++){
+                                        if(creater.peps[i]){
+                                            pep += (i+1).toString() + ","
+                                        }
+                                    }
+                                    let type = creater.type // here
+
+                                    // validate
+                                    if (rep === 4 || rep === 5){
                                         // binary transform
                                         delay = 0;
                                         for(let i = 0; i < 7; i++){
@@ -1090,18 +1155,18 @@ Window {
                                         }
                                         errorM = delay.toString();
                                     }
-                                    if((rep === 1 || rep === 3 || rep === 4 || rep === 6) && multi){
-                                        rep++;
+                                    if(rep === 1 && delay === 0){
+                                        valid = false
+                                        errorM = "delay can not = 0"
                                     }
-                                    //mm/dd/yyyy
-                                    let due = creatDate.text
-                                    let pep = ""
-                                    for(let i = 0; i < creater.peps.length; i++){
-                                        if(creater.peps[i]){
-                                            pep += (i+1).toString() + ","
-                                        }
+                                    if(rep === 4 && delay === 0 && valid){
+                                        valid = false
+                                        errorM = "you need to select at least one day"
                                     }
-                                    let type = creater.type
+                                    if(rep === 6 && (delay <= 0 || delay >= 29) && valid){
+                                        valid = false
+                                        errorM = "month day needs to be between 1-28"
+                                    }
 
                                     // vaild date
                                     if(pry === -1){
@@ -1110,8 +1175,6 @@ Window {
                                     }
 
                                     let duevalid = false
-
-
                                     if(!isNaN(due[0]) && !isNaN(due[1]) && due[2] === '/' && !isNaN(due[3]) && !isNaN(due[4]) && due[5] === '/' && !isNaN(due[6]) && !isNaN(due[7]) && !isNaN(due[8]) && !isNaN(due[9]) && valid){
                                         duevalid = true
                                     }
@@ -1150,7 +1213,7 @@ Window {
 
                                     if(valid){
                                         errorM = ""
-                                        engin.creatTask(name, pry, rep, delay, due ,pep, notes, type)
+                                        engin.creatTask(name, pry, rep, delay, due, notes, pep, type, creater.edit)
                                     }
                                     errorTextBox.text = errorM
                                 }

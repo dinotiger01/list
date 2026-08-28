@@ -111,6 +111,7 @@ Item{
                     onClicked:{
                         // text = listItemDes.isClosed
                         listItemDes.isClosed = !listItemDes.isClosed
+                        engin.editClose()
                         // listItemDes.visible = true
                     }
                 }
