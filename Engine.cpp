@@ -52,9 +52,15 @@ namespace  Engine {
         QObject* dir;
     };
 
+    struct typeST {
+        int dex;
+        string name;
+    };
+
+
     vector<task> all_tasks;
     vector<people> all_people;
-    vector<string> all_type = {"main", "work", "passoin"};
+    vector<typeST> all_type;
     vector<pryority> all_pry;
     vector<QObject*> all_loaded;
     unordered_map<string, QObject*> bulkCreate;
@@ -67,9 +73,25 @@ namespace  Engine {
     time_t curentTime = time(&curentTime);
     struct tm currentDate = *localtime(&curentTime);
 
+    bool filter_use_person = false;
+    bool filter_use_type = false;
+    bool filter_use_name = false;
+    bool filter_use_date_past = false;
+    bool filter_use_date_future = false;
+    vector<int> filter_people;
+    vector<string> filter_type;
+    vector<time_t> filter_date;
+    string filter_name;
+
+
+
     QObject* listPar;
     QObject* crate;
+    QObject* tota;
     QQmlEngine* eng;
+
+    QObject* filterType;
+    QObject* filterPer;
     // sql
     sqlite3* DB;
 
@@ -83,9 +105,12 @@ namespace  Engine {
         strftime(cDate, 50, "%m/%d/%Y", &currentDate);
         return QString::fromStdString(cDate);
     }
+
     QString EngineMod::getPersonName(int i, QObject* obj) {
-        peopleKidHold.at(i) = obj;
-        return QString::fromStdString(all_people[i].php);
+        if (obj != nullptr) {
+            peopleKidHold.at(i) = obj;
+        }
+        return QString::fromStdString(all_people[i].name);
     }
     int EngineMod::getPersonSize() {
         if (peopleKidHold.empty()) {
@@ -95,9 +120,18 @@ namespace  Engine {
         }
         return all_people.size();
     }
+    int EngineMod::getPersonDex(int i) {
+        return all_people[i].dex;
+    }
+    QString EngineMod::getPersonPhp(int i) {
+        return QString::fromStdString(all_people[i].php);
+    }
+
     QString EngineMod::getTypeName(int i, QObject* obj) {
-        typeKidHold.at(i) = obj;
-        return QString::fromStdString(all_type[i]);
+        if (obj != nullptr) {
+            typeKidHold.at(i) = obj;
+        }
+        return QString::fromStdString(all_type[i].name);
     }
     int EngineMod::getTypeSize() {
         if (typeKidHold.empty()) {
@@ -107,8 +141,14 @@ namespace  Engine {
         }
         return all_type.size();
     }
+    int EngineMod::getTypeDex(int i) {
+        return all_type[i].dex;
+    }
+
     QString EngineMod::getPryName(int i, QObject* obj) {
-        pryKidHold.at(i) = obj;
+        if (obj != nullptr) {
+            pryKidHold.at(i) = obj;
+        }
         return QString::fromStdString(all_pry[i].name);
     }
     int EngineMod::getPrySize() {
@@ -119,6 +159,7 @@ namespace  Engine {
         }
         return all_pry.size();
     }
+
     bool isPrev(time_t test) {
         time_t rn = curentTime;
         if((difftime(rn, test )/ 60*60*24) > -1){
@@ -129,14 +170,74 @@ namespace  Engine {
     }
     bool isPrev(tm testDate) {
         time_t test = mktime(&testDate);
-        time_t rn = curentTime;
-        if((difftime(rn, test )/ 60*60*24) > -1){
-            return true;
-        }else {
-            return false;
-        }
+        return isPrev(test);
     }
+    bool isFilter(task temp) {
+        // cout << "111" << "\n";
+        if (filter_use_person) {
+            // cout << "22" << "\n";
+            bool personfound = false;
+            for (int& i : temp.peoples) {
+                for (int& j : filter_people) {
+                    if (i == j) {
+                        personfound = true;
+                        break;
+                    }
+                }
+            }
+            if (!personfound) {
+                return false;
+            }
+        }
 
+        if (filter_use_type) {
+            bool typefound = false;
+            for (string& i: filter_type) {
+                if (i == temp.type) {
+                    typefound = true;
+                    break;
+                }
+            }
+            if (!typefound) {
+                return false;
+            }
+        }
+
+        if (filter_use_name) {
+            bool namefound = false;
+            for (int i = 0; i < temp.name.size(); i++) {
+                for (int j = i; j < temp.name.size() - i; j++) {
+                    if (temp.name.substr(i,j) == filter_name) {
+                        namefound = true;
+                        break;
+                    }
+                }
+            }
+            if (!namefound) {
+                return false;
+            }
+        }
+
+
+
+        if (filter_use_date_past && filter_use_date_future) {
+            if(difftime(filter_date[1], temp.date )/ 60*60*24 > -1 && difftime(temp.date ,filter_date[0])/ 60*60*24 > -1) {
+                return false;
+            }
+        }
+        if (filter_use_date_future) {
+            if (difftime(filter_date[1], temp.date )/ 60*60*24 < 0) {
+                return false;
+            }
+        }
+        if (filter_use_date_past) {
+            if (difftime(temp.date, filter_date[0])/ 60*60*24 < 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
@@ -148,10 +249,21 @@ namespace  Engine {
     }
 
     // start
-    void EngineMod::setPar(QObject *par, QObject* crat) {
+    void EngineMod::setPar(QObject *par, QObject* crat, QObject* tot) {
         listPar = par;
         crate = crat;
+        tota = tot;
 
+    }
+
+    void EngineMod::initFilter(QObject *typ, QObject *pe) {
+
+        sqlPullFilt();
+
+
+
+        filterPer = pe;
+        filterType = typ;
     }
 
 
@@ -287,13 +399,135 @@ namespace  Engine {
         return 0;
     }
 
+    static int callbackTYPE(void* data, int argc, char** argv, char** azColName) {
+        typeST newtype;
+        for (int i = 0; i< argc; i++) {
+            string tempName = azColName[i];
+            if (tempName == "ID") {
+                newtype.dex = stoi(argv[i]);
+            }else if (tempName == "NAME") {
+                newtype.name = argv[i];
+            }
+        }
+        all_type.push_back(newtype);
+
+
+        return 0;
+    }
+
+    static int callbackFit(void* data, int argc, char** argv, char** azColName) {
+        typeST newtype;
+        for (int i = 0; i< argc; i++) {
+            string tempName = azColName[i];
+            if (tempName == "NAME") {
+                filter_name = argv[i];
+                if (filter_name != "") {
+                    filter_use_name = true;
+                }
+            }else if (tempName == "PEOPLE") {
+                vector<int> temp;
+                string tring = argv[i];
+                string sub = "";
+                for (char& j: tring) {
+                    if (j == ',') {
+                        try {
+                            temp.push_back(stoi(sub));
+                        }catch(exception e) {
+                            cerr << e.what();
+                        }
+                        sub = "";
+                        continue;
+                    }
+                    sub+= j;
+                }
+                if (!temp.empty()) {
+                    filter_use_person = true;
+                }
+                filter_people = temp;
+            }else if (tempName == "TYPE") {
+                vector<string> temp;
+                string tring = argv[i];
+                string sub = "";
+                for (char& j: tring) {
+                    if (j == ',') {
+                        temp.push_back(sub);
+                        sub = "";
+                        continue;
+                    }
+                    sub+= j;
+                }
+                if (!temp.empty()) {
+                    filter_use_type = true;
+                }
+                filter_type = temp;
+            }else if (tempName == "DATE") {
+                vector<time_t> temp;
+                vector<string> middle;
+                string tring = argv[i];
+                string sub = "";
+                for (char& j: tring) {
+                    if (j == ',') {
+                        middle.push_back(sub);
+                        sub = "";
+                        continue;
+                    }
+                    sub+= j;
+                }
+                time_t date1;
+                time_t date2;
+                if (!middle.empty()) {
+                    cout << middle[0] << " : " << middle[1] << "\n";
+                    if (middle[0] != "") {
+                        filter_use_date_past = true;
+                        if (middle[0] == "x") {
+                            date2 = curentTime;
+                        }else {
+                            tm day;
+                            day.tm_year = stoi(middle[0].substr(6,4)) - 1900;
+                            day.tm_mon = stoi(middle[0].substr(0,2)) - 1;
+                            day.tm_mday = stoi(middle[0].substr(3,2));
+                            day.tm_hour = 0;
+                            day.tm_min = 0;
+                            day.tm_sec = 0;
+                            day.tm_isdst = -1;
+
+                            date1 = mktime(&day);
+                        }
+                    }
+                    if (middle[1] != "") {
+                        filter_use_date_future = true;
+                        if (middle[1] == "x") {
+                            date2 = curentTime;
+                        }else {
+                            tm day;
+                            day.tm_year = stoi(middle[1].substr(6,4)) - 1900;
+                            day.tm_mon = stoi(middle[1].substr(0,2)) - 1;
+                            day.tm_mday = stoi(middle[1].substr(3,2));
+                            day.tm_hour = 0;
+                            day.tm_min = 0;
+                            day.tm_sec = 0;
+                            day.tm_isdst = -1;
+                            date1 = mktime(&day);
+                        }
+                    }
+                }
+                temp = {date1, date2};
+                filter_date = temp;
+            }
+        }
+        all_type.push_back(newtype);
+
+
+        return 0;
+    }
+
     void EngineMod::sqlPullPeople() {
         // define stuff
         int exit = 0;
         // open
         exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
         // sql sertch
-        string query = "select * from PEOPLE";
+        string query = "select * from PEOPLE ORDER BY ID;";
         sqlite3_exec(DB, query.c_str(), callbackP, NULL , NULL);
 
         // debog stuff
@@ -331,6 +565,45 @@ namespace  Engine {
         string query = "select * from PRY "
                        "ORDER BY DEX";
         sqlite3_exec(DB, query.c_str(), callbackPRY, NULL , NULL);
+
+        // debog stuff
+        if (exit != SQLITE_OK) {
+            cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
+
+        }else {
+            cout << "it is open" << endl;
+        }
+        // close
+        sqlite3_close(DB);
+    }
+
+    void EngineMod::sqlPullType() {
+        int exit = 0;
+        // open
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        // sql sertch
+        string query = "select * from TYPE "
+                       "ORDER BY ID";
+        sqlite3_exec(DB, query.c_str(), callbackTYPE, NULL , NULL);
+
+        // debog stuff
+        if (exit != SQLITE_OK) {
+            cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
+
+        }else {
+            cout << "it is open" << endl;
+        }
+        // close
+        sqlite3_close(DB);
+    }
+
+    void EngineMod::sqlPullFilt() {
+        int exit = 0;
+        // open
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        // sql sertch
+        string query = "select * from filter";
+        sqlite3_exec(DB, query.c_str(), callbackFit, NULL , NULL);
 
         // debog stuff
         if (exit != SQLITE_OK) {
@@ -462,6 +735,7 @@ namespace  Engine {
         all_tasks.clear();
         all_people.clear();
         all_pry.clear();
+        all_type.clear();
         for (auto &i: all_loaded) {
             i->deleteLater();
         }
@@ -470,6 +744,14 @@ namespace  Engine {
         sqlPullPeople();
         sqlPullTask();
         sqlPullPry();
+        sqlPullType();
+
+        int tyInt = all_type.size();
+        filterType->setProperty("model", 0);
+        filterType->setProperty("model", tyInt);
+        int peInt = all_people.size();
+        filterPer->setProperty("model", 0);
+        filterPer->setProperty("model", peInt);
 
         // load if rec
         bool found = false;
@@ -482,6 +764,8 @@ namespace  Engine {
             refrechAll();
         }else {
             // display new data
+
+
             for (int i = 0; i < all_pry.size();i++) {
                 addPry(i);
             }
@@ -495,6 +779,13 @@ namespace  Engine {
 
                 }
             }
+
+            int total = 0;
+            for (auto& i: all_pry) {
+                total += i.dir->children().size() - 4;
+                cout << i.dir->children().size() << "\n";
+            }
+            tota->setProperty("tot", total);
         }
     }
 
@@ -509,7 +800,7 @@ namespace  Engine {
         // sql = "alter table TASKS ADD column IDS int AUTO_INCREMENT primary key";
         // sql = "alter table TASKS DROP CONSTRAINT ID";
         // sql = "drop table TASKS";
-        sql = "delete from TASKS where ID > 0;";
+        // sql = "delete from TASKS where ID > 0;";
         // ind++;
         // sql = "UPDATE TASKS SET people = '1,3,' where ID = 1";
 
@@ -535,13 +826,29 @@ namespace  Engine {
         //       "B int"
         //       ");";
 
+        // sql = "create table TYPE("
+        //       "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+        //       "NAME TEXT"
+        //       ");"
+        //       "INSERT INTO TYPE (NAME) VALUES ('test');";
+
+        // sql = "create table FILTER ("
+        //       "ID INT PRIMARY KEY,"
+        //       "NAME TEXT,"
+        //       "PEOPLE TEXT,"
+        //       "TYPE TEXT,"
+        //       "DATE TEXT);"
+        //       "INSERT INTO FILTER VALUES (0, '' , '' , '', '')";
+        // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
+
         // sql = "INSERT INTO PRY VALUES(2,'low',0,0,255)";
 
         // sql = "create table PEOPLE (ID int PRIMARY KEY,NAME text, PFP TEXT, REQHR text)";
-        // sql = "INSERT INTO PEOPLE VALUES(3, 'bat man','purple','1,1,1,1,1,1,1')";
+        // sql = "INSERT INTO PEOPLE VALUES(4, 'wtf','pink','1,1,1,1,1,1,1')";
 
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "sqlcmd: " << sqlite3_errmsg(DB) << endl;
+        sqlite3_close(DB);
     }
 
     void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type, bool edit) {
@@ -584,72 +891,158 @@ namespace  Engine {
         refrechAll();
     }
 
+    void EngineMod::createType(QString name, int dex, QString old) {
+
+        char* errorM;
+        int exit = 0;
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        string sql;
+        if (dex == -1) {
+            // create
+            string start = "INSERT INTO TYPE (NAME) VALUES ('";
+            string end = "');";
+            sql = start + name.toStdString() + end;
+        }else {
+            string start = "UPDATE TYPE SET NAME = '";
+            string mid = "' WHERE ID = ";
+            sql = start + name.toStdString() + mid + to_string(dex);
+        }
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "createType : " << sqlite3_errmsg(DB) << endl;
+
+        sql = "update Tasks set TYPE = '" + name.toStdString();
+        sql += "' where TYPE = '" + old.toStdString();
+        sql += "'";
+        cout << sql << "\n";
+
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "createType : " << sqlite3_errmsg(DB) << endl;
+
+        sqlite3_close(DB);
+
+
+        refrechAll();
+    }
+
+    void EngineMod::createPerson(int dex, QString name, QString php, QString reqHr) {
+        int exit = 0;
+        char* errorM;
+
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db" , &DB);
+
+        string sql;
+        char com = ',';
+        string que = "'";
+        if (dex == -1) {
+            string start = "INSERT INTO PEOPLE VALUES(";
+            string end = ");";
+
+            int ing = 0;
+            while(true) {
+                ing++;
+                bool found = false;
+                for (auto& j : all_people) {
+                    if (j.dex == ing) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    break;
+                }
+            }
+            string ind = to_string(ing);
+            sql = start + ind + com + que + name.toStdString() + que + com + que + php.toStdString() + que + com + que + reqHr.toStdString()+ que + end;
+
+
+        }else {
+            string start = "UPDATE PEOPLE SET NAME = '";
+            string end = " WHERE ID = " + to_string(dex);
+            string PHP = "PFP = '";
+            string REQHR = "REQHR = '";
+            sql = start + name.toStdString() + que + com + PHP + php.toStdString() + que + com + REQHR + reqHr.toStdString() + que + end;
+            cout << sql << "\n";
+        }
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
+
+        sqlite3_close(DB);
+        refrechAll();
+    }
+
     void EngineMod::addTask(int addtask) {
         // cout << "qml: " << all_tasks[addtask].name << endl;
         task& temp = all_tasks[addtask];
+        if (isFilter(temp)) {
+            // if filter here
+            QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
 
-        // if filter here
-        QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
+            // all_loaded.push_back(&component);
 
-        // all_loaded.push_back(&component);
+            QVariantMap taskProp;
+            taskProp["dex"] = temp.dex;
+            taskProp["taskName"] =  QString::fromStdString(temp.name);
+            taskProp["peopleInt"] = static_cast<int>(temp.peoples.size());
+            QStringList qPeople;
+            for (int i = 0; i < temp.peoples.size(); i++) {
+                // cout << i << " : " << all_people[temp.peoples[i] -1].php << " : "<< all_people[temp.peoples[i] -1].dex<<"\n";
+                people tperp;
+                for (auto& j : all_people) {
+                    if (temp.peoples[i] == j.dex) {
+                        tperp = j;
+                        break;
+                    }
+                }
+                qPeople.push_back(QString::fromStdString(tperp.php));
+            }
+            taskProp["peopleImgs"] = qPeople;
+            taskProp["taskType"] = QString::fromStdString(temp.type);
 
-        QVariantMap taskProp;
-        taskProp["dex"] = temp.dex;
-        taskProp["taskName"] =  QString::fromStdString(temp.name);
-        taskProp["peopleInt"] = static_cast<int>(temp.peoples.size());
-        QStringList qPeople;
-        for (int i = 0; i < temp.peoples.size(); i++) {
-            // cout << i << " : " << all_people[temp.peoples[i] -1].php << " : "<< all_people[temp.peoples[i] -1].dex<<"\n";
-            qPeople.push_back(QString::fromStdString(all_people[temp.peoples[i]-1].php));
-        }
-        taskProp["peopleImgs"] = qPeople;
-        taskProp["taskType"] = QString::fromStdString(temp.type);
 
+            double diff = difftime(temp.date, curentTime);
+            diff /= 60* 60 * 24;
+            diff = floor(diff);
+            int days = diff + 1; // off set
+            // cout << diff << " : " << ctime(&rn)  << " : "  << ctime(&temp.date)<< endl;
+            string preface;
+            if (days > 1) {
+                preface = to_string(abs(days)) + " days until";
+            }else if (days < -1) {
+                preface = to_string(abs(days)) + " days ago";
+            }else if (days == 0) {
+                preface = "today";
+            }else if (days == -1) {
+                preface = "yesterday";
+            }else if (days == 1) {
+                preface = "tomarow";
+            }
 
-        double diff = difftime(temp.date, curentTime);
-        diff /= 60* 60 * 24;
-        diff = floor(diff);
-        int days = diff + 1; // off set
-        // cout << diff << " : " << ctime(&rn)  << " : "  << ctime(&temp.date)<< endl;
-        string preface;
-        if (days > 1) {
-            preface = to_string(abs(days)) + " days until";
-        }else if (days < -1) {
-            preface = to_string(abs(days)) + " days ago";
-        }else if (days == 0) {
-            preface = "today";
-        }else if (days == -1) {
-            preface = "yesterday";
-        }else if (days == 1) {
-            preface = "tomarow";
-        }
+            taskProp["taskDate"] = QString::fromStdString(preface);
+            struct tm dueDate = *localtime(&temp.date);
+            char due[12];
+            strftime(due, 12,"%m/%d/%Y", &dueDate);
+            taskProp["taskNoteDate"] = QString::fromStdString(due);
+            // task date in description
+            taskProp["taskNotes"] = QString::fromStdString(temp.notes);
 
-        taskProp["taskDate"] = QString::fromStdString(preface);
-        struct tm dueDate = *localtime(&temp.date);
-        char due[12];
-        strftime(due, 12,"%m/%d/%Y", &dueDate);
-        taskProp["taskNoteDate"] = QString::fromStdString(due);
-        // task date in description
-        taskProp["taskNotes"] = QString::fromStdString(temp.notes);
+            QObject* newTaskQml = component.createWithInitialProperties(taskProp, eng->rootContext());
 
-        QObject* newTaskQml = component.createWithInitialProperties(taskProp, eng->rootContext());
+            all_loaded.push_back(newTaskQml);
 
-        all_loaded.push_back(newTaskQml);
+            if (!newTaskQml) {
+                qWarning() << "Failed to create:" << component.errors();
+                return;
+            }
 
-        if (!newTaskQml) {
-            qWarning() << "Failed to create:" << component.errors();
-            return;
-        }
+            QObject* pryDir = all_pry[temp.pry].dir;
+            newTaskQml->setParent(pryDir);
+            QQmlEngine::setObjectOwnership(newTaskQml, QQmlEngine::CppOwnership);
 
-        QObject* pryDir = all_pry[temp.pry].dir;
-        newTaskQml->setParent(pryDir);
-        QQmlEngine::setObjectOwnership(newTaskQml, QQmlEngine::CppOwnership);
+            QQuickItem* parentItem = qobject_cast<QQuickItem*>(pryDir);
+            QQuickItem* childItem = qobject_cast<QQuickItem*>(newTaskQml);
 
-        QQuickItem* parentItem = qobject_cast<QQuickItem*>(pryDir);
-        QQuickItem* childItem = qobject_cast<QQuickItem*>(newTaskQml);
-
-        if (parentItem && childItem) {
-            childItem->setParentItem(parentItem);
+            if (parentItem && childItem) {
+                childItem->setParentItem(parentItem);
+            }
         }
         // cout << childItem->parent() << endl;
         // ind++;
@@ -727,7 +1120,7 @@ namespace  Engine {
         bulkCreate["typeParent"]->setProperty("model", getTypeSize());
         // check kid
         for (int i = 0; i < all_type.size(); i++) {
-            if (all_type[i] == temp.type){
+            if (all_type[i].name == temp.type){
                 typeKidHold[i]->setProperty("checked", true);
                 break;
             }
@@ -842,7 +1235,7 @@ namespace  Engine {
         // this_thread::sleep_for(chrono::seconds(3));
 
         // crate->setProperty("createIsClosed", false);
-        // sqlComd();
+        sqlComd();
         refrechAll();
         // cout << "fromQml: " << test << "\n";
         // for (auto i: all_tasks) {
@@ -912,6 +1305,63 @@ namespace  Engine {
         refrechAll();
     }
 
+    void EngineMod::deleteType(int dex) {
+
+        int exit = 0;
+        char* errorM;
+        string ty;
+        for (auto& i : all_type) {
+            if (i.dex == dex) {
+                ty = i.name;
+                break;
+            }
+        }
+        ty += "';";
+        string sql = "delete from TYPE where ID = " + to_string(dex);
+        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
+        sql = "update TASKS set TYPE = 'NULL' where TYPE = '" + ty;
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        cout << sql << "\n";
+        cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
+        sqlite3_close(DB);
+        refrechAll();
+    }
+
+    void EngineMod::deletePerson(int dex) {
+        int exit = 0;
+        char* errorM;
+        string sql = "delete from PEOPLE where ID = " + to_string(dex);
+        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        cerr << "deletePerson: " << sqlite3_errmsg(DB) << endl;
+        for (auto& i: all_tasks) {
+            vector<int> temp = i.peoples;
+            string newPep = "";
+            for (int& j: temp) {
+                if (j == dex) {
+                    for (int& k: temp) {
+                        if (k != dex) {
+                            newPep += to_string(k) + ',';
+                        }
+                    }
+                    sql = "UPDATE TASKS SET PEOPLE = '" + newPep;
+                    sql += "' WHERE ID = " + to_string(i.dex) ;
+                    sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+                    cout << sql << "\n";
+                    cerr << "deletePerson: " << sqlite3_errmsg(DB) << endl;
+                    break;
+                }
+            }
+        }
+        // logic edit task with this person
+
+
+        sqlite3_close(DB);
+        refrechAll();
+    }
+
     void EngineMod::permDel() {
         int exit = 0;
         char* errorM;
@@ -925,6 +1375,99 @@ namespace  Engine {
 
         sqlite3_close(DB);
         refrechAll();
+    }
+
+    void EngineMod::setFilter(QString name, QVariantList pep, QStringList type, QStringList dates) {
+        filter_use_person = false;
+        for (auto& i: pep) {
+            if (i.toBool() == 1) {
+                filter_use_person = true;
+            }
+        }
+        filter_people.clear();
+        for (int i = 0; i < pep.size(); i++) {
+            if (pep[i].toBool()) {
+                filter_people.push_back(i+1);
+                cout << i+1 << "\n";
+            }
+        }
+
+        filter_use_type = false;
+        filter_type.clear();
+        for (auto& i: type) {
+            if (i.toStdString() != "") {
+                filter_use_type = true;
+                filter_type.push_back(i.toStdString());
+                // cout << "ahhhhhhhhhhhhhhhhhhhhhhhhhhh: " <<i.toStdString() << "\n";
+            }
+        }
+
+        filter_use_name = false;
+        if (name.toStdString() != "") {
+            filter_use_name = true;
+        }
+
+        filter_use_date_future = false;
+        filter_use_date_past = false;
+
+
+        string d1 = dates[0].toStdString();
+        struct tm day1;
+        if (d1 != "") {
+            filter_use_date_past = true;
+            day1.tm_year = stoi(d1.substr(6,4)) - 1900;
+            day1.tm_mon = stoi(d1.substr(0,2)) - 1;
+            day1.tm_mday = stoi(d1.substr(3,2));
+            day1.tm_hour = 0;
+            day1.tm_min = 0;
+            day1.tm_sec = 0;
+            day1.tm_isdst = -1;
+        }
+
+
+        string d2 = dates[1].toStdString();
+        struct tm day2;
+        if (d2 != "") {
+            filter_use_date_future = true;
+            day2.tm_year = stoi(d2.substr(6,4)) - 1900;
+            day2.tm_mon = stoi(d2.substr(0,2)) - 1;
+            day2.tm_mday = stoi(d2.substr(3,2));
+            day2.tm_hour = 0;
+            day2.tm_min = 0;
+            day2.tm_sec = 0;
+            day2.tm_isdst = -1;
+        }
+
+
+        filter_date = {mktime(&day1),mktime(&day2)};
+
+
+        filter_name = name.toStdString();
+
+        refrechAll();
+
+    }
+
+    void EngineMod::updateFilter(QString name, QString peps, QString types, QString dates) {
+        // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
+        int exit = 0;
+        char* errorM;
+
+        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db" , &DB);
+
+        string start = "UPDATE FILTER SET ";
+        string NAME = "NAME = '" + name.toStdString();
+        string PEOPLE = "' , PEOPLE = '" + peps.toStdString();
+        string TYPE = "' , TYPE = '" + types.toStdString();
+        string DATE = "' , DATE = '"+ dates.toStdString();
+        string end = "' WHERE ID = 0;";
+        string sql = start+ NAME + PEOPLE + TYPE + DATE+ end;
+        cout <<  sql << "\n";
+        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
+
+        sqlite3_close(DB);
+
     }
 };
 

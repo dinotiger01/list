@@ -1,36 +1,9 @@
-um like
-make list load off a variable
-idk man
+menue for add pry // futer
 
+style menu // futer
 
-i need to
+style (check website mom sent)
 
-struch in da .h
+hystory // futer
 
-filter
-
-validate if date existe ie. 02/30/2026
-
-validate month day is with in -27 and 28
-
-validate rec on do can not = 0
-
-debug set date
-
-menue for add people 
-
-menue for add pry
-
-filter presets
-
-type menu
-
-edit
-
-
-on duedate also on compleate
-
-style
-
-you hace to delete the most curent one throught the editor for it to actaly deleate
-
+timers // futer

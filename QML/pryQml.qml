@@ -30,7 +30,7 @@ Column {
                     anchors {
                         fill: parent
                     }
-                    text: pryName
+                    text: pryName + "-" + (pry.children.length -1)
                     font.pointSize: height / 2
                 }
                 Button {

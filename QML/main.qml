@@ -10,11 +10,22 @@ Window {
     height: 1250
     visible: true
     title: "List"
+    Item{
+        id: style
+        property string main: "#a37cf0"
+        property string text: "#010101"
+        property string back: "#e6ddd6"
+        property string detail: "#918383"
+        property string down: "#682bd7"
+        property string hover: "#bd2e95"
+
+    }
     EngineMod {
         id: engin
         Component.onCompleted: {
             // send to c++
-            engin.setPar(umpar, createTask)
+            engin.setPar(umpar, createTask, total)
+            engin.initFilter(typeMod, peopleMod)
             engin.setBulkCreate(newName, "name")
             engin.setBulkCreate(newNotes, "note")
             engin.setBulkCreate(prySelect, "pryParent")
@@ -57,7 +68,7 @@ Window {
                     color: "purple"
                     Column{
                         anchors{fill: parent}
-                        // all
+                        // home
                         Button{
                             width: 50
                             height: 50
@@ -67,11 +78,26 @@ Window {
                                     margins: 2.5
                                 }
                                 Text{
-                                    text: "all"
+                                    text: "home"
                                 }
                             }
-                            onClicked:{
-                                engin.testing();
+                            onClicked: {
+                                engin.testing()
+                                mainView.currentIndex = 0
+                            }
+                        }
+                        // filter presets
+                        Button{
+                            width: 50
+                            height: 50
+                            background: Rectangle{
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                Text{
+                                    text: "filter"
+                                }
                             }
                         }
                         // history
@@ -87,8 +113,11 @@ Window {
                                     text: "done"
                                 }
                             }
+                            onClicked: {
+                                mainView.currentIndex = 1
+                            }
                         }
-                        // other list
+                        /*other list will add later
                         Button{
                             width: 50
                             height: 50
@@ -102,7 +131,7 @@ Window {
                                 }
                             }
                         }
-                        // calender
+                        calender will add later
                         Button{
                             width: 50
                             height: 50
@@ -115,21 +144,7 @@ Window {
                                     text: "cal"
                                 }
                             }
-                        }
-                        // people
-                        Button{
-                            width: 50
-                            height: 50
-                            background: Rectangle{
-                                anchors{
-                                    fill: parent
-                                    margins: 2.5
-                                }
-                                Text{
-                                    text: "pep"
-                                }
-                            }
-                        }
+                        }*/
                         // settings
                         Button{
                             width: 50
@@ -143,410 +158,1076 @@ Window {
                             Text{
                                 text: "set"
                             }
+                            onClicked: {
+                                mainView.currentIndex = 2
+                            }
                         }
                     }
                 }
                 //main
-                Rectangle{
-                    id: tester
+                StackLayout{
+                    id: mainView
                     width: parent.width - leftBar.width
                     height: parent.height
-                    color: "green"
-                    Column{
+                    currentIndex: 2
+                    Rectangle{
                         anchors{fill: parent}
-                        // filter bar
-                        Rectangle{
-                            id: homeBar
-                            width: parent.width
-                            height: 50
-                            z: 100
-                            color: "red"
-                            Row{
-                                x: 5
-                                anchors{verticalCenter: parent.verticalCenter}
+                        id: tester
+                        color: "green"
+                        Column{
+                            anchors{fill: parent}
+                            // filter bar
+                            Rectangle{
+                                id: homeBar
                                 width: parent.width
-                                height: 45
-                                spacing: 5
-                                TextArea{
-                                    id: search
-                                    width: 250
-                                    height: parent.height
-                                    font.pointSize: (height-5)/2
-                                    verticalAlignment: Text.AlignVCenter
-                                    background: Rectangle{
-                                        anchors{
-                                            fill: parent
-                                            // margins: 2.5
-                                        }
-                                        color: "black"
-                                    }
-                                }
-                                //people
-                                Column{
-                                    id: people
-                                    width: 100
-                                    clip: true
-                                    // height: 45
-                                    Button{
-                                        width: parent.width
-                                        height: 45
+                                height: 50
+                                z: 100
+                                color: "red"
+                                Row{
+                                    x: 5
+                                    anchors{verticalCenter: parent.verticalCenter}
+                                    width: parent.width
+                                    height: 45
+                                    spacing: 5
+                                    TextArea{
+                                        id: search
+                                        width: 250
+                                        height: parent.height
+                                        font.pointSize: (height-5)/2
+                                        verticalAlignment: Text.AlignVCenter
+                                        placeholderText: "search"
+
                                         background: Rectangle{
                                             anchors{
                                                 fill: parent
                                                 // margins: 2.5
                                             }
-                                            color: "pink"
-                                            Text{
-                                                text: people.height
+                                            color: "black"
+                                        }
+
+                                        Keys.onPressed: function(event){
+                                            if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                                this.focus  = false
+                                                searchButton.clicked()
+                                                event.accepted = true;
                                             }
                                         }
-                                        onClicked:{
-                                            people.peopleIsClosed = !people.peopleIsClosed
-                                        }
                                     }
+                                    //people
                                     Column{
-                                        id: peopleDrop
-                                        width: parent.width
-                                        Repeater{
-                                            id: peopleMod
-                                            model: 10
-                                            Rectangle{
-                                                width: parent.width
-                                                height: 40
-                                                color: "cyan"
-                                                Row{
-                                                    anchors{
-                                                        fill: parent
-                                                        margins: 5
-                                                    }
-                                                    Button{
-                                                        width: parent.height
-                                                        height: parent.height
-                                                        background: Rectangle{
-                                                            anchors{fill: parent}
-                                                            color: "green"
-                                                        }
-                                                    }
-                                                    Text{
-                                                        width: parent.width - parent.height
-                                                        height: parent.height
-                                                        text: "name"
-                                                        font.pointSize: 15
-                                                        verticalAlignment: Text.AlignVCenter
-                                                        horizontalAlignment: Text.AlignHCenter
-                                                    }
+                                        id: people
+                                        width: 100
+                                        clip: true
+                                        // height: 45
+                                        Button{
+                                            width: parent.width
+                                            height: 45
+                                            background: Rectangle{
+                                                anchors{
+                                                    fill: parent
+                                                    // margins: 2.5
                                                 }
-                                            }
-                                        }
-                                    }
-                                    property bool peopleIsClosed: true
-                                    state: peopleIsClosed ? "people-closed" : "people-open"
-                                    states: [
-                                        State{
-                                            name: "people-open"
-                                            // when: listItemDes.visible
-                                            PropertyChanges{
-                                                target: people; height: 45 + peopleMod.model * 40
-                                                // target: listItemDes; height: 150
-                                            }
-                                        },
-                                        State{
-                                            name: "people-closed"
-                                            // when: !visible
-                                            PropertyChanges{
-                                                target: people; height: 45
-                                            }
-                                        }
-                                    ]
-                                    transitions: Transition{
-                                        NumberAnimation{
-                                            properties: "height"
-                                            duration: 250
-                                            easing.type: Easing.InOutQuad
-                                        }
-                                    }
-                                }
-                                //type
-                                Column{
-                                    id: type
-                                    width: 100
-                                    clip: true
-                                    // height: 45
-                                    Button{
-                                        width: parent.width
-                                        height: 45
-                                        background: Rectangle{
-                                            anchors{
-                                                fill: parent
-                                                // margins: 2.5
-                                            }
-                                            color: "pink"
-                                            Text{
-                                                text: type.height
-                                            }
-                                        }
-                                        onClicked:{
-                                            type.typeIsClosed = !type.typeIsClosed
-                                        }
-                                    }
-                                    Column{
-                                        id: typeDrop
-                                        width: parent.width
-                                        Repeater{
-                                            id: typeMod
-                                            model: 10
-                                            Rectangle{
-                                                width: parent.width
-                                                height: 40
-                                                color: "cyan"
-                                                Row{
-                                                    anchors{
-                                                        fill: parent
-                                                        margins: 5
-                                                    }
-                                                    Button{
-                                                        width: parent.height
-                                                        height: parent.height
-                                                        background: Rectangle{
-                                                            anchors{fill: parent}
-                                                            color: "green"
-                                                        }
-                                                    }
-                                                    Text{
-                                                        width: parent.width - parent.height
-                                                        height: parent.height
-                                                        text: "name"
-                                                        font.pointSize: 15
-                                                        verticalAlignment: Text.AlignVCenter
-                                                        horizontalAlignment: Text.AlignHCenter
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    property bool typeIsClosed: true
-                                    state: typeIsClosed ? "type-closed" : "type-open"
-                                    states: [
-                                        State{
-                                            name: "type-open"
-                                            // when: listItemDes.visible
-                                            PropertyChanges{
-                                                target: type; height: 45 + typeMod.model * 40
-                                                // target: listItemDes; height: 150
-                                            }
-                                        },
-                                        State{
-                                            name: "type-closed"
-                                            // when: !visible
-                                            PropertyChanges{
-                                                target: type; height: 45
-                                            }
-                                        }
-                                    ]
-                                    transitions: Transition{
-                                        NumberAnimation{
-                                            properties: "height"
-                                            duration: 250
-                                            easing.type: Easing.InOutQuad
-                                        }
-                                    }
-                                }
-                                //date
-                                Column{
-                                    id: date
-                                    width: 100
-                                    clip: true
-                                    // height: 45
-                                    Button{
-                                        width: parent.width
-                                        height: 45
-                                        background: Rectangle{
-                                            anchors{
-                                                fill: parent
-                                                // margins: 2.5
-                                            }
-                                            color: "pink"
-                                            Text{
-                                                text: date.height
-                                            }
-                                        }
-                                        onClicked:{
-                                            date.dateIsClosed = !date.dateIsClosed
-                                        }
-                                    }
-                                    Column{
-                                        id: dateDrop
-                                        width: parent.width
-                                        Repeater{
-                                            id: dateMod
-                                            model: 10
-                                            Rectangle{
-                                                width: parent.width
-                                                height: 30
-                                                color: "cyan"
+                                                color: "pink"
                                                 Text{
-                                                    text: "name"
+                                                    text: "PEOPLE"
+                                                    font.pointSize: 20
+                                                }
+                                            }
+                                            onClicked:{
+                                                people.peopleIsClosed = !people.peopleIsClosed
+                                                peopleMod.model = engin.getPersonSize()
+                                            }
+                                        }
+                                        Column{
+                                            id: peopleDrop
+                                            width: parent.width
+                                            Repeater{
+                                                id: peopleMod
+                                                CheckBox{
+                                                    width: parent.width
+                                                    height: 40
+                                                    text : engin.getPersonName(index, null)
+                                                    background: Rectangle{
+                                                        anchors{fill: parent}
+                                                        color: "black";
+                                                    }
+                                                    Component.onCompleted: {
+                                                        searchButton.pep.push(null)
+                                                    }
+                                                    onClicked: {
+                                                        searchButton.pep[index] = this.checked;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        property bool peopleIsClosed: true
+                                        state: peopleIsClosed ? "people-closed" : "people-open"
+                                        states: [
+                                            State{
+                                                name: "people-open"
+                                                // when: listItemDes.visible
+                                                PropertyChanges{
+                                                    target: people; height: undefined
+                                                    // target: listItemDes; height: 150
+                                                }
+                                            },
+                                            State{
+                                                name: "people-closed"
+                                                // when: !visible
+                                                PropertyChanges{
+                                                    target: people; height: 45
+                                                }
+                                            }
+                                        ]
+                                        transitions: Transition{
+                                            NumberAnimation{
+                                                properties: "height"
+                                                duration: 250
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    }
+                                    //type
+                                    Column{
+                                        id: type
+                                        width: 100
+                                        clip: true
+                                        // height: 45
+                                        Button{
+                                            width: parent.width
+                                            height: 45
+                                            background: Rectangle{
+                                                anchors{
+                                                    fill: parent
+                                                    // margins: 2.5
+                                                }
+                                                color: "pink"
+                                                Text{
+                                                    text: "TYPE"
+                                                    font.pointSize: 25
+                                                }
+                                            }
+                                            onClicked:{
+                                                type.typeIsClosed = !type.typeIsClosed
+                                            }
+                                        }
+                                        Column{
+                                            id: typeDrop
+                                            width: parent.width
+                                            Repeater{
+                                                id: typeMod
+                                                CheckBox{
+                                                    width: parent.width
+                                                    height: 40
+                                                    text: engin.getTypeName(index, null)
+                                                    background: Rectangle{
+                                                        anchors{fill: parent}
+                                                        color: "black";
+                                                    }
+                                                    Component.onCompleted: {
+                                                        searchButton.typ.push("")
+                                                    }
+                                                    onClicked: {
+                                                        if(this.checked){
+                                                            searchButton.typ[index] = this.text;
+                                                        }else{
+                                                            searchButton.typ[index] = "";
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        property bool typeIsClosed: true
+                                        state: typeIsClosed ? "type-closed" : "type-open"
+                                        states: [
+                                            State{
+                                                name: "type-open"
+                                                // when: listItemDes.visible
+                                                PropertyChanges{
+                                                    target: type; height: undefined
+                                                    // target: listItemDes; height: 150
+                                                }
+                                            },
+                                            State{
+                                                name: "type-closed"
+                                                // when: !visible
+                                                PropertyChanges{
+                                                    target: type; height: 45
+                                                }
+                                            }
+                                        ]
+                                        transitions: Transition{
+                                            NumberAnimation{
+                                                properties: "height"
+                                                duration: 250
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    }
+                                    //date
+                                    Column{
+                                        id: date
+                                        width: 100
+                                        clip: true
+                                        // height: 45
+                                        Button{
+                                            width: parent.width
+                                            height: 45
+                                            background: Rectangle{
+                                                anchors{
+                                                    fill: parent
+                                                    // margins: 2.5
+                                                }
+                                                color: "pink"
+                                                Text{
+                                                    text: "date"
+                                                }
+                                            }
+                                            onClicked:{
+                                                date.dateIsClosed = !date.dateIsClosed
+                                            }
+                                        }
+                                        Column{
+                                            id: dateDrop
+                                            width: parent.width
+                                            TextArea{
+                                                id: date1
+                                                width: parent.width
+                                                height: 40
+                                                Keys.onPressed: function(event){
+                                                    if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                                        this.focus  = false
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                            }
+                                            TextArea{
+                                                id: date2
+                                                width: parent.width
+                                                height: 40
+                                                Keys.onPressed: function(event){
+                                                    if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                                        this.focus  = false
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        property bool dateIsClosed: true
+                                        state: dateIsClosed ? "date-closed" : "date-open"
+                                        states: [
+                                            State{
+                                                name: "date-open"
+                                                // when: listItemDes.visible
+                                                PropertyChanges{
+                                                    target: date; height: undefined
+                                                    // target: listItemDes; height: 150
+                                                }
+                                            },
+                                            State{
+                                                name: "date-closed"
+                                                PropertyChanges{
+                                                    target: date; height: 45
+                                                }
+                                            }
+                                        ]
+                                        transitions: Transition{
+                                            NumberAnimation{
+                                                properties: "height"
+                                                duration: 250
+                                                easing.type: Easing.InOutQuad
+                                            }
+                                        }
+                                    }
+                                    // search
+                                    Button{
+                                        id: searchButton
+                                        width: parent.height
+                                        height: parent.height
+                                        background: Rectangle{
+                                            anchors{
+                                                fill: parent
+                                                // margins: 2.5
+                                            }
+                                            Text{text: "search"}
+                                        }
+                                        property var pep: []
+                                        property var typ: []
+                                        onClicked: {
+                                            let errorM = ""
+                                            let peps = this.pep
+
+                                            let types = this.typ
+
+                                            let dates = [] // list[string]
+                                            dates.push(date1.text)
+                                            dates.push(date2.text)
+
+                                            if((!isNaN(dates[0][0]) && !isNaN(dates[0][1]) && dates[0][2] === '/' && !isNaN(dates[0][3]) && !isNaN(dates[0][4]) && dates[0][5] === '/' && !isNaN(dates[0][6]) && !isNaN(dates[0][7]) && !isNaN(dates[0][8]) && !isNaN(dates[0][9]) )|| dates[0] === ""){
+
+                                            }else{
+                                                errorM = "frist dates must be in mm/dd/yyyy format"
+                                            }
+
+                                            if((!isNaN(dates[1][0]) && !isNaN(dates[1][1]) && dates[1][2] === '/' && !isNaN(dates[1][3]) && !isNaN(dates[1][4]) && dates[1][5] === '/' && !isNaN(dates[1][6]) && !isNaN(dates[1][7]) && !isNaN(dates[1][8]) && !isNaN(dates[1][9])) || dates[1] === ""){
+
+
+                                            }else{
+                                                errorM = "second dates must be in mm/dd/yyyy format"
+                                            }
+                                            let name = search.text;
+
+                                            for(let i = 0; i < name.length; i++){
+                                                if(name[i] === ";" || name[i] === "'"){
+                                                    errorM = "name can not contain ; or '"
+                                                }
+                                            }
+
+                                            filterErrormsg.text = errorM
+                                            if(errorM === ""){
+                                                engin.setFilter(name, peps, types, dates)
+                                                people.peopleIsClosed = true
+                                                type.typeIsClosed = true
+                                                date.dateIsClosed = true
+                                            }
+                                        }
+                                    }
+                                    // clear
+                                    Button{
+                                        width: parent.height
+                                        height: parent.height
+                                        background: Rectangle{
+                                            anchors{
+                                                fill: parent
+                                                // margins: 2.5
+                                            }
+                                            Text{text: "X"}
+                                        }
+                                        onClicked: {
+                                            people.peopleIsClosed = true
+                                            type.typeIsClosed = true
+                                            date.dateIsClosed = true
+                                            search.text = ""
+                                        }
+                                    }
+                                    //error
+                                    Text{
+                                        id: filterErrormsg
+                                        height: parent.height
+                                    }
+                                }
+                            }
+                            Item{
+                                width: parent.width
+                                height: parent.height - homeBar.height
+                                //main
+                                ScrollView{
+                                    anchors{fill: parent}
+                                    Column{
+                                        id: umpar
+                                        width: parent.width
+
+                                        Item{
+                                            width: parent.width - 150
+                                            height: 75
+                                            // anchors{
+                                            //     horizontalCenter: parent.horizontalCenter
+                                            // }
+                                            Rectangle{
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 5
+                                                }
+                                                color: "purple"
+                                                Text{
+                                                    id: total
+                                                    property int tot
+                                                    anchors{fill: parent}
+                                                    text: "total - " + tot
+                                                    font.pointSize: height/2
                                                 }
                                             }
                                         }
                                     }
-                                    property bool dateIsClosed: true
-                                    state: dateIsClosed ? "date-closed" : "date-open"
-                                    states: [
-                                        State{
-                                            name: "date-open"
-                                            // when: listItemDes.visible
-                                            PropertyChanges{
-                                                target: date; height: 45 + dateMod.model * 30
-                                                // target: listItemDes; height: 150
-                                            }
-                                        },
-                                        State{
-                                            name: "date-closed"
-                                            PropertyChanges{
-                                                target: date; height: 45
-                                            }
-                                        }
-                                    ]
-                                    transitions: Transition{
-                                        NumberAnimation{
-                                            properties: "height"
-                                            duration: 250
-                                            easing.type: Easing.InOutQuad
-                                        }
-                                    }
                                 }
-                                // search
-                                Button{
-                                    width: parent.height
-                                    height: parent.height
-                                    background: Rectangle{
+                                // new
+                                Item{
+                                    width: 75
+                                    height: 75
+                                    anchors{
+                                        right: parent.right
+                                        top: parent.top
+                                    }
+                                    Button{
                                         anchors{
                                             fill: parent
-                                            // margins: 2.5
                                         }
-                                    }
-                                    onClicked: {
-                                        people.peopleIsClosed = true
-                                        type.typeIsClosed = true
-                                        date.dateIsClosed = true
-                                    }
-                                }
-                                // clear
-                                Button{
-                                    width: parent.height
-                                    height: parent.height
-                                    background: Rectangle{
-                                        anchors{
-                                            fill: parent
-                                            // margins: 2.5
+                                        background: Rectangle{
+                                            anchors{
+                                                fill: parent
+                                                margins: 10
+                                            }
                                         }
-                                    }
-                                    onClicked: {
-                                        people.peopleIsClosed = true
-                                        type.typeIsClosed = true
-                                        date.dateIsClosed = true
-                                        search.text = ""
+                                        onClicked: {
+                                            createTask.createIsClosed = !createTask.createIsClosed
+                                            creater.peps = [false]
+                                            assSelect.model = 0
+                                            assSelect.model = engin.getPersonSize()
+                                            typeSelect.model = 0
+                                            typeSelect.model = engin.getTypeSize()
+                                            prySelect.model = 0
+                                            prySelect.model = engin.getPrySize()
+                                            creatDate.text = engin.getCurrentDate()
+                                            delButton.width = 0;
+                                            newName.text = ""
+                                            newNotes.text = ""
+                                            isRepBox.checked = false;
+                                            holderForAll.state = "eh"
+                                            repTypeDrop.text = ""
+                                            repSelCon.recType = 0
+                                            multiCheck.checked = false
+                                            repNum.num = 0
+                                            numText.text = "0"
+                                            // repWeek
+                                            for(let i = 0; i < 7; i++){
+                                                repWeek.children[i].checked = false
+                                            }
+                                            // creator
+                                            creater.edit = false
+                                            creater.pry = -1
+                                            creater.type = ""
+                                            creater.multi = false
+                                        }
+                                        // engin.setBulkCreate(newName, "name")
+                                        // engin.setBulkCreate(newNotes, "note")
+                                        // engin.setBulkCreate(prySelect, "pryParent")
+                                        // engin.setBulkCreate(typeSelect, "typeParent")
+                                        // engin.setBulkCreate(assSelect, "assParent")
+                                        // engin.setBulkCreate(delButton, "delButton")
+                                        // engin.setBulkCreate(creater, "creator")
+                                        //
+                                        // engin.setBulkCreate(isRepBox, "isRep")
+                                        // engin.setBulkCreate(holderForAll, "repSet")
+                                        // engin.setBulkCreate(repTypeDrop, "repDrop")
+                                        // engin.setBulkCreate(repSelCon, "repSel")
+                                        // engin.setBulkCreate(multiCheck, "multiBox")
+                                        // engin.setBulkCreate(repNum, "repNum")
+                                        // engin.setBulkCreate(numText, "repNumText")
+                                        // engin.setBulkCreate(repWeek, "repWeek")
+                                        // engin.setBulkCreate(creatDate, "date")
                                     }
                                 }
                             }
                         }
-                        Item{
-                            width: parent.width
-                            height: parent.height - homeBar.height
-                            //main
-                            ScrollView{
-                                anchors{fill: parent}
-                                Column{
-                                    id: umpar
-                                    width: parent.width
+                    }
+                    // hystory
+                    Rectangle{
+                        anchors{fill: parent}
+                        color: "orange";
+                    }
+                    // settings
 
-                                    Item{
-                                        width: parent.width - 150
-                                        height: 75
-                                        // anchors{
-                                        //     horizontalCenter: parent.horizontalCenter
-                                        // }
-                                        Rectangle{
-                                            anchors{
-                                                fill: parent
-                                                margins: 5
+                    // styles setings
+                    // people setting
+                    // type settings
+                    // filter presets
+                    Rectangle{
+                        anchors{fill: parent}
+                        color: "pink";
+                        Column{
+                            anchors{fill: parent}
+                            // set tab bar
+                            Item{
+                                id: setTabBar
+                                width: parent.width
+                                height: 100
+                                Rectangle{
+                                    anchors{
+                                        fill: parent
+                                        margins: 20
+                                    }
+                                    color: "green"
+                                    ButtonGroup{
+                                        id: settingButtonGroup
+                                    }
+                                    Row{
+                                        anchors{
+                                            centerIn: parent
+                                        }
+                                        height: parent.height
+                                        //genral
+                                        Button{
+                                            implicitWidth: childrenRect.width + 10
+                                            height: parent.height
+                                            ButtonGroup.group: settingButtonGroup
+                                            background: Rectangle{
+                                                width: childrenRect.width + 10
+                                                height: parent.height
+                                                color: "blue"
+                                                Text{
+                                                    anchors{centerIn: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "GENERAL"
+                                                    font.pointSize: parent.height/2
+                                                }
                                             }
-                                            color: "purple"
-                                            Text{
-                                                anchors{fill: parent}
-                                                text: "total - " + "um idk"
-                                                font.pointSize: height/2
+                                            onClicked: {
+                                                settingView.currentIndex = 0
+                                            }
+                                        }
+                                        //style
+                                        Button{
+                                            implicitWidth: childrenRect.width + 10
+                                            height: parent.height
+                                            ButtonGroup.group: settingButtonGroup
+                                            background: Rectangle{
+                                                width: childrenRect.width + 10
+                                                height: parent.height
+                                                color: "blue"
+                                                Text{
+                                                    anchors{centerIn: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "STYLE"
+                                                    font.pointSize: parent.height/2
+                                                }
+                                            }
+                                            onClicked: {
+                                                settingView.currentIndex = 1
+                                            }
+                                        }
+                                        //filters
+                                        Button{
+                                            implicitWidth: childrenRect.width + 10
+                                            height: parent.height
+                                            ButtonGroup.group: settingButtonGroup
+                                            background: Rectangle{
+                                                width: childrenRect.width + 10
+                                                height: parent.height
+                                                color: "blue"
+                                                Text{
+                                                    anchors{centerIn: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "FILTERS"
+                                                    font.pointSize: parent.height/2
+                                                }
+                                            }
+                                            onClicked: {
+                                                setFitPerMod.model = engin.getPersonSize()
+                                                setFitTypeMod.model = engin.getTypeSize()
+                                                settingView.currentIndex = 2
+                                            }
+                                        }
+                                        // person
+                                        Button{
+                                            implicitWidth: childrenRect.width + 10
+                                            height: parent.height
+                                            ButtonGroup.group: settingButtonGroup
+                                            background: Rectangle{
+                                                width: childrenRect.width + 10
+                                                height: parent.height
+                                                color: "blue"
+                                                Text{
+                                                    anchors{centerIn: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "PEOPLE"
+                                                    font.pointSize: parent.height/2
+                                                }
+                                            }
+                                            onClicked: {
+                                                setPerMod.model = engin.getPersonSize()
+                                                settingView.currentIndex = 3
+                                            }
+                                        }
+                                        //Type
+                                        Button{
+                                            implicitWidth: childrenRect.width + 10
+                                            height: parent.height
+                                            ButtonGroup.group: settingButtonGroup
+                                            background: Rectangle{
+                                                width: childrenRect.width + 10
+                                                height: parent.height
+                                                color: "blue"
+                                                Text{
+                                                    anchors{centerIn: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    text: "TYPES/PRY"
+                                                    font.pointSize: parent.height/2
+                                                }
+                                            }
+                                            onClicked: {
+                                                setTypeMod.model = engin.getTypeSize()
+                                                settingView.currentIndex = 4
                                             }
                                         }
                                     }
                                 }
                             }
-                            // new
-                            Item{
-                                width: 75
-                                height: 75
-                                anchors{
-                                    right: parent.right
-                                    top: parent.top
+                            // set main
+                            StackLayout{
+                                id: settingView
+                                currentIndex: 0
+                                width: parent.width
+                                height: parent.height - setTabBar.height
+                                //general
+                                Rectangle{
+                                    anchors{fill: parent}
+                                    color: "green"
                                 }
-                                Button{
-                                    anchors{
-                                        fill: parent
+                                // styles
+                                Rectangle {
+                                    anchors {fill: parent}
+                                    color: "blue"
+                                }
+                                //filters
+                                Rectangle{
+                                    anchors{fill: parent}
+                                    color: "yellow"
+                                    Column{
+                                        anchors{fill:parent}
+                                        Rectangle{
+                                            width: parent.width
+                                            height: 70
+                                            TextArea{
+                                                id: setFitName
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 10
+                                                }
+                                            }
+                                        }
+                                        Row{
+                                            width: parent.width
+                                            height: parent.height - 100
+                                            // people
+                                            Rectangle{
+                                                width: parent.width/3
+                                                height: parent.height
+                                                color: "green"
+                                                Column{
+                                                    anchors{fill: parent}
+                                                    Repeater{
+                                                        id: setFitPerMod
+                                                        CheckBox{
+                                                            property int ind: engin.getPersonDex(index)
+                                                            width: parent.width
+                                                            height: 50
+                                                            text: engin.getPersonName(index, null)
+                                                            Component.onCompleted:{
+                                                                // setFilter.peps.push("");
+                                                            }
+                                                            onClicked: {
+                                                                if(checked){
+                                                                    setFilter.peps[index] = ind
+                                                                }else{
+                                                                    setFilter.peps[index] = 0
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            // type
+                                            Rectangle{
+                                                width: parent.width/3
+                                                height: parent.height
+                                                color: "green"
+                                                Column{
+                                                    anchors{fill: parent}
+                                                    Repeater{
+                                                        id: setFitTypeMod
+                                                        CheckBox{
+                                                            width: parent.width
+                                                            height: 50
+                                                            text: engin.getTypeName(index, null)
+                                                            Component.onCompleted:{
+                                                                setFilter.teps.push("");
+                                                            }
+                                                            onClicked: {
+                                                                if(checked){
+                                                                    setFilter.teps[index] = text
+                                                                }else{
+                                                                    setFilter.teps[index] = ""
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            // date
+                                            Rectangle{
+                                                width: parent.width/3
+                                                height: parent.height
+                                                color: "green"
+                                                Column{
+                                                    anchors{fill: parent}
+                                                    Text{
+                                                        width: parent.width
+                                                        height: 30
+                                                        text: "mm/dd/yyyy"
+                                                    }
+                                                    TextArea{
+                                                        id: setPast
+                                                        width: text.width
+                                                        height: 50
+                                                    }
+                                                    Text{
+                                                        width: parent.width
+                                                        height: 30
+                                                        text: "mm/dd/yyyy"
+                                                    }
+                                                    TextArea{
+                                                        id: setFut
+                                                        width: text.width
+                                                        height: 50
+                                                    }
+                                                    CheckBox{
+                                                        id: setUsePast
+                                                        width: parent.width
+                                                        height: 50
+                                                        text: "past limit use current"
+                                                    }
+                                                    CheckBox{
+                                                        id: setUseFut
+                                                        width: parent.width
+                                                        height: 50
+                                                        text: "futre limit use current"
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
-                                    background: Rectangle{
+                                    Button{
+                                        id: setFilter
+                                        property var peps: [0]
+                                        property var teps: [""]
+                                        width: 100
+                                        height: 100
                                         anchors{
-                                            fill: parent
-                                            margins: 10
+                                            right: parent.right
+                                            bottom: parent.bottom
+                                        }
+                                        background: Rectangle{
+                                            anchors{
+                                                fill: parent
+                                                margins: 25
+                                            }
+                                        }
+                                        onClicked:{
+                                            let setname = setFitName.text
+
+
+
+                                            let setpeps = ""
+                                            for(let i = 0; i< peps.length; i++){
+                                                if(peps[i] !== 0){
+                                                    setpeps += peps[i] + ","
+                                                }
+                                            }
+
+
+
+                                            let settype = ""
+
+                                            for(let i = 0; i< teps.length; i++){
+                                                if(teps[i] !== ""){
+                                                    settype += teps[i] + ","
+                                                }
+                                            }
+
+
+                                            let setdates = ""
+                                            let date1 = ""
+                                            let date2 = ""
+                                            if(setUsePast.checked){
+                                                date1 = "x"
+                                            }else{
+                                                date1 = setPast.text
+                                            }
+                                            if(setUseFut.checked){
+                                                date2 = "x"
+                                            }else{
+                                                date2 = setFut.text
+                                            }
+                                            setdates += date1 + "," + date2 + ",";
+
+                                            engin.updateFilter(setname, setpeps, settype, setdates)
+                                            // name , pep, type, date
                                         }
                                     }
-                                    onClicked: {
-                                        createTask.createIsClosed = !createTask.createIsClosed
-                                        creater.peps = [false]
-                                        assSelect.model = 0
-                                        assSelect.model = engin.getPersonSize()
-                                        typeSelect.model = 0
-                                        typeSelect.model = engin.getTypeSize()
-                                        prySelect.model = 0
-                                        prySelect.model = engin.getPrySize()
-                                        creatDate.text = engin.getCurrentDate()
-                                        delButton.width = 0;
-                                        newName.text = ""
-                                        newNotes.text = ""
-                                        isRepBox.checked = false;
-                                        holderForAll.state = "eh"
-                                        repTypeDrop.text = ""
-                                        repSelCon.recType = 0
-                                        multiCheck.checked = false
-                                        repNum.num = 0
-                                        numText.text = "0"
-                                        // repWeek
-                                        for(let i = 0; i < 7; i++){
-                                            repWeek.children[i].checked = false
+                                }
+                                // people
+                                Rectangle{
+                                    anchors{fill: parent}
+                                    color: "red"
+                                    Row{
+                                        anchors{fill: parent}
+                                        Rectangle{
+                                            width: parent.width/2
+                                            height: parent.height
+                                            Column{
+                                                width: parent.height
+                                                height: parent.height
+                                                Repeater{
+                                                    id: setPerMod
+                                                    Rectangle{
+                                                        width: parent.width
+                                                        height: 60
+                                                        Button{
+                                                            anchors{fill:parent}
+                                                            property string name: engin.getPersonName(index, null)
+                                                            property int ind: engin.getPersonDex(index)
+                                                            property string php : engin.getPersonPhp(index)
+                                                            onClicked: {
+                                                                setPerCreator.dex = ind
+                                                                setPerName.text = name
+                                                                setPerPHP.text = php
+                                                            }
+
+                                                            background: Row{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                Button{
+                                                                    width: parent.height
+                                                                    height:parent.height
+                                                                    background: Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 15
+                                                                        }
+                                                                        radius: height/2
+                                                                        color: "black"
+                                                                    }
+                                                                }
+                                                                Rectangle{
+                                                                    width: parent.width - parent.height
+                                                                    height: parent.height
+                                                                    Text{
+                                                                        text: parent.parent.parent.name
+                                                                        font.pointSize: 25
+                                                                    }
+                                                                    // color: "black"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
-                                        // creator
-                                        creater.edit = false
-                                        creater.pry = -1
-                                        creater.type = ""
-                                        creater.multi = false
+                                        Rectangle{
+                                            width: parent.width/2
+                                            height: parent.height
+                                            color: "purple"
+                                            Column{
+                                                anchors{fill: parent}
+                                                Text{
+                                                    text: "name"
+                                                }
+                                                //name
+                                                TextArea{
+                                                    id: setPerName
+                                                    width: parent.height
+                                                    height: 50
+                                                }
+                                                Text{
+                                                    text: "color"
+                                                }
+                                                // color
+                                                TextArea{
+                                                    width: parent.height
+                                                    height: 50
+                                                    id: setPerPHP
+                                                }
+                                                //req hr
+                                                Column{
+
+                                                }
+                                                Row{
+                                                    // setnew
+                                                    Button{
+                                                        id: setPerNew
+                                                        width: 50
+                                                        height: 50
+                                                        text: "new"
+                                                        onClicked: {
+                                                            setPerCreator.dex = -1
+                                                        }
+                                                    }
+                                                    //create
+                                                    Button{
+                                                        property int dex;
+                                                        id: setPerCreator
+                                                        width: 50
+                                                        height: 50
+                                                        text: "+"
+                                                        onClicked: {
+                                                            let name = setPerName.text
+                                                            let php = setPerPHP.text
+                                                            engin.createPerson(this.dex, name, php, "1,1,1,1,1,1,1")
+                                                            // index name color '1,1,1,1,1,1,1'
+
+                                                            setPerMod.model = 0
+                                                            setPerMod.model = engin.getPersonSize()
+                                                        }
+                                                    }
+                                                    //delete
+                                                    Button{
+                                                        id: setPerDell
+                                                        width: 50
+                                                        height: 50
+                                                        text: "-"
+                                                        onClicked: {
+                                                            engin.deletePerson(setPerCreator.dex)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
-                                    // engin.setBulkCreate(newName, "name")
-                                    // engin.setBulkCreate(newNotes, "note")
-                                    // engin.setBulkCreate(prySelect, "pryParent")
-                                    // engin.setBulkCreate(typeSelect, "typeParent")
-                                    // engin.setBulkCreate(assSelect, "assParent")
-                                    // engin.setBulkCreate(delButton, "delButton")
-                                    // engin.setBulkCreate(creater, "creator")
-                                    //
-                                    // engin.setBulkCreate(isRepBox, "isRep")
-                                    // engin.setBulkCreate(holderForAll, "repSet")
-                                    // engin.setBulkCreate(repTypeDrop, "repDrop")
-                                    // engin.setBulkCreate(repSelCon, "repSel")
-                                    // engin.setBulkCreate(multiCheck, "multiBox")
-                                    // engin.setBulkCreate(repNum, "repNum")
-                                    // engin.setBulkCreate(numText, "repNumText")
-                                    // engin.setBulkCreate(repWeek, "repWeek")
-                                    // engin.setBulkCreate(creatDate, "date")
+                                }
+                                // type / priority
+                                Rectangle{
+                                    anchors{fill: parent}
+                                    color: "orange"
+                                    Row{
+                                        anchors{fill: parent}
+                                        // show list type / pry
+                                        Rectangle{
+                                            width: parent.width / 2
+                                            height: parent.height
+                                            Column{
+                                                width: parent.height
+                                                height: parent.height
+                                                Repeater{
+                                                    id: setTypeMod
+                                                    Rectangle{
+                                                        width: parent.width
+                                                        height: 60
+                                                        Button{
+                                                            anchors{fill:parent}
+                                                            property string name: engin.getTypeName(index, null)
+                                                            property int ind: engin.getTypeDex(index)
+                                                            onClicked: {
+                                                                setTypeCreator.dex = ind
+                                                                setTypeName.text = name
+                                                                setTypeCreator.old = name
+                                                            }
+
+                                                            background: Row{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                Button{
+                                                                    width: parent.height
+                                                                    height:parent.height
+                                                                    background: Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 15
+                                                                        }
+                                                                        radius: height/2
+                                                                        color: "black"
+                                                                    }
+                                                                }
+                                                                Rectangle{
+                                                                    width: parent.width - parent.height
+                                                                    height: parent.height
+                                                                    Text{
+                                                                        text: parent.parent.parent.name
+                                                                        font.pointSize: 25
+                                                                    }
+                                                                    // color: "black"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Rectangle{
+                                            width: parent.width / 2
+                                            height: parent.height
+                                            color: "orange"
+                                            TextArea{
+                                                id: setTypeName
+                                                width: parent.width
+                                                height: 50
+                                                Keys.onPressed: function(event){
+                                                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                                                        this.focus = true
+
+
+                                                        accepted = true
+                                                    }
+                                                }
+                                            }
+
+
+                                            Button{
+                                                id: setTypeCreator
+                                                property int dex;
+                                                property string old
+                                                width: 50
+                                                height: 50
+                                                y: 100
+                                                background: Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        margins: 5
+                                                    }
+                                                }
+                                                onClicked: {
+
+                                                    let name = setTypeName.text
+                                                    engin.createType(name, dex, old)
+
+                                                    setTypeMod.model = 0
+                                                    setTypeMod.model = engin.getTypeSize()
+                                                }
+                                            }
+                                            Button{
+                                                width: 50
+                                                height: 50
+                                                y: 100
+                                                x: 50
+                                                background: Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        margins: 5
+                                                    }
+                                                }
+                                                onClicked: {
+                                                    engin.deleteType(setTypeCreator.dex)
+
+                                                    setTypeMod.model = 0
+                                                    setTypeMod.model = engin.getTypeSize()
+                                                }
+                                            }
+
+                                            Button{
+                                                width: 100
+                                                height: 100
+                                                y: 100
+                                                anchors{right: parent.right}
+                                                background: Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        margins: 10
+                                                    }
+                                                }
+                                                onClicked: {
+                                                    setTypeCreator.dex = -1
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // delete list type
+                                    // edit list type
+                                    // add list type
                                 }
                             }
                         }
@@ -657,6 +1338,13 @@ Window {
                             id: newName
                             width: parent.width
                             height: 50
+                            Keys.onPressed: function(event){
+                                if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                    this.focus  = false
+                                    creater.clicked()
+                                    event.accepted = true;
+                                }
+                            }
                         }
                         Row{
                             width: parent.width
@@ -991,6 +1679,13 @@ Window {
                                         // activeFocus: false
                                         id: creatDate
                                         text: engin.getCurrentDate()
+
+                                        Keys.onPressed: function(event){
+                                            if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                                this.focus  = false
+                                                event.accepted = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
