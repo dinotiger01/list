@@ -36,11 +36,14 @@ jobs:
 
       - name: Deploy and Bundle Qt Dependencies
         run: |
-          # Locate the compiled bundle
           APP_PATH="build/List.app"
-          
-          # macdeployqt copies QML modules, plugins, and frameworks into the bundle
-          macdeployqt "$APP_PATH" -qmldir=. -always-overwrite
+        
+          macdeployqt "$APP_PATH" \
+          -qmldir=. \
+          -always-overwrite \
+          -libpath=/opt/homebrew/opt/qt@6/lib \
+          -libpath=/opt/homebrew/Frameworks
+
 
       - name: Archive macOS Build
         run: |
