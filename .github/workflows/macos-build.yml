@@ -38,19 +38,17 @@ jobs:
 
       - name: Deploy and Bundle Qt Dependencies
         run: |
-          # Locate the compiled .app bundle (adjust paths if your executable name differs)
-          APP_PATH="build/MyQmlApp.app"
-          
-          # Run macdeployqt to inject QML plugins and Qt frameworks into the bundle
+          # Updated target app bundle name
+          APP_PATH="build/List.app"
           macdeployqt "$APP_PATH" -qmldir=. -always-overwrite
 
       - name: Archive macOS Build
         run: |
           cd build
-          zip -r MyQmlApp-macOS.zip MyQmlApp.app
+          zip -r List-macOS.zip List.app
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyQmlApp-macOS
-          path: build/MyQmlApp-macOS.zip
+          name: List-macOS
+          path: build/List-macOS.zip
