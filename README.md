@@ -7,6 +7,12 @@ hystory // futer
 timers // futer
 
 
+
+
 read me
 
 compabiability
+
+video
+
+um i could check to solve those like qml erroes but eh

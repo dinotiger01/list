@@ -97,12 +97,12 @@ Window {
                                         fill: parent
                                         margins: 2.5
                                     }
-                                    source: "https://www.svgrepo.com/show/535439/home-1.svg"
+                                    source: "../SVG/home.svg"
                                     // color: style.text //mark
                                 }
                             }
                             onClicked: {
-                                engin.testing()
+                                // engin.testing()
                                 mainView.currentIndex = 0
                             }
                         }
@@ -182,7 +182,7 @@ Window {
                                         fill: parent
                                         margins: 2.5
                                     }
-                                    source: "https://www.svgrepo.com/show/33799/gear-configuration-interface-symbol.svg"
+                                    source: "../SVG/settings.svg"
                                     // color: style.text //mark
                                 }
                             }
@@ -647,7 +647,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "https://img.icons8.com/?size=100&id=2sWrwEXiaegS&format=png&color=000000"
+                                                source: "../SVG/search.svg"
                                             }
                                         }
                                         property var pep: []
@@ -707,7 +707,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "https://img.icons8.com/?size=100&id=jZpTWAJNBgw3&format=png&color=000000"
+                                                source: "../SVG/restart.svg"
                                             }
                                         }
                                         onClicked: {
@@ -737,7 +737,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "https://img.icons8.com/?size=100&id=2i5n7zNvArOt&format=png&color=000000"
+                                                source: "../SVG/X.svg"
                                             }
                                         }
                                         onClicked: {
@@ -822,7 +822,7 @@ Window {
                                                                 fill: parent
                                                                 margins: 5
                                                             }
-                                                            source: "https://img.icons8.com/?size=100&id=Ei5AhpGybn1O&format=png&color=000000"
+                                                            source: "../SVG/sync.svg"
                                                         }
 
                                                     }
@@ -851,18 +851,21 @@ Window {
                                                                 fill: parent
                                                                 margins: 5
                                                             }
-                                                            source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                            source: "../SVG/plus.svg"
                                                         }
                                                     }
                                                     onClicked: {
                                                         createTask.createIsClosed = !createTask.createIsClosed
-                                                        creater.peps = [false]
+                                                        // creater.peps = [false]
                                                         assSelect.model = 0
                                                         assSelect.model = engin.getPersonSize()
+
                                                         typeSelect.model = 0
-                                                        typeSelect.model = engin.getTypeSize()
+                                                        typeSelect.model = engin.getTypeSize()-1
+
                                                         prySelect.model = 0
                                                         prySelect.model = engin.getPrySize()
+
                                                         creatDate.text = engin.getCurrentDate()
                                                         delButton.width = 0;
                                                         newName.text = ""
@@ -882,6 +885,7 @@ Window {
                                                         creater.edit = false
                                                         creater.pry = -1
                                                         creater.type = ""
+                                                        creater.peps = [0]
                                                         creater.multi = false
                                                     }
                                                     // engin.setBulkCreate(newName, "name")
@@ -935,7 +939,7 @@ Window {
                                 Rectangle{
                                     anchors{
                                         fill: parent
-                                        margins: 20
+                                        margins: 10
                                     }
                                     color: style.main
                                     ButtonGroup{
@@ -945,7 +949,7 @@ Window {
                                         anchors{
                                             centerIn: parent
                                         }
-                                        height: parent.height
+                                        height: parent.height - 20
                                         //genral
                                         Button{
                                             checkable: true
@@ -1545,7 +1549,7 @@ Window {
                                                     fill: parent
                                                     margins: 5
                                                 }
-                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                source: "../SVG/plus.svg"
                                             }
                                         }
                                         onClicked:{
@@ -1583,8 +1587,7 @@ Window {
                                                 date1 = "x"
                                             }else{
                                                 date1 = setPast.text
-                                                if((!isNaN(date1[0]) && !isNaN(date1[1]) && date1[2] === '/' && !isNaN(date1[3]) && !isNaN(date1[4]) && date2[5] === '/' && !isNaN(date1[6]) && !isNaN(date1[7]) && !isNaN(date1[8]) && !isNaN(date1[9]) || date1 === "" )){
-
+                                                if((!isNaN(date1[0]) && !isNaN(date1[1]) && date1[2] === '/' && !isNaN(date1[3]) && !isNaN(date1[4]) && date1[5] === '/' && !isNaN(date1[6]) && !isNaN(date1[7]) && !isNaN(date1[8]) && !isNaN(date1[9]) || date1 === "" )){
                                                 }else{
                                                     errorM = "frist dates must be in mm/dd/yyyy format"
                                                 }
@@ -1594,10 +1597,9 @@ Window {
                                                 date2 = "x"
                                             }else{
                                                 date2 = setFut.text
-                                                if((!isNaN(date2[0]) && !isNaN(date2[1]) && date2[2] === '/' && !isNaN(date2[3]) && !isNaN(date2[4]) && date2[5] === '/' && !isNaN(date2[6]) && !isNaN(date2[7]) && !isNaN(date2[8]) && !isNaN(date2[9])|| date1 === "" )){
-
+                                                if((!isNaN(date2[0]) && !isNaN(date2[1]) && date2[2] === '/' && !isNaN(date2[3]) && !isNaN(date2[4]) && date2[5] === '/' && !isNaN(date2[6]) && !isNaN(date2[7]) && !isNaN(date2[8]) && !isNaN(date2[9])|| date2 === "" )){
                                                 }else{
-                                                    errorM = "frist dates must be in mm/dd/yyyy format"
+                                                    errorM = "seconed dates must be in mm/dd/yyyy format"
                                                 }
                                             }
                                             setdates += date1 + "," + date2 + ",";
@@ -1619,7 +1621,7 @@ Window {
                                             height: parent.height
                                             color: style.back
                                             Column{
-                                                width: parent.height
+                                                width: parent.width
                                                 height: parent.height
                                                 ButtonGroup{
                                                     id: buttonGroupPerp
@@ -1805,15 +1807,16 @@ Window {
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            color: parent.down ? style.down :
-                                                                parent.hovered ? style.hover : style.button
+                                                            color: setPerCreator.dex === -1 ? style.check :
+                                                                parent.down ? style.down :
+                                                                    parent.hovered ? style.hover: style.button
                                                             Image{
                                                                 anchors{
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=7RnGsNzOXmbg&format=png&color=000000"
-                                                                rotation: 90
+                                                                source: "../SVG/up-arrow2.svg"
+                                                                // rotation: 90
                                                             }
                                                         }
                                                         onClicked: {
@@ -1841,13 +1844,14 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                                source: "../SVG/plus.svg"
                                                             }
                                                         }
                                                         onClicked: {
                                                             let name = setPerName.text
                                                             let php = setPerPHP.text
                                                             let errorM = ""
+
                                                             for(let i = 0; i < name.length; i++){
                                                                 if(name[i] === "'" || name[i] === ";" ){
                                                                     errorM = "name can not coitain ' or ;"
@@ -1869,7 +1873,6 @@ Window {
                                                         }
                                                     }
                                                     //delete
-
                                                     Button{
                                                         id: setPerDell
                                                         property int dex;
@@ -1887,14 +1890,13 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=J7wGSlJMWWIv&format=png&color=000000"
+                                                                source: "../SVG/garbage.svg"
                                                             }
                                                         }
                                                         onClicked: {
                                                             engin.deletePerson(setPerCreator.dex)
                                                         }
                                                     }
-
                                                     Item{
                                                         width: 50
                                                         height: 50
@@ -1914,6 +1916,27 @@ Window {
                                                         color: style.text
                                                     }
                                                 }
+                                                Rectangle {
+                                                    width: parent.width
+                                                    implicitHeight: setPersIns.implicitHeight
+                                                    color: style.detail
+                                                    border {
+                                                        width: 1
+                                                        color: style.border
+                                                    }
+                                                    Text {
+                                                        width: parent.width
+                                                        id: setPersIns
+                                                        font.pointSize: 15
+                                                        color: style.text
+                                                        wrapMode: Text.Wrap
+                                                        text: "this is the task type editor you can do 3 things here:
+to create people you must first press the set up button (2 arrows up) the button will turn on and the text box will empty this means you are creating a person. now you can enter the name you want to give to the type into the text box the color in the bottom half can be hex code or the name of the color is it will show in the box inder the text. then you click the add button (+) to fully add the task. it should show up on the left if it does not try going to a difrrnt page then comming back\n
+to edit person find the person on the left then click on it the check indicator should turn on then edit the text box as wanted. lastly if you click the add button (+) it will edit the task\n
+to delete a person type simply cilck the task then click the garbage button
+                                                    "
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -1930,7 +1953,7 @@ Window {
                                             height: parent.height
                                             color: style.back
                                             Column{
-                                                width: parent.height
+                                                width: parent.width
                                                 height: parent.height
                                                 ButtonGroup{
                                                     id: buttonGroupType
@@ -2073,15 +2096,15 @@ Window {
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            color: parent.down ? style.down :
-                                                                parent.hovered ? style.hover : style.button
+                                                            color: setTypeCreator.dex === -1 ? style.check :
+                                                                parent.down ? style.down :
+                                                                    parent.hovered ? style.hover: style.button
                                                             Image{
                                                                 anchors{
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=7RnGsNzOXmbg&format=png&color=000000"
-                                                                rotation: 90
+                                                                source: "../SVG/up-arrow2.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2109,7 +2132,7 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                                source: "../SVG/plus.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2146,7 +2169,7 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "https://img.icons8.com/?size=100&id=J7wGSlJMWWIv&format=png&color=000000"
+                                                                source: "../SVG/garbage.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2156,18 +2179,45 @@ Window {
                                                             setTypeMod.model = engin.getTypeSize()
                                                         }
                                                     }
-                                                    Text{
-                                                        id: setTypeErrorM
+                                                    Rectangle{
+                                                        implicitWidth:  setTypeErrorM.implicitWidth
                                                         height: 50
+                                                        color: style.back
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        Text{
+                                                            height: parent.height
+                                                            id: setTypeErrorM
+                                                            font.pointSize: 15
+                                                            color: style.text
+
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    width: parent.width
+                                                    implicitHeight:  setTypeIns.implicitHeight
+                                                    color: style.detail
+                                                    border{
+                                                        width: 1
+                                                        color: style.border
+                                                    }
+                                                    Text{
+                                                        width: parent.width
+                                                        id: setTypeIns
                                                         font.pointSize: 15
                                                         color: style.text
-
+                                                        wrapMode: Text.Wrap
+                                                        text: "this is the task type editor you can do 3 things here:
+to create type task you must first press the set up button (2 arrows up) the button will turn on and the text box will empty this means you are creating a type. now you can enter the name you want to give to the type into the text box. then you click the add button (+) to fully add the task. it should show up on the left if it does not try going to a difrrnt page then comming back\n
+to edit type a task find the task on the left then click on it the check indicator should turn on then edit the text box as wanted. lastly if you click the add button (+) it will edit the task\n
+to delete a task type simply cilck the task then click the garbage button
+                                                    "
                                                     }
                                                 }
                                             }
-
-
-
                                         }
                                     }
 
@@ -2658,7 +2708,7 @@ Window {
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                            source: "../SVG/plus.svg"
                                                         }
                                                     }
                                                 }
@@ -2679,7 +2729,7 @@ Window {
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            source: "https://img.icons8.com/?size=100&id=1i7ZSnIJ34KY&format=png&color=000000"
+                                                            source: "../SVG/minus.svg"
                                                         }
                                                     }
                                                 }
@@ -3031,13 +3081,14 @@ Window {
                                     ButtonGroup{
                                         id: typeSelectGroup
                                         onClicked: button =>{
-                                            creater.type = button.text
+                                            creater.type = button.name
                                         }
                                     }
                                     Repeater{
                                         id: typeSelect
                                         RadioButton{
                                             property int dex: index
+                                            property string name: engin.getTypeName(index, creType)
                                             width: parent.width
                                             height: 30
                                             id: creType
@@ -3089,13 +3140,14 @@ Window {
                                                                 }
                                                                 verticalAlignment: Text.AlignVCenter
                                                                 font.pixelSize: parent.height / 2
-                                                                text: engin.getTypeName(index, creType)
+                                                                text: creType.name
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
                                             // color: "black"
+
                                         }
 
                                     }
@@ -3120,6 +3172,7 @@ Window {
                                             height: 30
                                             id: creAss
                                             property int dex: index
+                                            property int ind: engin.getPersonDex(index)
                                             indicator: Rectangle{
                                                 anchors{fill: parent}
                                                 color: style.detail
@@ -3174,10 +3227,15 @@ Window {
                                                 }
                                             }
                                             Component.onCompleted:{
-                                                creater.peps.push(false)
+                                                creater.peps.push(0)
                                             }
                                             onClicked:{
-                                                creater.peps[index] = checked;
+                                                if(checked){
+                                                    creater.peps[index] = ind;
+                                                }else{
+                                                    creater.peps[index] = 0;
+                                                }
+
                                             }
                                             // color: "black"
                                         }
@@ -3246,7 +3304,7 @@ Window {
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "https://img.icons8.com/?size=100&id=DTN37d2D4JlB&format=png&color=000000"
+                                        source: "../SVG/garbage.svg"
                                         // color: style.text //mark
                                     }
                                 }
@@ -3259,8 +3317,9 @@ Window {
                                 property bool edit: false
                                 property int pry: -1
                                 property string type : "not sett"
-                                property var peps: [true]
+                                property var peps: [0]
                                 property bool multi: false
+
                                 background: Rectangle {
                                     anchors {
                                         fill: parent
@@ -3273,7 +3332,7 @@ Window {
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                        source: "../SVG/plus.svg"
                                         // color: style.text //mark
                                     }
                                 }
@@ -3297,8 +3356,8 @@ Window {
                                     let due = creatDate.text
                                     let pep = ""//
                                     for(let i = 0; i < creater.peps.length; i++){
-                                        if(creater.peps[i]){
-                                            pep += (i+1).toString() + ","
+                                        if(creater.peps[i] !== 0){
+                                            pep += (peps[i]).toString() + ","
                                         }
                                     }
                                     let type = creater.type // here
@@ -3395,7 +3454,7 @@ Window {
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "https://img.icons8.com/?size=100&id=2i5n7zNvArOt&format=png&color=000000"
+                                        source: "../SVG/minus.svg"
                                         // color: style.text //mark
                                     }
                                 }

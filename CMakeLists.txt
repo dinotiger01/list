@@ -19,7 +19,7 @@ if(APPLE)
     set(WrapOpenGL_FOUND TRUE CACHE BOOL "" FORCE)
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql OpenGL Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql OpenGL Concurrent Svg)
 find_package(SQLite3 REQUIRED)
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -50,12 +50,28 @@ qt_add_qml_module(${PROJECT_NAME}
         SOURCES
         Engine.h
         Engine.cpp
+        RESOURCES
+        SVG/check.svg
+        SVG/edit.svg
+        SVG/garbage.svg
+        SVG/home.svg
+        SVG/minus.svg
+        SVG/plus.svg
+        SVG/restart.svg
+        SVG/search.svg
+        SVG/settings.svg
+        SVG/sync.svg
+        SVG/up-arrow.svg
+        SVG/up-arrow2.svg
+        SVG/X.svg
+
 #        SQL/data.db
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/SQL
         ${CMAKE_CURRENT_SOURCE_DIR}/QML
+        ${CMAKE_CURRENT_SOURCE_DIR}/SVG
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -65,6 +81,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Widgets
         Qt6::Sql
         Qt6::Concurrent
+        Qt6::Svg
         SQLite3::SQLite3
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
@@ -73,6 +90,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/SQL"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SQL"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/SVG"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SVG"
 )
 
 

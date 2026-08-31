@@ -77,7 +77,7 @@ Item{
                                     fill: parent
                                     margins: 2.5
                                 }
-                                source: "https://img.icons8.com/?size=100&id=uNzoeGXjLfRM&format=png&color=000000"
+                                source: "../SVG/check.svg"
 
                             }
                         }
@@ -203,20 +203,20 @@ Item{
                                     fill: parent
                                     margins: 2.5
                                 }
-                                source: "https://img.icons8.com/?size=100&id=kHqsQPiFpGjM&format=png&color=000000"
+                                source: "../SVG/up-arrow.svg"
                                 property bool close: true
                                 state: close ? "colosed" : "open"
                                 states: [
                                     State{
                                         name: "colosed"
                                         PropertyChanges{
-                                            target: drop; rotation: -90
+                                            target: drop; rotation: 90
                                         }
                                     },
                                     State{
                                         name: "open"
                                         PropertyChanges{
-                                            target: drop; rotation: 0
+                                            target: drop; rotation: 180
                                         }
                                     }
                                 ]
@@ -310,7 +310,7 @@ Item{
                                     fill: parent
                                     margins: 2.5
                                 }
-                                source: "https://img.icons8.com/?size=100&id=kCViyr9hZtLX&format=png&color=000000"
+                                source: "../SVG/edit.svg"
 
                             }
                         }

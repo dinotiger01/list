@@ -106,7 +106,7 @@ namespace  Engine {
 
     QString EngineMod::getPersonName(int i, QObject* obj) {
         if (obj != nullptr) {
-            peopleKidHold.at(i) = obj;
+            peopleKidHold[i] = obj;
         }
         return QString::fromStdString(all_people[i].name);
     }
@@ -126,9 +126,12 @@ namespace  Engine {
     }
 
     QString EngineMod::getTypeName(int i, QObject* obj) {
+        cout << "type name: " << i << "\n";
+
         if (obj != nullptr) {
-            typeKidHold.at(i) = obj;
+            typeKidHold[i] = obj;
         }
+
         return QString::fromStdString(all_type[i].name);
     }
     int EngineMod::getTypeSize() {
@@ -137,6 +140,7 @@ namespace  Engine {
                 typeKidHold.push_back(NULL);
             }
         }
+        cout << "type size: " << all_type.size()<< "\n";
         return all_type.size();
     }
     int EngineMod::getTypeDex(int i) {
@@ -952,6 +956,7 @@ namespace  Engine {
             sql = start + ind + com + que + name.toStdString() + que + com + que + php.toStdString() + que + com + que + reqHr.toStdString()+ que + end;
 
 
+
         }else {
             string start = "UPDATE PEOPLE SET NAME = '";
             string end = " WHERE ID = " + to_string(dex);
@@ -972,7 +977,8 @@ namespace  Engine {
         task& temp = all_tasks[addtask];
         if (isFilter(temp)) {
             // if filter here
-            QQmlComponent component(eng, QUrl(QStringLiteral("../QML/taskQml.qml")));
+            QQmlComponent component(eng, QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/taskQml.qml")));
+
 
             // all_loaded.push_back(&component);
 
@@ -1049,7 +1055,8 @@ namespace  Engine {
     void EngineMod::addPry(int addedPry) {
         pryority& temp = all_pry[addedPry];
 
-        QQmlComponent component(eng, QUrl(QStringLiteral("../QML/pryQml.qml")));
+        QQmlComponent component(eng, QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/pryQml.qml")));
+
 
         // define var in pry
         QVariantMap prop;
@@ -1107,79 +1114,79 @@ namespace  Engine {
             }
         }
 
-        bulkCreate["name"]->setProperty("text", QString::fromStdString(temp.name));
-        bulkCreate["note"]->setProperty("text", QString::fromStdString(temp.notes));
-        bulkCreate["pryParent"]->setProperty("model", getPrySize());
+        bulkCreate["name"]->setProperty("text", QString::fromStdString(temp.name));//yep
+        bulkCreate["note"]->setProperty("text", QString::fromStdString(temp.notes));//yep
+        bulkCreate["pryParent"]->setProperty("model", getPrySize());//yep
         // check kid
-        pryKidHold[temp.pry]->setProperty("checked", true);
+        pryKidHold[temp.pry]->setProperty("checked", true);//check
 
-        bulkCreate["typeParent"]->setProperty("model", getTypeSize());
+        bulkCreate["typeParent"]->setProperty("model", getTypeSize());//check
         // check kid
         for (int i = 0; i < all_type.size(); i++) {
             if (all_type[i].name == temp.type){
-                typeKidHold[i]->setProperty("checked", true);
+                typeKidHold[i]->setProperty("checked", true);//check
                 break;
             }
         }
-        bulkCreate["assParent"]->setProperty("model", getPersonSize());
+        bulkCreate["assParent"]->setProperty("model", getPersonSize());//check
         // check kid
         for (int i = 0; i < peopleKidHold.size(); i++) {
             bool found = false;
             for (auto& k: temp.peoples) {
                 if (i+1 == k) {
-                    peopleKidHold[i]->setProperty("checked", true);
+                    peopleKidHold[i]->setProperty("checked", true);//check
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                peopleKidHold[i]->setProperty("checked", false);
+                peopleKidHold[i]->setProperty("checked", false);//check
             }
         }
 
-        bulkCreate["delButton"]->setProperty("width", 30);
-        bulkCreate["repSel"]->setProperty("recType", temp.isReturn);
+        bulkCreate["delButton"]->setProperty("width", 30);//yep
+        bulkCreate["repSel"]->setProperty("recType", temp.isReturn);//yep
         // convert to string
         char out[50];
         tm date = *localtime(&temp.date);
         strftime(out, 12,"%m/%d/%Y", &date);
 
-        bulkCreate["date"]->setProperty("text", QString::fromStdString(out));
+        bulkCreate["date"]->setProperty("text", QString::fromStdString(out));//yep
 
         if (temp.isReturn > 0) {
-            bulkCreate["isRep"]->setProperty("checked", true);
-            bulkCreate["repSet"]->setProperty("state", "yeah");
+            bulkCreate["isRep"]->setProperty("checked", true);//yep
+            bulkCreate["repSet"]->setProperty("state", "yeah");//yep
 
             if (temp.isReturn == 1 || temp.isReturn == 2) {
-                bulkCreate["repDropT"]->setProperty("text", "rec on due");
+                bulkCreate["repDropT"]->setProperty("text", "rec on due");//yep
             }
             if (temp.isReturn == 3) {
-                bulkCreate["repDropT"]->setProperty("text", "rec on comp");
+                bulkCreate["repDropT"]->setProperty("text", "rec on comp");//yep
             }
             if (temp.isReturn == 4 || temp.isReturn == 5) {
-                bulkCreate["repDropT"]->setProperty("text", "rec on week");
+                bulkCreate["repDropT"]->setProperty("text", "rec on week");//yep
             }
             if (temp.isReturn == 6 || temp.isReturn == 7) {
-                bulkCreate["repDropT"]->setProperty("text", "rec on month");
+                bulkCreate["repDropT"]->setProperty("text", "rec on month");//yep
             }
 
 
 
             // check
             if (temp.isReturn == 2 || temp.isReturn == 5 || temp.isReturn == 7) {
-                bulkCreate["multiBox"]->setProperty("checked", true);
-                bulkCreate["creator"]->setProperty("multi", true);
+                bulkCreate["multiBox"]->setProperty("checked", true);//yep
+                bulkCreate["creator"]->setProperty("multi", true);//yep
             }else {
-                bulkCreate["multiBox"]->setProperty("checked", false);
-                bulkCreate["creator"]->setProperty("multi", false);
+                bulkCreate["multiBox"]->setProperty("checked", false);//yep
+                bulkCreate["creator"]->setProperty("multi", false);//yep
             }
             //number
             if (temp.isReturn == 2 || temp.isReturn == 3 || temp.isReturn == 7 || temp.isReturn == 1 || temp.isReturn == 6) {
-                bulkCreate["repNum"]->setProperty("num", temp.delay);
-                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(temp.delay)));
+                bulkCreate["repNum"]->setProperty("num", temp.delay);//yep
+                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(temp.delay)));//yep
             }else {
-                bulkCreate["repNum"]->setProperty("num", 0);
-                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(0)));
+                bulkCreate["repNum"]->setProperty("num", 0);//yep
+                bulkCreate["repNumText"]->setProperty("text", QString::fromStdString(to_string(0)));//yep
             }
 
             if (temp.isReturn == 4 || temp.isReturn == 5) {
@@ -1189,35 +1196,34 @@ namespace  Engine {
                 bitset<7> binary(temp.delay);
                 for (int i = 0; i < binary.size(); i++) {
                     if (binary[i] == 1 ) {
-                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", true);
+                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", true);//yep
                     }else {
-                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);
+                        bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);//yep
                     }
                 }
             }else {
                 for (int i = 0; i < 7; i++) {
-                    bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);
+                    bulkCreate["repWeek" + to_string(i)]->setProperty("checked", false);//yep
                 }
             }
         }else {
-            bulkCreate["isRep"]->setProperty("checked", false);
-            bulkCreate["repSet"]->setProperty("state", "eh");
+            bulkCreate["isRep"]->setProperty("checked", false);//yep
+            bulkCreate["repSet"]->setProperty("state", "eh");//yep
         }
         // creator
-        bulkCreate["creator"]->setProperty("pry", temp.pry);
-        bulkCreate["creator"]->setProperty("edit", true);
-        bulkCreate["creator"]->setProperty("type", QString::fromStdString(temp.type));
+        bulkCreate["creator"]->setProperty("pry", temp.pry);//yep
+        bulkCreate["creator"]->setProperty("edit", true);//yep
+        bulkCreate["creator"]->setProperty("type", QString::fromStdString(temp.type));//check
 
-        vector<bool> peps = {true, false, true};
         QVariantList qmlPep;
-        qmlPep.reserve(peps.size());
-        for (bool i : peps) {
+        qmlPep.reserve(all_people.size());
+        for (int i : temp.peoples) {
             qmlPep.append(i);
             cout << "fromC: " << i << "\n";
         }
 
 
-        bulkCreate["creator"]->setProperty("peps", qmlPep);
+        bulkCreate["creator"]->setProperty("peps", qmlPep);//check
 
 
         crate->setProperty("createIsClosed", false);
