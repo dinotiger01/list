@@ -15,10 +15,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          version: '6.7.2' # Change to your preferred Qt6 version
-          modules: 'qtdeclarative' # Installs QML modules
+          version: '6.7.2'
+          modules: 'qtdeclarative'
+          arch: 'clang_64'
 
       - name: Install Dependencies via Homebrew
         run: |
