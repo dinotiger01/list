@@ -1,0 +1,56 @@
+name: MacOS Qt/CMake Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.7.2' # Change to your preferred Qt6 version
+          modules: 'qtdeclarative' # Installs QML modules
+
+      - name: Install Dependencies via Homebrew
+        run: |
+          brew update
+          brew install cmake sqlite
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=$QT_ROOT_DIR
+
+      - name: Build Application
+        run: |
+          cmake --build build --config Release
+
+      - name: Deploy and Bundle Qt Dependencies
+        run: |
+          # Locate the compiled .app bundle (adjust paths if your executable name differs)
+          APP_PATH="build/MyQmlApp.app"
+          
+          # Run macdeployqt to inject QML plugins and Qt frameworks into the bundle
+          macdeployqt "$APP_PATH" -qmldir=. -always-overwrite
+
+      - name: Archive macOS Build
+        run: |
+          cd build
+          zip -r MyQmlApp-macOS.zip MyQmlApp.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyQmlApp-macOS
+          path: build/MyQmlApp-macOS.zip
