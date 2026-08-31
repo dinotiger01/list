@@ -1,4 +1,4 @@
-name: MacOS
+name: MacOS Qt/CMake Build
 
 on:
   push:
@@ -14,24 +14,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '6.7.2'
-          modules: 'qtdeclarative'
-          arch: 'clang_64'
-
-      - name: Install Dependencies via Homebrew
+      - name: Install Qt6 and Dependencies via Homebrew
         run: |
           brew update
-          brew install cmake sqlite
+          # Installs native macOS Qt6 (includes Core, Gui, Quick, Sql, Svg, etc.)
+          brew install cmake qt@6 sqlite
+          
+          # Add Qt binaries to the runner environment path for macdeployqt
+          echo "/opt/homebrew/opt/qt@6/bin" >> $GITHUB_PATH
 
       - name: Configure CMake
         run: |
           mkdir build
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH=$QT_ROOT_DIR
+            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@6
 
       - name: Build Application
         run: |
@@ -39,8 +36,10 @@ jobs:
 
       - name: Deploy and Bundle Qt Dependencies
         run: |
-          # Updated target app bundle name
+          # Locate the compiled bundle
           APP_PATH="build/List.app"
+          
+          # macdeployqt copies QML modules, plugins, and frameworks into the bundle
           macdeployqt "$APP_PATH" -qmldir=. -always-overwrite
 
       - name: Archive macOS Build
