@@ -51,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: List-macOS
-          path: build/List-macOS.zip
+          path: build/List-macOS.zi
