@@ -1,4 +1,4 @@
-name: MacOS Qt/CMake Build
+name: MacOS
 
 on:
   push:
