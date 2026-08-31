@@ -53,7 +53,7 @@ namespace  Engine {
         void sqlPullPeople();
         void sqlPullPry();
         void sqlPullType();
-        void sqlPullFilt();
+        Q_INVOKABLE void sqlPullFilt();
         void loadTasks();
         void addTask(int addTask);
         void addPry(int addedPry);

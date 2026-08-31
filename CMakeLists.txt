@@ -21,14 +21,17 @@ endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql OpenGL Concurrent)
 find_package(SQLite3 REQUIRED)
-
-
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
     qt_policy(SET QTP0004 NEW)
 endif()
+if(APPLE)
+    set(BUNDLE_TYPE MACOSX_BUNDLE)
+else()
+    set(BUNDLE_TYPE "")
+endif()
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+add_executable(${PROJECT_NAME} ${BUNDLE_TYPE}
         main.cpp
 )
 
@@ -42,10 +45,17 @@ qt_add_qml_module(${PROJECT_NAME}
         RESOURCE_PREFIX "/qt/qml"
         QML_FILES
         QML/main.qml
+        QML/pryQml.qml
+        QML/taskQml.qml
         SOURCES
         Engine.h
         Engine.cpp
-        data.db
+#        SQL/data.db
+)
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/SQL
+        ${CMAKE_CURRENT_SOURCE_DIR}/QML
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -55,6 +65,14 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Widgets
         Qt6::Sql
         Qt6::Concurrent
+        SQLite3::SQLite3
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/SQL"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SQL"
+)
+
 

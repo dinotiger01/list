@@ -8,11 +8,27 @@ Column {
         property string pryName: "name"
         property bool pryIsClosed: false
         property int dex: 1
-        property int prr: 255
-        property int prg: 255
-        property int prb: 255
+        property string pcolor: ""
         //pry
         Item {
+            Item{
+                id: style
+                property string main: "#682bd7"
+                property string text: "#010101"
+                property string border: "#010101"
+                property string back: "#e6ddd6"
+                property string detail: "#a69d96"
+
+                /*color: parent.down ? style.down :
+                    parent.hovered ? style.hover : style.button*/
+                property string textBox: "#86d9fe"
+                property string total: "#fc7b54"
+
+                property string check: "#fd95fd"
+                property string button: "#a37cf0"
+                property string hover: "#b38cf0"
+                property string down: "#c39cf0"
+            }
             width: parent.width
             height: 75
             Rectangle {
@@ -20,11 +36,7 @@ Column {
                     fill: parent
                     margins: 5
                 }
-                color{
-                    r: prr
-                    g: prg
-                    b: prb
-                }
+                color: pcolor
 
                 Text {
                     anchors {
@@ -39,14 +51,51 @@ Column {
                     anchors {
                         right: parent.right
                     }
-                    background: Rectangle {
-                        anchors {
+                    checkable: true
+                    checked:  true
+                    background: Rectangle{
+                        anchors{
                             fill: parent
                             margins: 5
+                        }
+                        color: parent.checked ? style.check :
+                            parent.down ? style.down :
+                                parent.hovered ? style.hover: style.button
+                        Image{
+                            id: drop
+                            anchors{
+                                fill: parent
+                                margins: 2.5
+                            }
+                            source: "https://img.icons8.com/?size=100&id=kHqsQPiFpGjM&format=png&color=000000"
+                            property bool close: false
+                            state: close ? "colosed" : "open"
+                            states: [
+                                State{
+                                    name: "colosed"
+                                    PropertyChanges{
+                                        target: drop; rotation: -90
+                                    }
+                                },
+                                State{
+                                    name: "open"
+                                    PropertyChanges{
+                                        target: drop; rotation: 0
+                                    }
+                                }
+                            ]
+                            transitions: Transition{
+                                NumberAnimation{
+                                    properties: "rotation"
+                                    duration: 250
+                                    easing.type: Easing.InOutQuad
+                                }
+                            }
                         }
                     }
                     onClicked: {
                         pry.pryIsClosed = !pry.pryIsClosed
+                        drop.close = pry.pryIsClosed
                     }
                 }
             }

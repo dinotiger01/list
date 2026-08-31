@@ -46,9 +46,7 @@ namespace  Engine {
     struct pryority {
         int dex;
         string name;
-        int r;
-        int g;
-        int b;
+        string color;
         QObject* dir;
     };
 
@@ -83,7 +81,7 @@ namespace  Engine {
     vector<time_t> filter_date;
     string filter_name;
 
-
+    QString dbPath;
 
     QObject* listPar;
     QObject* crate;
@@ -206,7 +204,7 @@ namespace  Engine {
         if (filter_use_name) {
             bool namefound = false;
             for (int i = 0; i < temp.name.size(); i++) {
-                for (int j = i; j < temp.name.size() - i; j++) {
+                for (int j = 0; j < temp.name.size() - i; j++) {
                     if (temp.name.substr(i,j) == filter_name) {
                         namefound = true;
                         break;
@@ -242,6 +240,7 @@ namespace  Engine {
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
+        dbPath = QCoreApplication::applicationDirPath() + "/SQL/data.db";
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
@@ -378,18 +377,14 @@ namespace  Engine {
     static int callbackPRY(void* data, int argc, char** argv, char** azColName) {
         pryority newPry;
         for (int i = 0; i < argc;i++) {
-            // cout << azColName[i] << " : " << argv[i] << endl;
+            cout << azColName[i] << " : " << argv[i] << endl;
             string tempName = azColName[i];
             if (tempName == "DEX") {
                 newPry.dex = stoi(argv[i]);
             }else if (tempName == "NAME") {
                 newPry.name = argv[i];
-            }else if (tempName == "R") {
-                newPry.r = stoi(argv[i]);
-            }else if (tempName == "G") {
-                newPry.g = stoi(argv[i]);
-            }else if (tempName == "B") {
-                newPry.b = stoi(argv[i]);
+            }else if (tempName == "COLOR") {
+                newPry.color = argv[i];
             }else {
                 cerr << "no this is wrong : " << tempName;
             }
@@ -525,7 +520,8 @@ namespace  Engine {
         // define stuff
         int exit = 0;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        cout << dbPath.toUtf8().constData() << "\n";
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
         string query = "select * from PEOPLE ORDER BY ID;";
         sqlite3_exec(DB, query.c_str(), callbackP, NULL , NULL);
@@ -545,7 +541,7 @@ namespace  Engine {
         // define stuff
         int exit = 0;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
         string query = "select * from TASKS ORDER BY WHE DESC";
         sqlite3_exec(DB, query.c_str(), callback, NULL , NULL);
@@ -560,7 +556,7 @@ namespace  Engine {
     void EngineMod::sqlPullPry() {
         int exit = 0;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
         string query = "select * from PRY "
                        "ORDER BY DEX";
@@ -580,7 +576,7 @@ namespace  Engine {
     void EngineMod::sqlPullType() {
         int exit = 0;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
         string query = "select * from TYPE "
                        "ORDER BY ID";
@@ -600,7 +596,7 @@ namespace  Engine {
     void EngineMod::sqlPullFilt() {
         int exit = 0;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
         string query = "select * from filter";
         sqlite3_exec(DB, query.c_str(), callbackFit, NULL , NULL);
@@ -614,6 +610,7 @@ namespace  Engine {
         }
         // close
         sqlite3_close(DB);
+        // refrechAll();
     }
 
     void back_dup(task dup, struct tm newtime, bool oveRide) {
@@ -635,7 +632,7 @@ namespace  Engine {
         }
         string sql;
         sql = start + startquo + dup.name + endquo + com + to_string(dup.pry) + com + to_string(dup.isReturn) + com + to_string(dup.delay) + com + startquo + rn + endquo + com + startquo + dup.notes + endquo + com + startquo + pep + endquo + com + startquo + dup.type + endquo+ end;
-        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_open(dbPath.toUtf8().constData(), &DB);
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
 
         cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
@@ -732,6 +729,8 @@ namespace  Engine {
 
     void EngineMod::refrechAll() {
         //clear
+        // sqlComd();
+
         all_tasks.clear();
         all_people.clear();
         all_pry.clear();
@@ -793,7 +792,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
         // open
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(".//data.db", &DB);
 
         string sql = "";
         // sql = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES ('seconed task', 0 , 1 , 1, '2026/08/15/', 'this note', '2,3,', 'seconed');";
@@ -821,9 +820,7 @@ namespace  Engine {
         // sql = "create table PRY("
         //       "DEX int PRIMARY KEY,"
         //       "NAME text,"
-        //       "R int,"
-        //       "G int,"
-        //       "B int"
+        //       "COLOR text"
         //       ");";
 
         // sql = "create table TYPE("
@@ -841,7 +838,8 @@ namespace  Engine {
         //       "INSERT INTO FILTER VALUES (0, '' , '' , '', '')";
         // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
 
-        // sql = "INSERT INTO PRY VALUES(2,'low',0,0,255)";
+        // sql = "INSERT INTO PRY VALUES(2,'low','blue')";
+        // sql = "update PRY set COLOR = '#835ce0' where DEX = 1";
 
         // sql = "create table PEOPLE (ID int PRIMARY KEY,NAME text, PFP TEXT, REQHR text)";
         // sql = "INSERT INTO PEOPLE VALUES(4, 'wtf','pink','1,1,1,1,1,1,1')";
@@ -856,7 +854,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
 
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         string newdue = due.toStdString();
         string fixeddue = newdue.substr(6, 4) + "/" + newdue.substr(0, 2) + "/" + newdue.substr(3, 2);
         string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
@@ -895,7 +893,7 @@ namespace  Engine {
 
         char* errorM;
         int exit = 0;
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         string sql;
         if (dex == -1) {
             // create
@@ -928,7 +926,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
 
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db" , &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData() , &DB);
 
         string sql;
         char com = ',';
@@ -1057,9 +1055,7 @@ namespace  Engine {
         QVariantMap prop;
         prop["dex"] = static_cast<int>(temp.dex);
         prop["pryName"] = QString::fromStdString(temp.name);
-        prop["prr"] = static_cast<int>(temp.r);
-        prop["prg"] = static_cast<int>(temp.g);
-        prop["prb"] = static_cast<int>(temp.b);
+        prop["pcolor"] = QString::fromStdString(temp.color);
 
         QObject* newPry = component.createWithInitialProperties(prop, eng->rootContext());
 
@@ -1155,16 +1151,16 @@ namespace  Engine {
             bulkCreate["repSet"]->setProperty("state", "yeah");
 
             if (temp.isReturn == 1 || temp.isReturn == 2) {
-                bulkCreate["repDrop"]->setProperty("text", "rec on due");
+                bulkCreate["repDropT"]->setProperty("text", "rec on due");
             }
             if (temp.isReturn == 3) {
-                bulkCreate["repDrop"]->setProperty("text", "rec on comp");
+                bulkCreate["repDropT"]->setProperty("text", "rec on comp");
             }
             if (temp.isReturn == 4 || temp.isReturn == 5) {
-                bulkCreate["repDrop"]->setProperty("text", "rec on week");
+                bulkCreate["repDropT"]->setProperty("text", "rec on week");
             }
             if (temp.isReturn == 6 || temp.isReturn == 7) {
-                bulkCreate["repDrop"]->setProperty("text", "rec on month");
+                bulkCreate["repDropT"]->setProperty("text", "rec on month");
             }
 
 
@@ -1235,8 +1231,8 @@ namespace  Engine {
         // this_thread::sleep_for(chrono::seconds(3));
 
         // crate->setProperty("createIsClosed", false);
-        sqlComd();
-        refrechAll();
+        // sqlComd();
+        // refrechAll();
         // cout << "fromQml: " << test << "\n";
         // for (auto i: all_tasks) {
         //     cout << i.dex << endl;
@@ -1293,7 +1289,7 @@ namespace  Engine {
             char* errorM;
             string sql = "delete from TASKS where ID =";
             sql += to_string(delDex);
-            sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+            sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
             sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
 
@@ -1318,7 +1314,7 @@ namespace  Engine {
         }
         ty += "';";
         string sql = "delete from TYPE where ID = " + to_string(dex);
-        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_open(dbPath.toUtf8().constData(), &DB);
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
         cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
         sql = "update TASKS set TYPE = 'NULL' where TYPE = '" + ty;
@@ -1333,7 +1329,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
         string sql = "delete from PEOPLE where ID = " + to_string(dex);
-        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_open(dbPath.toUtf8().constData(), &DB);
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
         cerr << "deletePerson: " << sqlite3_errmsg(DB) << endl;
         for (auto& i: all_tasks) {
@@ -1365,7 +1361,7 @@ namespace  Engine {
     void EngineMod::permDel() {
         int exit = 0;
         char* errorM;
-        sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db", &DB);
+        sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
         string sql = "delete from TASKS where ID =";
         sql += to_string(curLook);
@@ -1453,7 +1449,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
 
-        exit = sqlite3_open("/home/FFlyingFish/Downloads/untitled1/data.db" , &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData() , &DB);
 
         string start = "UPDATE FILTER SET ";
         string NAME = "NAME = '" + name.toStdString();

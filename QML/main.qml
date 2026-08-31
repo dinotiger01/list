@@ -12,13 +12,21 @@ Window {
     title: "List"
     Item{
         id: style
-        property string main: "#a37cf0"
+        property string main: "#682bd7"
         property string text: "#010101"
+        property string border: "#010101"
         property string back: "#e6ddd6"
-        property string detail: "#918383"
-        property string down: "#682bd7"
-        property string hover: "#bd2e95"
+        property string detail: "#d6cdc6"
 
+        /*color: parent.down ? style.down :
+            parent.hovered ? style.hover : style.button*/
+        property string textBox: "#86d9fe"
+        property string total: "#fc7b54"
+
+        property string check: "#fd95fd"
+        property string button: "#a37cf0"
+        property string hover: "#b38cf0"
+        property string down: "#c39cf0"
     }
     EngineMod {
         id: engin
@@ -37,6 +45,7 @@ Window {
             engin.setBulkCreate(isRepBox, "isRep")
             engin.setBulkCreate(holderForAll, "repSet")
             engin.setBulkCreate(repTypeDrop, "repDrop")
+            engin.setBulkCreate(dropText, "repDropT")
             engin.setBulkCreate(repSelCon, "repSel")
             engin.setBulkCreate(multiCheck, "multiBox")
             engin.setBulkCreate(repNum, "repNum")
@@ -54,10 +63,10 @@ Window {
         id: pageer
         anchors{fill: parent}
         //main
-        Rectangle{
+        Item{
             width: parent.width
-            height: parent.height - timerBlock.height
-            color: "blue"
+            height: parent.height
+            // color: "blue"
             Row{
                 anchors{fill: parent}
                 // tab bar
@@ -65,7 +74,11 @@ Window {
                     id: leftBar
                     width: 50
                     height: parent.height
-                    color: "purple"
+                    color: style.main //here
+                    border{
+                        width: 1
+                        color: style.border
+                    }
                     Column{
                         anchors{fill: parent}
                         // home
@@ -77,8 +90,15 @@ Window {
                                     fill: parent
                                     margins: 2.5
                                 }
-                                Text{
-                                    text: "home"
+                                color: parent.down ? style.down : //here
+                                    parent.hovered ? style.hover : style.button
+                                Image{
+                                    anchors{
+                                        fill: parent
+                                        margins: 2.5
+                                    }
+                                    source: "https://www.svgrepo.com/show/535439/home-1.svg"
+                                    // color: style.text //mark
                                 }
                             }
                             onClicked: {
@@ -87,7 +107,7 @@ Window {
                             }
                         }
                         // filter presets
-                        Button{
+                        /*Button{
                             width: 50
                             height: 50
                             background: Rectangle{
@@ -99,9 +119,9 @@ Window {
                                     text: "filter"
                                 }
                             }
-                        }
+                        }*/
                         // history
-                        Button{
+                        /*Button{
                             width: 50
                             height: 50
                             background: Rectangle{
@@ -117,7 +137,7 @@ Window {
                                 mainView.currentIndex = 1
                             }
                         }
-                        /*other list will add later
+                        other list will add later
                         Button{
                             width: 50
                             height: 50
@@ -149,14 +169,22 @@ Window {
                         Button{
                             width: 50
                             height: 50
+                            checkable: true
                             background: Rectangle{
                                 anchors{
                                     fill: parent
                                     margins: 2.5
                                 }
-                            }
-                            Text{
-                                text: "set"
+                                color: parent.down ? style.down : //here
+                                       parent.hovered ? style.hover : style.button
+                                Image{
+                                    anchors{
+                                        fill: parent
+                                        margins: 2.5
+                                    }
+                                    source: "https://www.svgrepo.com/show/33799/gear-configuration-interface-symbol.svg"
+                                    // color: style.text //mark
+                                }
                             }
                             onClicked: {
                                 mainView.currentIndex = 2
@@ -169,11 +197,15 @@ Window {
                     id: mainView
                     width: parent.width - leftBar.width
                     height: parent.height
-                    currentIndex: 2
+                    currentIndex: 0
                     Rectangle{
                         anchors{fill: parent}
                         id: tester
-                        color: "green"
+                        border{
+                            width: 1
+                            color: style.border
+                        }
+                        color: style.back
                         Column{
                             anchors{fill: parent}
                             // filter bar
@@ -182,27 +214,37 @@ Window {
                                 width: parent.width
                                 height: 50
                                 z: 100
-                                color: "red"
+                                color: style.main //here
+                                border{
+                                    width: 1
+                                    color: style.border
+                                }
                                 Row{
                                     x: 5
                                     anchors{verticalCenter: parent.verticalCenter}
                                     width: parent.width
                                     height: 45
                                     spacing: 5
+                                    // name
                                     TextArea{
                                         id: search
                                         width: 250
                                         height: parent.height
-                                        font.pointSize: (height-5)/2
+                                        font.pixelSize: height /2
                                         verticalAlignment: Text.AlignVCenter
                                         placeholderText: "search"
-
+                                        placeholderTextColor: style.text
+                                        color: style.text
                                         background: Rectangle{
                                             anchors{
                                                 fill: parent
                                                 // margins: 2.5
                                             }
-                                            color: "black"
+                                            border{
+                                                width: 1
+                                                color: style.border
+                                            }
+                                            color: style.textBox
                                         }
 
                                         Keys.onPressed: function(event){
@@ -216,21 +258,21 @@ Window {
                                     //people
                                     Column{
                                         id: people
-                                        width: 100
                                         clip: true
                                         // height: 45
                                         Button{
-                                            width: parent.width
                                             height: 45
+                                            checkable: true
                                             background: Rectangle{
-                                                anchors{
-                                                    fill: parent
-                                                    // margins: 2.5
-                                                }
-                                                color: "pink"
+                                                implicitWidth: childrenRect.width + 20
+                                                height: parent.height
+                                                color: parent.checked ? style.check :
+                                                       parent.down ? style.down :
+                                                       parent.hovered ? style.hover: style.button
                                                 Text{
+                                                    anchors{centerIn: parent}
                                                     text: "PEOPLE"
-                                                    font.pointSize: 20
+                                                    font.pixelSize: parent.height - 10
                                                 }
                                             }
                                             onClicked:{
@@ -238,6 +280,7 @@ Window {
                                                 peopleMod.model = engin.getPersonSize()
                                             }
                                         }
+                                        //mark
                                         Column{
                                             id: peopleDrop
                                             width: parent.width
@@ -246,10 +289,63 @@ Window {
                                                 CheckBox{
                                                     width: parent.width
                                                     height: 40
-                                                    text : engin.getPersonName(index, null)
+                                                    /*text : engin.getPersonName(index, null)
                                                     background: Rectangle{
                                                         anchors{fill: parent}
-                                                        color: "black";
+                                                        color: style.detail
+                                                    }*/
+                                                    indicator: Rectangle{
+                                                        anchors{fill: parent}
+                                                        color: style.detail
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        Row{
+                                                            anchors{fill: parent}
+                                                            Item{
+                                                                width: parent.height
+                                                                height: parent.height
+
+                                                                Rectangle{
+                                                                    anchors{
+                                                                        fill: parent
+                                                                        margins: 2.5
+                                                                    }
+                                                                    border{
+                                                                        width: 1
+                                                                        color: style.border
+                                                                    }
+                                                                    radius: 5
+                                                                    color: parent.parent.parent.parent.checked ? style.check :
+                                                                        parent.parent.parent.parent.down ? style.down :
+                                                                            parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                }
+                                                            }
+                                                            Item{
+                                                                width: parent.width - parent.height
+                                                                height: parent.height
+                                                                Rectangle{
+                                                                    anchors{
+                                                                        fill: parent
+                                                                        margins: 1
+                                                                    }
+                                                                    color: style.detail
+                                                                    /*border{
+                                                                        width: 1
+                                                                        color: style.border
+                                                                    }*/
+                                                                    Text{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                        }
+                                                                        verticalAlignment: Text.AlignVCenter
+                                                                        font.pixelSize: parent.height / 2
+                                                                        text: engin.getPersonName(index, null)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                     Component.onCompleted: {
                                                         searchButton.pep.push(null)
@@ -290,21 +386,21 @@ Window {
                                     //type
                                     Column{
                                         id: type
-                                        width: 100
                                         clip: true
                                         // height: 45
                                         Button{
-                                            width: parent.width
                                             height: 45
+                                            checkable: true
                                             background: Rectangle{
-                                                anchors{
-                                                    fill: parent
-                                                    // margins: 2.5
-                                                }
-                                                color: "pink"
+                                                implicitWidth:childrenRect.width + 20;
+                                                height: parent.height
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
+                                                    anchors{centerIn: parent}
                                                     text: "TYPE"
-                                                    font.pointSize: 25
+                                                    font.pixelSize: parent.height - 10
                                                 }
                                             }
                                             onClicked:{
@@ -319,10 +415,58 @@ Window {
                                                 CheckBox{
                                                     width: parent.width
                                                     height: 40
-                                                    text: engin.getTypeName(index, null)
-                                                    background: Rectangle{
+                                                    indicator: Rectangle{
                                                         anchors{fill: parent}
-                                                        color: "black";
+                                                        color: style.detail
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        Row{
+                                                            anchors{fill: parent}
+                                                            Item{
+                                                                width: parent.height
+                                                                height: parent.height
+
+                                                                Rectangle{
+                                                                    anchors{
+                                                                        fill: parent
+                                                                        margins: 2.5
+                                                                    }
+                                                                    border{
+                                                                        width: 1
+                                                                        color: style.border
+                                                                    }
+                                                                    radius: 5
+                                                                    color: parent.parent.parent.parent.checked ? style.check :
+                                                                        parent.parent.parent.parent.down ? style.down :
+                                                                            parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                }
+                                                            }
+                                                            Item{
+                                                                width: parent.width - parent.height
+                                                                height: parent.height
+                                                                Rectangle{
+                                                                    anchors{
+                                                                        fill: parent
+                                                                        margins: 1
+                                                                    }
+                                                                    color: style.detail
+                                                                    /*border{
+                                                                        width: 1
+                                                                        color: style.border
+                                                                    }*/
+                                                                    Text{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                        }
+                                                                        verticalAlignment: Text.AlignVCenter
+                                                                        font.pixelSize: parent.height / 2
+                                                                        text: engin.getTypeName(index, null)
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                     Component.onCompleted: {
                                                         searchButton.typ.push("")
@@ -368,20 +512,21 @@ Window {
                                     //date
                                     Column{
                                         id: date
-                                        width: 100
                                         clip: true
                                         // height: 45
                                         Button{
-                                            width: parent.width
+                                            checkable: true
                                             height: 45
                                             background: Rectangle{
-                                                anchors{
-                                                    fill: parent
-                                                    // margins: 2.5
-                                                }
-                                                color: "pink"
+                                                implicitWidth: childrenRect.width + 20;
+                                                height: parent.height
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
-                                                    text: "date"
+                                                    anchors{centerIn: parent}
+                                                    text: "DATE"
+                                                    font.pixelSize: parent.height - 10
                                                 }
                                             }
                                             onClicked:{
@@ -391,10 +536,39 @@ Window {
                                         Column{
                                             id: dateDrop
                                             width: parent.width
+                                            Rectangle{
+                                                width: parent.width
+                                                height: 20
+                                                color: style.detail
+                                                Text{
+                                                    anchors{fill: parent}
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    text: "mm/dd/yyyy"
+                                                    color: style.text
+                                                }
+                                            }
                                             TextArea{
                                                 id: date1
                                                 width: parent.width
-                                                height: 40
+                                                height: 30
+                                                placeholderText: "From"
+                                                placeholderTextColor: style.text
+
+                                                color: style.text
+                                                background: Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        // margins: 2.5
+                                                    }
+                                                    border{
+                                                        width: 1
+                                                        color: style.border
+                                                    }
+                                                    color: style.textBox
+                                                }
+
+                                                font.pointSize: width/10
                                                 Keys.onPressed: function(event){
                                                     if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
                                                         this.focus  = false
@@ -405,7 +579,23 @@ Window {
                                             TextArea{
                                                 id: date2
                                                 width: parent.width
-                                                height: 40
+                                                height: 30
+                                                placeholderText: "To"
+                                                font.pointSize: width/10
+                                                placeholderTextColor: style.text
+
+                                                color: style.text
+                                                background: Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        // margins: 2.5
+                                                    }
+                                                    border{
+                                                        width: 1
+                                                        color: style.border
+                                                    }
+                                                    color: style.textBox
+                                                }
                                                 Keys.onPressed: function(event){
                                                     if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
                                                         this.focus  = false
@@ -450,7 +640,15 @@ Window {
                                                 fill: parent
                                                 // margins: 2.5
                                             }
-                                            Text{text: "search"}
+                                            color: parent.down ? style.down : //here
+                                                parent.hovered ? style.hover : style.button
+                                            Image{
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 2.5
+                                                }
+                                                source: "https://img.icons8.com/?size=100&id=2sWrwEXiaegS&format=png&color=000000"
+                                            }
                                         }
                                         property var pep: []
                                         property var typ: []
@@ -493,6 +691,36 @@ Window {
                                             }
                                         }
                                     }
+                                    //ref
+                                    Button{
+                                        width: parent.height
+                                        height: parent.height
+                                        background: Rectangle{
+                                            anchors{
+                                                fill: parent
+                                                // margins: 2.5
+                                            }
+                                            color: parent.down ? style.down : //here
+                                                parent.hovered ? style.hover : style.button
+                                            Image{
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 2.5
+                                                }
+                                                source: "https://img.icons8.com/?size=100&id=jZpTWAJNBgw3&format=png&color=000000"
+                                            }
+                                        }
+                                        onClicked: {
+                                            people.peopleIsClosed = true
+                                            type.typeIsClosed = true
+                                            date.dateIsClosed = true
+                                            search.text = ""
+                                            engin.sqlPullFilt()
+
+
+                                            engin.refrechAll()
+                                        }
+                                    }
                                     // clear
                                     Button{
                                         width: parent.height
@@ -502,19 +730,40 @@ Window {
                                                 fill: parent
                                                 // margins: 2.5
                                             }
-                                            Text{text: "X"}
+                                            color: parent.down ? style.down : //here
+                                                parent.hovered ? style.hover : style.button
+                                            Image{
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 2.5
+                                                }
+                                                source: "https://img.icons8.com/?size=100&id=2i5n7zNvArOt&format=png&color=000000"
+                                            }
                                         }
                                         onClicked: {
                                             people.peopleIsClosed = true
                                             type.typeIsClosed = true
                                             date.dateIsClosed = true
                                             search.text = ""
+                                            date1.text = ""
+                                            date2.text = ""
+                                            searchButton.pep = []
+                                            searchButton.typ = []
+                                            for(let i = 0; i < peopleMod.children.length; i++){
+                                                peopleMod.children[i].checked = false
+                                            }
+                                            for(let i = 0; i < typeMod.children.length; i++){
+                                                typeMod.children[i].checked = false
+                                            }
+                                            searchButton.click()
                                         }
                                     }
                                     //error
                                     Text{
                                         id: filterErrormsg
+                                        width: 150
                                         height: parent.height
+                                        wrapMode: Text.Wrap
                                     }
                                 }
                             }
@@ -528,103 +777,143 @@ Window {
                                         id: umpar
                                         width: parent.width
 
-                                        Item{
-                                            width: parent.width - 150
+                                        Row{
+                                            width: parent.width
                                             height: 75
                                             // anchors{
                                             //     horizontalCenter: parent.horizontalCenter
                                             // }
-                                            Rectangle{
-                                                anchors{
-                                                    fill: parent
-                                                    margins: 5
+                                            Item{
+                                                width: parent.width - 75*2
+                                                height: parent.height
+                                                Rectangle{
+                                                    anchors{
+                                                        fill: parent
+                                                        margins: 5
+                                                    }
+                                                    color: style.total
+                                                    Text{
+                                                        id: total
+                                                        property int tot
+                                                        anchors{fill: parent}
+                                                        text: "total - " + tot
+                                                        font.pointSize: height/2
+                                                    }
                                                 }
-                                                color: "purple"
-                                                Text{
-                                                    id: total
-                                                    property int tot
-                                                    anchors{fill: parent}
-                                                    text: "total - " + tot
-                                                    font.pointSize: height/2
+                                            }
+
+                                            Item{
+                                                width: 75
+                                                height: 75
+
+                                                Button{
+                                                    anchors{
+                                                        fill: parent
+                                                    }
+                                                    background: Rectangle{
+                                                        anchors {
+                                                            fill: parent
+                                                            margins: 10
+                                                        }
+                                                        color: parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                        Image{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 5
+                                                            }
+                                                            source: "https://img.icons8.com/?size=100&id=Ei5AhpGybn1O&format=png&color=000000"
+                                                        }
+
+                                                    }
+                                                    onClicked: {
+                                                        engin.refrechAll();
+                                                    }
+                                                }
+                                            }
+                                            //new
+                                            Item{
+                                                width: 75
+                                                height: 75
+                                                Button{
+                                                    anchors{
+                                                        fill: parent
+                                                    }
+                                                    background: Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 10
+                                                        }
+                                                        color: parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                        Image{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 5
+                                                            }
+                                                            source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                        }
+                                                    }
+                                                    onClicked: {
+                                                        createTask.createIsClosed = !createTask.createIsClosed
+                                                        creater.peps = [false]
+                                                        assSelect.model = 0
+                                                        assSelect.model = engin.getPersonSize()
+                                                        typeSelect.model = 0
+                                                        typeSelect.model = engin.getTypeSize()
+                                                        prySelect.model = 0
+                                                        prySelect.model = engin.getPrySize()
+                                                        creatDate.text = engin.getCurrentDate()
+                                                        delButton.width = 0;
+                                                        newName.text = ""
+                                                        newNotes.text = ""
+                                                        isRepBox.checked = false;
+                                                        holderForAll.state = "eh"
+                                                        repTypeDrop.text = ""
+                                                        repSelCon.recType = 0
+                                                        multiCheck.checked = false
+                                                        repNum.num = 0
+                                                        numText.text = "0"
+                                                        // repWeek
+                                                        for(let i = 0; i < 7; i++){
+                                                            repWeek.children[i].checked = false
+                                                        }
+                                                        // creator
+                                                        creater.edit = false
+                                                        creater.pry = -1
+                                                        creater.type = ""
+                                                        creater.multi = false
+                                                    }
+                                                    // engin.setBulkCreate(newName, "name")
+                                                    // engin.setBulkCreate(newNotes, "note")
+                                                    // engin.setBulkCreate(prySelect, "pryParent")
+                                                    // engin.setBulkCreate(typeSelect, "typeParent")
+                                                    // engin.setBulkCreate(assSelect, "assParent")
+                                                    // engin.setBulkCreate(delButton, "delButton")
+                                                    // engin.setBulkCreate(creater, "creator")
+                                                    //
+                                                    // engin.setBulkCreate(isRepBox, "isRep")
+                                                    // engin.setBulkCreate(holderForAll, "repSet")
+                                                    // engin.setBulkCreate(repTypeDrop, "repDrop")
+                                                    // engin.setBulkCreate(repSelCon, "repSel")
+                                                    // engin.setBulkCreate(multiCheck, "multiBox")
+                                                    // engin.setBulkCreate(repNum, "repNum")
+                                                    // engin.setBulkCreate(numText, "repNumText")
+                                                    // engin.setBulkCreate(repWeek, "repWeek")
+                                                    // engin.setBulkCreate(creatDate, "date")
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                // new
-                                Item{
-                                    width: 75
-                                    height: 75
-                                    anchors{
-                                        right: parent.right
-                                        top: parent.top
-                                    }
-                                    Button{
-                                        anchors{
-                                            fill: parent
-                                        }
-                                        background: Rectangle{
-                                            anchors{
-                                                fill: parent
-                                                margins: 10
-                                            }
-                                        }
-                                        onClicked: {
-                                            createTask.createIsClosed = !createTask.createIsClosed
-                                            creater.peps = [false]
-                                            assSelect.model = 0
-                                            assSelect.model = engin.getPersonSize()
-                                            typeSelect.model = 0
-                                            typeSelect.model = engin.getTypeSize()
-                                            prySelect.model = 0
-                                            prySelect.model = engin.getPrySize()
-                                            creatDate.text = engin.getCurrentDate()
-                                            delButton.width = 0;
-                                            newName.text = ""
-                                            newNotes.text = ""
-                                            isRepBox.checked = false;
-                                            holderForAll.state = "eh"
-                                            repTypeDrop.text = ""
-                                            repSelCon.recType = 0
-                                            multiCheck.checked = false
-                                            repNum.num = 0
-                                            numText.text = "0"
-                                            // repWeek
-                                            for(let i = 0; i < 7; i++){
-                                                repWeek.children[i].checked = false
-                                            }
-                                            // creator
-                                            creater.edit = false
-                                            creater.pry = -1
-                                            creater.type = ""
-                                            creater.multi = false
-                                        }
-                                        // engin.setBulkCreate(newName, "name")
-                                        // engin.setBulkCreate(newNotes, "note")
-                                        // engin.setBulkCreate(prySelect, "pryParent")
-                                        // engin.setBulkCreate(typeSelect, "typeParent")
-                                        // engin.setBulkCreate(assSelect, "assParent")
-                                        // engin.setBulkCreate(delButton, "delButton")
-                                        // engin.setBulkCreate(creater, "creator")
-                                        //
-                                        // engin.setBulkCreate(isRepBox, "isRep")
-                                        // engin.setBulkCreate(holderForAll, "repSet")
-                                        // engin.setBulkCreate(repTypeDrop, "repDrop")
-                                        // engin.setBulkCreate(repSelCon, "repSel")
-                                        // engin.setBulkCreate(multiCheck, "multiBox")
-                                        // engin.setBulkCreate(repNum, "repNum")
-                                        // engin.setBulkCreate(numText, "repNumText")
-                                        // engin.setBulkCreate(repWeek, "repWeek")
-                                        // engin.setBulkCreate(creatDate, "date")
-                                    }
-                                }
+
                             }
                         }
                     }
                     // hystory
                     Rectangle{
                         anchors{fill: parent}
-                        color: "orange";
+                        color: style.back
                     }
                     // settings
 
@@ -634,7 +923,7 @@ Window {
                     // filter presets
                     Rectangle{
                         anchors{fill: parent}
-                        color: "pink";
+                        color: style.back;
                         Column{
                             anchors{fill: parent}
                             // set tab bar
@@ -642,12 +931,13 @@ Window {
                                 id: setTabBar
                                 width: parent.width
                                 height: 100
+
                                 Rectangle{
                                     anchors{
                                         fill: parent
                                         margins: 20
                                     }
-                                    color: "green"
+                                    color: style.main
                                     ButtonGroup{
                                         id: settingButtonGroup
                                     }
@@ -658,13 +948,16 @@ Window {
                                         height: parent.height
                                         //genral
                                         Button{
+                                            checkable: true
                                             implicitWidth: childrenRect.width + 10
                                             height: parent.height
                                             ButtonGroup.group: settingButtonGroup
                                             background: Rectangle{
                                                 width: childrenRect.width + 10
                                                 height: parent.height
-                                                color: "blue"
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     verticalAlignment: Text.AlignVCenter
@@ -672,19 +965,23 @@ Window {
                                                     font.pointSize: parent.height/2
                                                 }
                                             }
+
                                             onClicked: {
                                                 settingView.currentIndex = 0
                                             }
                                         }
                                         //style
                                         Button{
+                                            checkable: true
                                             implicitWidth: childrenRect.width + 10
                                             height: parent.height
                                             ButtonGroup.group: settingButtonGroup
                                             background: Rectangle{
                                                 width: childrenRect.width + 10
                                                 height: parent.height
-                                                color: "blue"
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     verticalAlignment: Text.AlignVCenter
@@ -698,13 +995,16 @@ Window {
                                         }
                                         //filters
                                         Button{
+                                            checkable: true
                                             implicitWidth: childrenRect.width + 10
                                             height: parent.height
                                             ButtonGroup.group: settingButtonGroup
                                             background: Rectangle{
                                                 width: childrenRect.width + 10
                                                 height: parent.height
-                                                color: "blue"
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     verticalAlignment: Text.AlignVCenter
@@ -720,13 +1020,16 @@ Window {
                                         }
                                         // person
                                         Button{
+                                            checkable: true
                                             implicitWidth: childrenRect.width + 10
                                             height: parent.height
                                             ButtonGroup.group: settingButtonGroup
                                             background: Rectangle{
                                                 width: childrenRect.width + 10
                                                 height: parent.height
-                                                color: "blue"
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     verticalAlignment: Text.AlignVCenter
@@ -741,13 +1044,16 @@ Window {
                                         }
                                         //Type
                                         Button{
+                                            checkable: true
                                             implicitWidth: childrenRect.width + 10
                                             height: parent.height
                                             ButtonGroup.group: settingButtonGroup
                                             background: Rectangle{
                                                 width: childrenRect.width + 10
                                                 height: parent.height
-                                                color: "blue"
+                                                color: parent.checked ? style.check :
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     verticalAlignment: Text.AlignVCenter
@@ -773,26 +1079,51 @@ Window {
                                 Rectangle{
                                     anchors{fill: parent}
                                     color: "green"
+                                    Text{
+                                        text: "feature not added sorry"
+                                    }
                                 }
                                 // styles
                                 Rectangle {
                                     anchors {fill: parent}
                                     color: "blue"
+                                    Text{
+                                        text: "feature not added sorry"
+                                    }
                                 }
                                 //filters
                                 Rectangle{
                                     anchors{fill: parent}
-                                    color: "yellow"
                                     Column{
                                         anchors{fill:parent}
+                                        // text are if you know you know
                                         Rectangle{
                                             width: parent.width
                                             height: 70
-                                            TextArea{
-                                                id: setFitName
-                                                anchors{
-                                                    fill: parent
-                                                    margins: 10
+                                            color: style.back
+                                            Item{
+                                                width: parent.width
+                                                height: 50
+                                                TextArea{
+                                                    id: setFitName
+                                                    placeholderText: "Name"
+                                                    placeholderTextColor: style.color
+                                                    font.pointSize: 25
+                                                    verticalAlignment: Text.AlignVCenter
+                                                    anchors{
+                                                        fill: parent
+                                                        margins: 2.5
+                                                    }
+                                                    color: style.text
+                                                    background: Rectangle{
+                                                        color: style.textBox
+                                                        anchors{fill: parent}
+                                                        border{
+                                                            width: 2
+                                                            color: style.border
+                                                        }
+                                                        radius: 10
+                                                    }
                                                 }
                                             }
                                         }
@@ -803,7 +1134,11 @@ Window {
                                             Rectangle{
                                                 width: parent.width/3
                                                 height: parent.height
-                                                color: "green"
+                                                color: style.back
+                                                border{
+                                                    width: 1
+                                                    color: style.border
+                                                }
                                                 Column{
                                                     anchors{fill: parent}
                                                     Repeater{
@@ -813,8 +1148,61 @@ Window {
                                                             width: parent.width
                                                             height: 50
                                                             text: engin.getPersonName(index, null)
+                                                            indicator: Rectangle{
+                                                                anchors{fill: parent}
+                                                                color: style.detail
+                                                                border{
+                                                                    width: 1
+                                                                    color: style.border
+                                                                }
+                                                                Row{
+                                                                    anchors{fill: parent}
+                                                                    Item{
+                                                                        width: parent.height
+                                                                        height: parent.height
+
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 2.5
+                                                                            }
+                                                                            border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }
+                                                                            radius: 5
+                                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                                parent.parent.parent.parent.down ? style.down :
+                                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                        }
+                                                                    }
+                                                                    Item{
+                                                                        width: parent.width - parent.height
+                                                                        height: parent.height
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 1
+                                                                            }
+                                                                            color: style.detail
+                                                                            /*border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }*/
+                                                                            Text{
+                                                                                anchors{
+                                                                                    fill: parent
+                                                                                }
+                                                                                verticalAlignment: Text.AlignVCenter
+                                                                                font.pixelSize: parent.height / 2
+                                                                                text: engin.getPersonName(index, null)
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
                                                             Component.onCompleted:{
-                                                                // setFilter.peps.push("");
+                                                                setFilter.peps.push("");
                                                             }
                                                             onClicked: {
                                                                 if(checked){
@@ -831,7 +1219,11 @@ Window {
                                             Rectangle{
                                                 width: parent.width/3
                                                 height: parent.height
-                                                color: "green"
+                                                color: style.back
+                                                border{
+                                                    width: 1
+                                                    color: style.border
+                                                }
                                                 Column{
                                                     anchors{fill: parent}
                                                     Repeater{
@@ -840,6 +1232,59 @@ Window {
                                                             width: parent.width
                                                             height: 50
                                                             text: engin.getTypeName(index, null)
+                                                            indicator: Rectangle{
+                                                                anchors{fill: parent}
+                                                                color: style.detail
+                                                                border{
+                                                                    width: 1
+                                                                    color: style.border
+                                                                }
+                                                                Row{
+                                                                    anchors{fill: parent}
+                                                                    Item{
+                                                                        width: parent.height
+                                                                        height: parent.height
+
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 2.5
+                                                                            }
+                                                                            border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }
+                                                                            radius: 5
+                                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                                parent.parent.parent.parent.down ? style.down :
+                                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                        }
+                                                                    }
+                                                                    Item{
+                                                                        width: parent.width - parent.height
+                                                                        height: parent.height
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 1
+                                                                            }
+                                                                            color: style.detail
+                                                                            /*border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }*/
+                                                                            Text{
+                                                                                anchors{
+                                                                                    fill: parent
+                                                                                }
+                                                                                verticalAlignment: Text.AlignVCenter
+                                                                                font.pixelSize: parent.height / 2
+                                                                                text: engin.getTypeName(index, null)
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
                                                             Component.onCompleted:{
                                                                 setFilter.teps.push("");
                                                             }
@@ -858,42 +1303,223 @@ Window {
                                             Rectangle{
                                                 width: parent.width/3
                                                 height: parent.height
-                                                color: "green"
+                                                color: style.main
                                                 Column{
                                                     anchors{fill: parent}
-                                                    Text{
+
+                                                    Item{
                                                         width: parent.width
-                                                        height: 30
-                                                        text: "mm/dd/yyyy"
-                                                    }
-                                                    TextArea{
-                                                        id: setPast
-                                                        width: text.width
                                                         height: 50
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 10
+                                                            }
+                                                            color: style.detail
+                                                            Text{
+                                                                text: "Past limit mm/dd/yyyy"
+                                                                color: style.text
+                                                                font.pointSize: 15
+                                                            }
+                                                        }
                                                     }
-                                                    Text{
+                                                    Item{
                                                         width: parent.width
-                                                        height: 30
-                                                        text: "mm/dd/yyyy"
-                                                    }
-                                                    TextArea{
-                                                        id: setFut
-                                                        width: text.width
                                                         height: 50
+                                                        TextArea{
+                                                            id: setPast
+                                                            placeholderText: "Past"
+                                                            placeholderTextColor: style.color
+                                                            font.pointSize: 15
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: style.text
+                                                            background: Rectangle{
+                                                                color: style.textBox
+                                                                anchors{fill: parent}
+                                                                border{
+                                                                    width: 2
+                                                                    color: style.border
+                                                                }
+                                                                radius: 10
+                                                            }
+                                                        }
                                                     }
+                                                    Item{
+                                                        width: parent.width
+                                                        height: 50
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 10
+                                                            }
+                                                            color: style.detail
+                                                            Text{
+                                                                text: "Future limit mm/dd/yyyy"
+                                                                color: style.text
+                                                                font.pointSize: 15
+                                                            }
+                                                        }
+                                                    }
+                                                    Item{
+                                                        width: parent.width
+                                                        height: 50
+                                                        TextArea{
+                                                            id: setFut
+                                                            placeholderText: "Future"
+                                                            placeholderTextColor: style.color
+                                                            font.pointSize: 15
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            onTextChanged:{
+                                                                colorInd.color = text;
+                                                            }
+                                                            color: style.text
+                                                            background: Rectangle{
+                                                                color: style.textBox
+                                                                anchors{fill: parent}
+                                                                border{
+                                                                    width: 2
+                                                                    color: style.border
+                                                                }
+                                                                radius: 10
+                                                            }
+                                                        }
+                                                    }
+
                                                     CheckBox{
                                                         id: setUsePast
                                                         width: parent.width
                                                         height: 50
-                                                        text: "past limit use current"
+                                                        indicator: Rectangle{
+                                                            anchors{fill: parent}
+                                                            color: style.detail
+                                                            border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }
+                                                            Row{
+                                                                anchors{fill: parent}
+                                                                Item{
+                                                                    width: parent.height
+                                                                    height: parent.height
+
+                                                                    Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 2.5
+                                                                        }
+                                                                        border{
+                                                                            width: 1
+                                                                            color: style.border
+                                                                        }
+                                                                        radius: 5
+                                                                        color: parent.parent.parent.parent.checked ? style.check :
+                                                                            parent.parent.parent.parent.down ? style.down :
+                                                                                parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                    }
+                                                                }
+                                                                Item{
+                                                                    width: parent.width - parent.height
+                                                                    height: parent.height
+                                                                    Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 1
+                                                                        }
+                                                                        color: style.detail
+                                                                        /*border{
+                                                                            width: 1
+                                                                            color: style.border
+                                                                        }*/
+                                                                        Text{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                            }
+                                                                            verticalAlignment: Text.AlignVCenter
+                                                                            font.pixelSize: parent.height / 2
+                                                                            text: "past limit use current"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                     CheckBox{
                                                         id: setUseFut
                                                         width: parent.width
                                                         height: 50
-                                                        text: "futre limit use current"
+                                                        indicator: Rectangle{
+                                                            anchors{fill: parent}
+                                                            color: style.detail
+                                                            border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }
+                                                            Row{
+                                                                anchors{fill: parent}
+                                                                Item{
+                                                                    width: parent.height
+                                                                    height: parent.height
+
+                                                                    Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 2.5
+                                                                        }
+                                                                        border{
+                                                                            width: 1
+                                                                            color: style.border
+                                                                        }
+                                                                        radius: 5
+                                                                        color: parent.parent.parent.parent.checked ? style.check :
+                                                                            parent.parent.parent.parent.down ? style.down :
+                                                                                parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                                    }
+                                                                }
+                                                                Item{
+                                                                    width: parent.width - parent.height
+                                                                    height: parent.height
+                                                                    Rectangle{
+                                                                        anchors{
+                                                                            fill: parent
+                                                                            margins: 1
+                                                                        }
+                                                                        color: style.detail
+                                                                        /*border{
+                                                                            width: 1
+                                                                            color: style.border
+                                                                        }*/
+                                                                        Text{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                            }
+                                                                            verticalAlignment: Text.AlignVCenter
+                                                                            font.pixelSize: parent.height / 2
+                                                                            text: "futre limit use current"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
+
                                                 }
+                                            }
+                                        }
+                                        Rectangle{
+                                            width: parent.width
+                                            height: 30
+                                            color: style.detail
+                                            Text{
+                                                id: setFilterError
+                                                font.pointSize: 15
+                                                color: style.text
+                                                text: ""
                                             }
                                         }
                                     }
@@ -910,12 +1536,26 @@ Window {
                                         background: Rectangle{
                                             anchors{
                                                 fill: parent
-                                                margins: 25
+                                                margins: 10
+                                            }
+                                            color: parent.down ? style.down :
+                                                parent.hovered ? style.hover : style.button
+                                            Image{
+                                                anchors{
+                                                    fill: parent
+                                                    margins: 5
+                                                }
+                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
                                             }
                                         }
                                         onClicked:{
+                                            let errorM = ""
                                             let setname = setFitName.text
-
+                                            for(let i = 0; i < setname.length; i++){
+                                                if(setname[i] === "'" || setname[i] === ';'){
+                                                    errorM = "name can not contain ' or ;"
+                                                }
+                                            }
 
 
                                             let setpeps = ""
@@ -943,15 +1583,28 @@ Window {
                                                 date1 = "x"
                                             }else{
                                                 date1 = setPast.text
+                                                if((!isNaN(date1[0]) && !isNaN(date1[1]) && date1[2] === '/' && !isNaN(date1[3]) && !isNaN(date1[4]) && date2[5] === '/' && !isNaN(date1[6]) && !isNaN(date1[7]) && !isNaN(date1[8]) && !isNaN(date1[9]) || date1 === "" )){
+
+                                                }else{
+                                                    errorM = "frist dates must be in mm/dd/yyyy format"
+                                                }
+
                                             }
                                             if(setUseFut.checked){
                                                 date2 = "x"
                                             }else{
                                                 date2 = setFut.text
+                                                if((!isNaN(date2[0]) && !isNaN(date2[1]) && date2[2] === '/' && !isNaN(date2[3]) && !isNaN(date2[4]) && date2[5] === '/' && !isNaN(date2[6]) && !isNaN(date2[7]) && !isNaN(date2[8]) && !isNaN(date2[9])|| date1 === "" )){
+
+                                                }else{
+                                                    errorM = "frist dates must be in mm/dd/yyyy format"
+                                                }
                                             }
                                             setdates += date1 + "," + date2 + ",";
-
-                                            engin.updateFilter(setname, setpeps, settype, setdates)
+                                            if(errorM === ""){
+                                                engin.updateFilter(setname, setpeps, settype, setdates)
+                                            }
+                                            setFilterError.text = errorM
                                             // name , pep, type, date
                                         }
                                     }
@@ -959,21 +1612,24 @@ Window {
                                 // people
                                 Rectangle{
                                     anchors{fill: parent}
-                                    color: "red"
                                     Row{
                                         anchors{fill: parent}
                                         Rectangle{
                                             width: parent.width/2
                                             height: parent.height
+                                            color: style.back
                                             Column{
                                                 width: parent.height
                                                 height: parent.height
+                                                ButtonGroup{
+                                                    id: buttonGroupPerp
+                                                }
                                                 Repeater{
                                                     id: setPerMod
                                                     Rectangle{
                                                         width: parent.width
                                                         height: 60
-                                                        Button{
+                                                        CheckBox{
                                                             anchors{fill:parent}
                                                             property string name: engin.getPersonName(index, null)
                                                             property int ind: engin.getPersonDex(index)
@@ -983,32 +1639,59 @@ Window {
                                                                 setPerName.text = name
                                                                 setPerPHP.text = php
                                                             }
+                                                            ButtonGroup.group: buttonGroupPerp
 
-                                                            background: Row{
-                                                                anchors{
-                                                                    fill: parent
-                                                                    margins: 5
+                                                            indicator: Rectangle{
+                                                                anchors{fill: parent}
+                                                                color: style.detail
+                                                                border{
+                                                                    width: 1
+                                                                    color: style.border
                                                                 }
-                                                                Button{
-                                                                    width: parent.height
-                                                                    height:parent.height
-                                                                    background: Rectangle{
-                                                                        anchors{
-                                                                            fill: parent
-                                                                            margins: 15
+                                                                Row{
+                                                                    anchors{fill: parent}
+                                                                    Item{
+                                                                        width: parent.height
+                                                                        height: parent.height
+
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 2.5
+                                                                            }
+                                                                            border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }
+                                                                            radius: 5
+                                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                                parent.parent.parent.parent.down ? style.down :
+                                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
                                                                         }
-                                                                        radius: height/2
-                                                                        color: "black"
                                                                     }
-                                                                }
-                                                                Rectangle{
-                                                                    width: parent.width - parent.height
-                                                                    height: parent.height
-                                                                    Text{
-                                                                        text: parent.parent.parent.name
-                                                                        font.pointSize: 25
+                                                                    Item{
+                                                                        width: parent.width - parent.height
+                                                                        height: parent.height
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 1
+                                                                            }
+                                                                            color: style.detail
+                                                                            /*border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }*/
+                                                                            Text{
+                                                                                anchors{
+                                                                                    fill: parent
+                                                                                }
+                                                                                verticalAlignment: Text.AlignVCenter
+                                                                                font.pixelSize: parent.height / 2
+                                                                                text: engin.getPersonName(index, null)
+                                                                            }
+                                                                        }
                                                                     }
-                                                                    // color: "black"
                                                                 }
                                                             }
                                                         }
@@ -1019,40 +1702,125 @@ Window {
                                         Rectangle{
                                             width: parent.width/2
                                             height: parent.height
-                                            color: "purple"
+                                            color: style.main
                                             Column{
                                                 anchors{fill: parent}
-                                                Text{
-                                                    text: "name"
+                                                Item{
+                                                    width: parent.width
+                                                    height: 50
+                                                    Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 10
+                                                        }
+                                                        color: style.detail
+                                                        Text{
+                                                            text: "Name"
+                                                            color: style.text
+                                                            font.pointSize: 15
+                                                        }
+                                                    }
+                                                }
+                                                Item{
+                                                    width: parent.width
+                                                    height: 50
+                                                    TextArea{
+                                                        id: setPerName
+                                                        placeholderText: "Name"
+                                                        placeholderTextColor: style.color
+                                                        font.pointSize: 15
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 2.5
+                                                        }
+                                                        color: style.text
+                                                        background: Rectangle{
+                                                            color: style.textBox
+                                                            anchors{fill: parent}
+                                                            border{
+                                                                width: 2
+                                                                color: style.border
+                                                            }
+                                                            radius: 10
+                                                        }
+                                                    }
                                                 }
                                                 //name
-                                                TextArea{
-                                                    id: setPerName
-                                                    width: parent.height
+                                                Item{
+                                                    width: parent.width
                                                     height: 50
-                                                }
-                                                Text{
-                                                    text: "color"
+                                                    Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 10
+                                                        }
+                                                        color: style.detail
+                                                        Text{
+                                                            text: "color"
+                                                            color: style.text
+                                                            font.pointSize: 15
+                                                        }
+                                                    }
                                                 }
                                                 // color
-                                                TextArea{
-                                                    width: parent.height
+                                                Item{
+                                                    width: parent.width
                                                     height: 50
-                                                    id: setPerPHP
+                                                    TextArea{
+                                                        id: setPerPHP
+                                                        placeholderText: "Color"
+                                                        placeholderTextColor: style.color
+                                                        font.pointSize: 15
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 2.5
+                                                        }
+                                                        onTextChanged:{
+                                                            colorInd.color = text;
+                                                        }
+                                                        color: style.text
+                                                        background: Rectangle{
+                                                            color: style.textBox
+                                                            anchors{fill: parent}
+                                                            border{
+                                                                width: 2
+                                                                color: style.border
+                                                            }
+                                                            radius: 10
+                                                        }
+                                                    }
                                                 }
                                                 //req hr
                                                 Column{
 
                                                 }
                                                 Row{
+                                                    height: 50
                                                     // setnew
                                                     Button{
-                                                        id: setPerNew
                                                         width: 50
                                                         height: 50
-                                                        text: "new"
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=7RnGsNzOXmbg&format=png&color=000000"
+                                                                rotation: 90
+                                                            }
+                                                        }
                                                         onClicked: {
                                                             setPerCreator.dex = -1
+                                                            setPerPHP.text = "";
+                                                            setPerName.text = "";
+                                                            buttonGroupPerp.checkedButton = null
                                                         }
                                                     }
                                                     //create
@@ -1061,11 +1829,39 @@ Window {
                                                         id: setPerCreator
                                                         width: 50
                                                         height: 50
-                                                        text: "+"
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                            }
+                                                        }
                                                         onClicked: {
                                                             let name = setPerName.text
                                                             let php = setPerPHP.text
-                                                            engin.createPerson(this.dex, name, php, "1,1,1,1,1,1,1")
+                                                            let errorM = ""
+                                                            for(let i = 0; i < name.length; i++){
+                                                                if(name[i] === "'" || name[i] === ";" ){
+                                                                    errorM = "name can not coitain ' or ;"
+                                                                }
+                                                            }
+                                                            for(let i = 0; i < php.length; i++){
+                                                                if(php[i] === "'" || php[i] === ";" ){
+                                                                    errorM = "color can not coitain ' or ;"
+                                                                }
+                                                            }
+                                                            if(errorM === ""){
+                                                                engin.createPerson(this.dex, name, php, "1,1,1,1,1,1,1")
+                                                            }
+                                                            setPepErrorM.text = errorM
                                                             // index name color '1,1,1,1,1,1,1'
 
                                                             setPerMod.model = 0
@@ -1073,14 +1869,49 @@ Window {
                                                         }
                                                     }
                                                     //delete
+
                                                     Button{
                                                         id: setPerDell
+                                                        property int dex;
                                                         width: 50
                                                         height: 50
-                                                        text: "-"
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=J7wGSlJMWWIv&format=png&color=000000"
+                                                            }
+                                                        }
                                                         onClicked: {
                                                             engin.deletePerson(setPerCreator.dex)
                                                         }
+                                                    }
+
+                                                    Item{
+                                                        width: 50
+                                                        height: 50
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            id: colorInd
+                                                            radius: 15
+                                                        }
+                                                    }
+                                                    Text{
+                                                        id: setPepErrorM
+                                                        height: 50
+                                                        font.pointSize: 15
+                                                        color: style.text
                                                     }
                                                 }
                                             }
@@ -1089,23 +1920,27 @@ Window {
                                 }
                                 // type / priority
                                 Rectangle{
+
                                     anchors{fill: parent}
-                                    color: "orange"
                                     Row{
                                         anchors{fill: parent}
                                         // show list type / pry
                                         Rectangle{
                                             width: parent.width / 2
                                             height: parent.height
+                                            color: style.back
                                             Column{
                                                 width: parent.height
                                                 height: parent.height
+                                                ButtonGroup{
+                                                    id: buttonGroupType
+                                                }
                                                 Repeater{
                                                     id: setTypeMod
                                                     Rectangle{
                                                         width: parent.width
                                                         height: 60
-                                                        Button{
+                                                        CheckBox{
                                                             anchors{fill:parent}
                                                             property string name: engin.getTypeName(index, null)
                                                             property int ind: engin.getTypeDex(index)
@@ -1114,32 +1949,58 @@ Window {
                                                                 setTypeName.text = name
                                                                 setTypeCreator.old = name
                                                             }
+                                                            ButtonGroup.group: buttonGroupType
+                                                            indicator: Rectangle{
+                                                                anchors{fill: parent}
+                                                                color: style.detail
+                                                                border{
+                                                                    width: 1
+                                                                    color: style.border
+                                                                }
+                                                                Row{
+                                                                    anchors{fill: parent}
+                                                                    Item{
+                                                                        width: parent.height
+                                                                        height: parent.height
 
-                                                            background: Row{
-                                                                anchors{
-                                                                    fill: parent
-                                                                    margins: 5
-                                                                }
-                                                                Button{
-                                                                    width: parent.height
-                                                                    height:parent.height
-                                                                    background: Rectangle{
-                                                                        anchors{
-                                                                            fill: parent
-                                                                            margins: 15
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 2.5
+                                                                            }
+                                                                            border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }
+                                                                            radius: 5
+                                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                                parent.parent.parent.parent.down ? style.down :
+                                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
                                                                         }
-                                                                        radius: height/2
-                                                                        color: "black"
                                                                     }
-                                                                }
-                                                                Rectangle{
-                                                                    width: parent.width - parent.height
-                                                                    height: parent.height
-                                                                    Text{
-                                                                        text: parent.parent.parent.name
-                                                                        font.pointSize: 25
+                                                                    Item{
+                                                                        width: parent.width - parent.height
+                                                                        height: parent.height
+                                                                        Rectangle{
+                                                                            anchors{
+                                                                                fill: parent
+                                                                                margins: 1
+                                                                            }
+                                                                            color: style.detail
+                                                                            /*border{
+                                                                                width: 1
+                                                                                color: style.border
+                                                                            }*/
+                                                                            Text{
+                                                                                anchors{
+                                                                                    fill: parent
+                                                                                }
+                                                                                verticalAlignment: Text.AlignVCenter
+                                                                                font.pixelSize: parent.height / 2
+                                                                                text: engin.getTypeName(index, null)
+                                                                            }
+                                                                        }
                                                                     }
-                                                                    // color: "black"
                                                                 }
                                                             }
                                                         }
@@ -1150,78 +2011,163 @@ Window {
                                         Rectangle{
                                             width: parent.width / 2
                                             height: parent.height
-                                            color: "orange"
-                                            TextArea{
-                                                id: setTypeName
-                                                width: parent.width
-                                                height: 50
-                                                Keys.onPressed: function(event){
-                                                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-                                                        this.focus = true
+                                            color: style.main
+                                            Column{
+                                                anchors{fill: parent}
+                                                Item{
+                                                    width: parent.width
+                                                    height: 50
+                                                    Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 10
+                                                        }
+                                                        color: style.detail
+                                                        Text{
+                                                            text: "Name"
+                                                            color: style.text
+                                                            font.pointSize: 15
+                                                        }
+                                                    }
+                                                }
+                                                Item{
+                                                    width: parent.width
+                                                    height: 50
+                                                    TextArea{
+                                                        id: setTypeName
+                                                        placeholderText: "Name"
+                                                        placeholderTextColor: style.color
+                                                        font.pointSize: 15
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 2.5
+                                                        }
+                                                        color: style.text
+                                                        background: Rectangle{
+                                                            color: style.textBox
+                                                            anchors{fill: parent}
+                                                            border{
+                                                                width: 2
+                                                                color: style.border
+                                                            }
+                                                            radius: 10
+                                                        }
+                                                        Keys.onPressed: function(event){
+                                                            if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                                                                this.focus = true
 
 
-                                                        accepted = true
+                                                                accepted = true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                Row{
+                                                    height: 50
+                                                    // setnew
+                                                    Button{
+                                                        width: 50
+                                                        height: 50
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=7RnGsNzOXmbg&format=png&color=000000"
+                                                                rotation: 90
+                                                            }
+                                                        }
+                                                        onClicked: {
+                                                            setTypeCreator.dex = -1
+                                                            setTypeName.text = "";
+                                                            buttonGroupType.checkedButton = null
+                                                        }
+                                                    }
+                                                    //create
+                                                    Button{
+                                                        id: setTypeCreator
+                                                        property int dex;
+                                                        property string old
+                                                        width: 50
+                                                        height: 50
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                            }
+                                                        }
+                                                        onClicked: {
+                                                            let name = setTypeName.text
+                                                            let errorM = ""
+                                                            for(let i = 0; i < name.length; i++){
+                                                                if(name[i] === "'" || name[i] === ";" ){
+                                                                    errorM = "name can not coitain ' or ;"
+                                                                }
+                                                            }
+                                                            if(errorM === ""){
+                                                                engin.createType(name, dex, old)
+                                                            }
+                                                            setTypeErrorM.text = errorM
+
+                                                            setTypeMod.model = 0
+                                                            setTypeMod.model = engin.getTypeSize()
+                                                        }
+                                                    }
+                                                    //delete
+                                                    Button{
+                                                        property int dex;
+                                                        width: 50
+                                                        height: 50
+                                                        background: Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            color: parent.down ? style.down :
+                                                                parent.hovered ? style.hover : style.button
+                                                            Image{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 5
+                                                                }
+                                                                source: "https://img.icons8.com/?size=100&id=J7wGSlJMWWIv&format=png&color=000000"
+                                                            }
+                                                        }
+                                                        onClicked: {
+                                                            engin.deleteType(setTypeCreator.dex)
+
+                                                            setTypeMod.model = 0
+                                                            setTypeMod.model = engin.getTypeSize()
+                                                        }
+                                                    }
+                                                    Text{
+                                                        id: setTypeErrorM
+                                                        height: 50
+                                                        font.pointSize: 15
+                                                        color: style.text
+
                                                     }
                                                 }
                                             }
 
 
-                                            Button{
-                                                id: setTypeCreator
-                                                property int dex;
-                                                property string old
-                                                width: 50
-                                                height: 50
-                                                y: 100
-                                                background: Rectangle{
-                                                    anchors{
-                                                        fill: parent
-                                                        margins: 5
-                                                    }
-                                                }
-                                                onClicked: {
 
-                                                    let name = setTypeName.text
-                                                    engin.createType(name, dex, old)
-
-                                                    setTypeMod.model = 0
-                                                    setTypeMod.model = engin.getTypeSize()
-                                                }
-                                            }
-                                            Button{
-                                                width: 50
-                                                height: 50
-                                                y: 100
-                                                x: 50
-                                                background: Rectangle{
-                                                    anchors{
-                                                        fill: parent
-                                                        margins: 5
-                                                    }
-                                                }
-                                                onClicked: {
-                                                    engin.deleteType(setTypeCreator.dex)
-
-                                                    setTypeMod.model = 0
-                                                    setTypeMod.model = engin.getTypeSize()
-                                                }
-                                            }
-
-                                            Button{
-                                                width: 100
-                                                height: 100
-                                                y: 100
-                                                anchors{right: parent.right}
-                                                background: Rectangle{
-                                                    anchors{
-                                                        fill: parent
-                                                        margins: 10
-                                                    }
-                                                }
-                                                onClicked: {
-                                                    setTypeCreator.dex = -1
-                                                }
-                                            }
                                         }
                                     }
 
@@ -1236,12 +2182,12 @@ Window {
             }
         }
         //timers
-        Rectangle{
+        /*Rectangle{
             id: timerBlock
             width: parent.width
             height: 260
             anchors{bottom: parent.bottom}
-            ScrollView{
+            /!*ScrollView{
                 anchors{fill: parent}
                 Row{
                     anchors{
@@ -1312,14 +2258,18 @@ Window {
                         }
                     }
                 }
-            }
-        }
+            }*!/
+        }*/
         // create task
         Rectangle{
             id: createTask
             width: parent.width
             height: 260
-            // color: "blue"
+            color: style.back
+            border{
+                width: 1
+                color: style.border
+            }
             anchors {bottom: parent.bottom}
             clip: true
             Item{
@@ -1334,15 +2284,34 @@ Window {
                         id: editorholder
                         width: 500
                         height: parent.height
-                        TextArea{
-                            id: newName
+                        Item{
                             width: parent.width
                             height: 50
-                            Keys.onPressed: function(event){
-                                if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
-                                    this.focus  = false
-                                    creater.clicked()
-                                    event.accepted = true;
+                            TextArea{
+                                id: newName
+                                placeholderText: "Name"
+                                placeholderTextColor: style.color
+                                font.pointSize: 15
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                color: style.text
+                                background: Rectangle{
+                                    color: style.textBox
+                                    anchors{fill: parent}
+                                    border{
+                                        width: 2
+                                        color: style.border
+                                    }
+                                    radius: 10
+                                }
+                                Keys.onPressed: function(event){
+                                    if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                        this.focus  = false
+                                        creater.clicked()
+                                        event.accepted = true;
+                                    }
                                 }
                             }
                         }
@@ -1357,14 +2326,66 @@ Window {
                             Rectangle{
                                 width: 125
                                 height:200
-                                color: "pink"
+                                color: style.back
                                 Column{
                                     anchors{fill: parent}
                                     CheckBox {
                                         id: isRepBox
                                         width: parent.width
                                         height: 30
-                                        text: "reurcering"
+                                        indicator: Rectangle{
+                                            anchors{fill: parent}
+                                            color: style.detail
+                                            border{
+                                                width: 1
+                                                color: style.border
+                                            }
+                                            Row{
+                                                anchors{fill: parent}
+                                                Item{
+                                                    width: parent.height
+                                                    height: parent.height
+
+                                                    Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 2.5
+                                                        }
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.parent.parent.parent.checked ? style.check :
+                                                            parent.parent.parent.parent.down ? style.down :
+                                                                parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                    }
+                                                }
+                                                Item{
+                                                    width: parent.width - parent.height
+                                                    height: parent.height
+                                                    Rectangle{
+                                                        anchors{
+                                                            fill: parent
+                                                            margins: 1
+                                                        }
+                                                        color: style.detail
+                                                        /*border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }*/
+                                                        Text{
+                                                            anchors{
+                                                                fill: parent
+                                                            }
+                                                            verticalAlignment: Text.AlignVCenter
+                                                            font.pixelSize: parent.height / 2
+                                                            text: "Recurring"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                         onClicked: {
                                             if(checked){
                                                 holderForAll.state = "yeah"
@@ -1388,11 +2409,12 @@ Window {
                                             // drop down
                                             Button{
                                                 width: parent.width;
+                                                height: 30
                                                 id: repTypeDrop
                                                 ButtonGroup{
                                                     id: repType
                                                     onClicked: typeRec => {
-                                                        repTypeDrop.text = typeRec.text
+                                                        dropText.text = typeRec.name
                                                         repSelCon.repSelectColosed = true
                                                         repSelCon.recType = typeRec.type
                                                     }
@@ -1400,42 +2422,118 @@ Window {
                                                 onClicked:{
                                                     repSelCon.repSelectColosed = !repSelCon.repSelectColosed
                                                 }
+                                                background: Rectangle {
+                                                    width: parent.width
+                                                    height: parent.height
+                                                    color: parent.checked ? style.check :
+                                                        parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                    Text {
+                                                        id:dropText
+                                                        anchors {
+                                                            centerIn: parent
+                                                        }
+                                                        text: "CLICK"
+                                                        font.pixelSize: parent.height - 15
+                                                    }
+                                                }
                                             }
                                             // after x days from due date 1
                                             // if multi = flase delet task when due date is over 2
                                             // number
                                             Button{
                                                 property int type: 1
+                                                property string name: "rep after due" // bad for scope reasons fuck you
                                                 width: parent.width
+                                                height: 30
                                                 ButtonGroup.group: repType
-                                                text: "rep affter due"
+                                                background: Rectangle {
+                                                    width: parent.width
+                                                    height: parent.height
+                                                    color: parent.checked ? style.check :
+                                                        parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                    Text {
+                                                        anchors {
+                                                            centerIn: parent
+                                                        }
+                                                        text: parent.parent.name
+                                                        font.pixelSize: parent.height - 15
+                                                    }
+                                                }
+
                                             }
                                             // after x days from mark of 3
                                             // incapadible with multi 5
                                             // number
                                             Button{
                                                 property int type: 3
+                                                property string name: "rep affter comp"
                                                 width: parent.width
+                                                height: 30
                                                 ButtonGroup.group: repType
-                                                text: "rep affter comp"
+                                                background: Rectangle {
+                                                    width: parent.width
+                                                    height: parent.height
+                                                    color: parent.checked ? style.check :
+                                                        parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                    Text {
+                                                        anchors {
+                                                            centerIn: parent
+                                                        }
+                                                        text:  parent.parent.name
+                                                        font.pixelSize: parent.height - 15
+                                                    }
+                                                }
                                             }
                                             // by week witch days of the week 4
                                             // if multi = flase delet task when due date is over 5
                                             // week day (stored as a int that translates to binary)
                                             Button{
                                                 property int type: 4
+                                                property string name: "rep on week day"
                                                 width: parent.width
+                                                height: 30
                                                 ButtonGroup.group: repType
-                                                text: "rep on week day"
+                                                background: Rectangle {
+                                                    width: parent.width
+                                                    height: parent.height
+                                                    color: parent.checked ? style.check :
+                                                        parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                    Text {
+                                                        anchors {
+                                                            centerIn: parent
+                                                        }
+                                                        text:  parent.parent.name
+                                                        font.pixelSize: parent.height - 15
+                                                    }
+                                                }
                                             }
                                             // month day, day of the month 1-28 6
                                             // if multi = flase delet task when due date is over 7
                                             // number
                                             Button{
                                                 property int type: 6
+                                                property string name: "rep on month day"
                                                 width: parent.width
+                                                height: 30
                                                 ButtonGroup.group: repType
-                                                text: "rep on month day"
+                                                background: Rectangle {
+                                                    width: parent.width
+                                                    height: parent.height
+                                                    color: parent.checked ? style.check :
+                                                        parent.down ? style.down :
+                                                            parent.hovered ? style.hover : style.button
+                                                    Text {
+                                                        anchors {
+                                                            centerIn: parent
+                                                        }
+                                                        text:  parent.parent.name
+                                                        font.pixelSize: parent.height - 15
+                                                    }
+                                                }
                                             }
                                             property bool repSelectColosed: true
                                             state: repSelectColosed ? "cell-closed" : "cell-open"
@@ -1471,9 +2569,61 @@ Window {
                                                 id: multiCheck
                                                 clip: true
                                                 width: parent.width
-                                                text: "alowDuplicats"
                                                 onClicked: {
                                                     creater.multi = checked
+                                                }
+                                                indicator: Rectangle{
+                                                    anchors{fill: parent}
+                                                    color: style.detail
+                                                    border{
+                                                        width: 1
+                                                        color: style.border
+                                                    }
+                                                    Row{
+                                                        anchors{fill: parent}
+                                                        Item{
+                                                            width: parent.height
+                                                            height: parent.height
+
+                                                            Rectangle{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 2.5
+                                                                }
+                                                                border{
+                                                                    width: 1
+                                                                    color: style.border
+                                                                }
+                                                                radius: 5
+                                                                color: parent.parent.parent.parent.checked ? style.check :
+                                                                    parent.parent.parent.parent.down ? style.down :
+                                                                        parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                            }
+                                                        }
+                                                        Item{
+                                                            width: parent.width - parent.height
+                                                            height: parent.height
+                                                            Rectangle{
+                                                                anchors{
+                                                                    fill: parent
+                                                                    margins: 1
+                                                                }
+                                                                color: style.detail
+                                                                /*border{
+                                                                    width: 1
+                                                                    color: style.border
+                                                                }*/
+                                                                Text{
+                                                                    anchors{
+                                                                        fill: parent
+                                                                    }
+                                                                    verticalAlignment: Text.AlignVCenter
+                                                                    font.pixelSize: parent.height / 2 - 3
+                                                                    text:"Allow Duplicates"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                             // number
@@ -1487,23 +2637,50 @@ Window {
                                                     width: parent.width/3
                                                     height: parent.height
                                                     text: "0"
+                                                    font.pixelSize: height -5
+                                                    horizontalAlignment: Text.AlignHCenter
+                                                    verticalAlignment: Text.AlignVCenter
                                                 }
                                                 Button{
                                                     width: parent.width/3
                                                     height: parent.height
-                                                    text: "+"
                                                     onClicked:{
                                                         repNum.num += 1
                                                         numText.text = repNum.num.toString()
+                                                    }
+                                                    background: Rectangle{
+                                                        width: parent.height
+                                                        height: parent.height
+                                                        color: parent.down ? style.down : //here
+                                                            parent.hovered ? style.hover : style.button
+                                                        Image{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                                        }
                                                     }
                                                 }
                                                 Button{
                                                     width: parent.width/3
                                                     height: parent.height
-                                                    text: "-"
                                                     onClicked:{
                                                         repNum.num -= 1
                                                         numText.text = repNum.num.toString()
+                                                    }
+                                                    background: Rectangle{
+                                                        width: parent.height
+                                                        height: parent.height
+                                                        color: parent.down ? style.down : //here
+                                                            parent.hovered ? style.hover : style.button
+                                                        Image{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            source: "https://img.icons8.com/?size=100&id=1i7ZSnIJ34KY&format=png&color=000000"
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1512,98 +2689,147 @@ Window {
                                                 id: repWeek
                                                 clip: true
                                                 width: parent.width
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                               parent.down ? style.down :
+                                                               parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "S"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "M"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "T"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "W"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "T"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "F"
+                                                        }
+                                                    }
+                                                }
+                                                CheckBox{
+                                                    width: parent.width / 7
+                                                    height: width
+                                                    checkable: true
+                                                    indicator:Rectangle{
+                                                        anchors{fill:parent}
+                                                        border{
+                                                            width: 1
+                                                            color: style.border
+                                                        }
+                                                        radius: 5
+                                                        color: parent.checked ? style.check :
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
+                                                        Text{
+                                                            anchors{centerIn: parent}
+                                                            text: "S"
+                                                        }
+                                                    }
+                                                }
 
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
-                                                CheckBox{
-                                                    width: parent.width / 7
-                                                    height: width
-                                                    checkable: true
-                                                    indicator: Rectangle{
-                                                        anchors{fill: parent}
-                                                        x: 0
-                                                        color: parent.checked ? "green" : "blue"
-                                                    }
-                                                    onClicked: {
-                                                        // parent.isChecked = checked;
-                                                    }
-                                                }
                                             }
                                             state: repSelCon.recType === 1 || repSelCon.recType === 2 ? "number and check" :
                                                     repSelCon.recType === 3  ? "just number" :
@@ -1668,22 +2894,41 @@ Window {
                                             }
                                         }
                                     }
-                                    Rectangle{
+                                    Item{
                                         width: parent.width
                                         height: 20
                                         Text{
+                                            anchors{centerIn: parent}
                                             text: "mm/dd/yyyy"
                                         }
                                     }
-                                    TextArea{
-                                        // activeFocus: false
-                                        id: creatDate
-                                        text: engin.getCurrentDate()
-
-                                        Keys.onPressed: function(event){
-                                            if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
-                                                this.focus  = false
-                                                event.accepted = true;
+                                    Item{
+                                        width: parent.width
+                                        height: 30
+                                        TextArea{
+                                            id: creatDate
+                                            font.pointSize: 10
+                                            text: engin.getCurrentDate()
+                                            anchors{
+                                                fill: parent
+                                                margins: 1
+                                            }
+                                            color: style.text
+                                            background: Rectangle{
+                                                color: style.textBox
+                                                anchors{fill: parent}
+                                                border{
+                                                    width: 2
+                                                    color: style.border
+                                                }
+                                                radius: 10
+                                            }
+                                            Keys.onPressed: function(event){
+                                                if(event.key === Qt.Key_Return || event.key === Qt.Key_Enter){
+                                                    this.focus  = false
+                                                    creater.clicked()
+                                                    event.accepted = true;
+                                                }
                                             }
                                         }
                                     }
@@ -1693,7 +2938,11 @@ Window {
                             Rectangle{
                                 width: 125
                                 height: 200
-                                color: "green"
+                                color: style.back
+                                border{
+                                    width: 1
+                                    color: style.border
+                                }
                                 Column{
                                     width: parent.width
                                     ButtonGroup{
@@ -1707,9 +2956,62 @@ Window {
                                         RadioButton{
                                             width: parent.width
                                             height: 30
+                                            id: crePry
                                             property int dex: index
                                             ButtonGroup.group: prySelectGroup
-                                            text: engin.getPryName(index, this);
+                                            indicator: Rectangle{
+                                                anchors{fill: parent}
+                                                color: style.detail
+                                                border{
+                                                    width: 1
+                                                    color: style.border
+                                                }
+                                                Row{
+                                                    anchors{fill: parent}
+                                                    Item{
+                                                        width: parent.height
+                                                        height: parent.height
+
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }
+                                                            radius: 5
+                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                parent.parent.parent.parent.down ? style.down :
+                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                        }
+                                                    }
+                                                    Item{
+                                                        width: parent.width - parent.height
+                                                        height: parent.height
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 1
+                                                            }
+                                                            color: style.detail
+                                                            /*border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }*/
+                                                            Text{
+                                                                anchors{
+                                                                    fill: parent
+                                                                }
+                                                                verticalAlignment: Text.AlignVCenter
+                                                                font.pixelSize: parent.height / 2
+                                                                text: engin.getPryName(index, crePry);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             // color: "black"
                                         }
                                     }
@@ -1719,7 +3021,11 @@ Window {
                             Rectangle{
                                 width: 125
                                 height:200
-                                color: "orange"
+                                color: style.back
+                                border{
+                                    width: 1
+                                    color: style.border
+                                }
                                 Column{
                                     width: parent.width
                                     ButtonGroup{
@@ -1734,8 +3040,61 @@ Window {
                                             property int dex: index
                                             width: parent.width
                                             height: 30
+                                            id: creType
                                             ButtonGroup.group: typeSelectGroup
-                                            text: engin.getTypeName(index, this)
+                                            indicator: Rectangle{
+                                                anchors{fill: parent}
+                                                color: style.detail
+                                                border{
+                                                    width: 1
+                                                    color: style.border
+                                                }
+                                                Row{
+                                                    anchors{fill: parent}
+                                                    Item{
+                                                        width: parent.height
+                                                        height: parent.height
+
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }
+                                                            radius: 5
+                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                parent.parent.parent.parent.down ? style.down :
+                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                        }
+                                                    }
+                                                    Item{
+                                                        width: parent.width - parent.height
+                                                        height: parent.height
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 1
+                                                            }
+                                                            color: style.detail
+                                                            /*border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }*/
+                                                            Text{
+                                                                anchors{
+                                                                    fill: parent
+                                                                }
+                                                                verticalAlignment: Text.AlignVCenter
+                                                                font.pixelSize: parent.height / 2
+                                                                text: engin.getTypeName(index, creType)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             // color: "black"
                                         }
 
@@ -1746,7 +3105,11 @@ Window {
                             Rectangle{
                                 width: 125
                                 height:200
-                                color: "red"
+                                color: style.back
+                                border{
+                                    width: 1
+                                    color: style.border
+                                }
                                 Column{
                                     width: parent.width
                                     Repeater{
@@ -1755,8 +3118,61 @@ Window {
                                         CheckBox{
                                             width: parent.width
                                             height: 30
+                                            id: creAss
                                             property int dex: index
-                                            text: engin.getPersonName(index, this)
+                                            indicator: Rectangle{
+                                                anchors{fill: parent}
+                                                color: style.detail
+                                                border{
+                                                    width: 1
+                                                    color: style.border
+                                                }
+                                                Row{
+                                                    anchors{fill: parent}
+                                                    Item{
+                                                        width: parent.height
+                                                        height: parent.height
+
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 2.5
+                                                            }
+                                                            border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }
+                                                            radius: 5
+                                                            color: parent.parent.parent.parent.checked ? style.check :
+                                                                parent.parent.parent.parent.down ? style.down :
+                                                                    parent.parent.parent.parent.hovered ? style.hover: style.button
+                                                        }
+                                                    }
+                                                    Item{
+                                                        width: parent.width - parent.height
+                                                        height: parent.height
+                                                        Rectangle{
+                                                            anchors{
+                                                                fill: parent
+                                                                margins: 1
+                                                            }
+                                                            color: style.detail
+                                                            /*border{
+                                                                width: 1
+                                                                color: style.border
+                                                            }*/
+                                                            Text{
+                                                                anchors{
+                                                                    fill: parent
+                                                                }
+                                                                verticalAlignment: Text.AlignVCenter
+                                                                font.pixelSize: parent.height / 2
+                                                                text: engin.getPersonName(index, creAss)
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             Component.onCompleted:{
                                                 creater.peps.push(false)
                                             }
@@ -1773,16 +3189,35 @@ Window {
                     Column{
                         width: parent.width - 500
                         height: parent.height
-                        TextArea{
-                            id: newNotes
+                        Item{
                             width: parent.width
                             height: parent.height - 30
+                            TextArea{
+                                id: newNotes
+                                placeholderText: "Notes"
+                                placeholderTextColor: style.color
+                                font.pointSize: 15
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                color: style.text
+                                background: Rectangle{
+                                    color: style.textBox
+                                    anchors{fill: parent}
+                                    border{
+                                        width: 2
+                                        color: style.border
+                                    }
+                                    radius: 10
+                                }
+                            }
                         }
                         Row{
                             width: parent.width
                             height: 30
                             //error
-                            Rectangle{
+                            Item{
                                 width: parent.width - delButton.width - creater.width - closeButton.width   //ill get there
                                 height: parent.height
                                 Text{
@@ -1795,10 +3230,25 @@ Window {
                                 id: delButton
                                 width: 30
                                 height: parent.height
-                                text: "X"
                                 onClicked: {
                                     engin.permDel()
                                     createTask.createIsClosed = true
+                                }
+                                background: Rectangle {
+                                    anchors {
+                                        fill: parent
+                                        margins: 2.5
+                                    }
+                                    color: parent.down ? style.down : //here
+                                        parent.hovered ? style.hover : style.button
+                                    Image {
+                                        anchors {
+                                            fill: parent
+                                            margins: 2.5
+                                        }
+                                        source: "https://img.icons8.com/?size=100&id=DTN37d2D4JlB&format=png&color=000000"
+                                        // color: style.text //mark
+                                    }
                                 }
                             }
                             // create
@@ -1806,12 +3256,27 @@ Window {
                                 id: creater
                                 width: 30
                                 height: parent.height
-                                text: "+"
                                 property bool edit: false
                                 property int pry: -1
                                 property string type : "not sett"
                                 property var peps: [true]
                                 property bool multi: false
+                                background: Rectangle {
+                                    anchors {
+                                        fill: parent
+                                        margins: 2.5
+                                    }
+                                    color: parent.down ? style.down : //here
+                                        parent.hovered ? style.hover : style.button
+                                    Image {
+                                        anchors {
+                                            fill: parent
+                                            margins: 2.5
+                                        }
+                                        source: "https://img.icons8.com/?size=100&id=Li1YuxryCXFK&format=png&color=000000"
+                                        // color: style.text //mark
+                                    }
+                                }
                                 onClicked:{
                                     let valid = true
                                     let errorM = ""
@@ -1913,13 +3378,27 @@ Window {
                                     errorTextBox.text = errorM
                                 }
                             }
-
                             // close
                             Button{
                                 id: closeButton
                                 width: 30
                                 height: parent.height
-                                text: "-"
+                                background: Rectangle {
+                                    anchors {
+                                        fill: parent
+                                        margins: 2.5
+                                    }
+                                    color: parent.down ? style.down : //here
+                                        parent.hovered ? style.hover : style.button
+                                    Image {
+                                        anchors {
+                                            fill: parent
+                                            margins: 2.5
+                                        }
+                                        source: "https://img.icons8.com/?size=100&id=2i5n7zNvArOt&format=png&color=000000"
+                                        // color: style.text //mark
+                                    }
+                                }
                                 onClicked: {
                                     createTask.createIsClosed = true;
                                 }

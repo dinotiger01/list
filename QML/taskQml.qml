@@ -3,7 +3,7 @@ import QtQuick.Controls
 import EngineMod
 
 Item{
-    width: 950
+    width: 950//mark
     property int dex
     property string taskName: "name"
     property int peopleInt: 1
@@ -16,15 +16,37 @@ Item{
     EngineMod{
         id: engin
     }
+    Item{
+        id: style
+        property string main: "#682bd7"
+        property string text: "#010101"
+        property string border: "#010101"
+        property string back: "#e6ddd6"
+        property string detail: "#d6cdc6"
 
-    height: childrenRect.height + 10
+        /*color: parent.down ? style.down :
+            parent.hovered ? style.hover : style.button*/
+        property string textBox: "#918383"
+        property string total: "#fc7b54"
 
+        property string check: "#fd95fd"
+        property string button: "#a37cf0"
+        property string hover: "#b38cf0"
+        property string down: "#c39cf0"
+
+    }
+    implicitHeight: childrenRect.height+10
     Rectangle{
-        width: parent.width
-        height: childrenRect.height
+        width: 900
+        x: 25
+        implicitHeight: childrenRect.height
+        border{
+            width: 1
+            color: style.border
+        }
         y: 5 // margin
         clip: true
-        color: "pink"
+        color: style.detail
         Column{
             id: listItem
             width: parent.width
@@ -37,9 +59,27 @@ Item{
                     width: 50
                     height: 50
                     background: Rectangle{
-                        anchors{
-                            fill: parent
-                            margins: 5
+                        anchors{fill: parent}
+                        border{
+                            width: 1
+                            color: style.border
+                        }
+                        color: style.detail
+                        Rectangle{
+                            anchors{
+                                fill: parent
+                                margins: 5
+                            }
+                            color: parent.parent.down ? style.down :
+                                parent.parent.hovered ? style.hover : style.button
+                            Image{
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                source: "https://img.icons8.com/?size=100&id=uNzoeGXjLfRM&format=png&color=000000"
+
+                            }
                         }
                     }
                     onClicked:{
@@ -49,29 +89,50 @@ Item{
                 //name
                 Rectangle{
                     id: listName
-                    width: parent.width-listCheck.width-listPeople.width-listList.width-listDate.width-listButton.width
+                    width: parent.width- listCheck.width -listPeople.width-listList.width-listDate.width-listButton.width
+                    x: -5
                     height: parent.height
+                    border{
+                        width: 1
+                        color: style.border
+                    }
+                    color: style.detail
                     Text{
+                        // anchors{fill: parent}
+                        width: parent.width - 5
+                        height: parent.height
+                        x: 5
                         text: taskName
                         font.pointSize: parent.height / 2
                     }
                 }
                 // people
-                Row{
+                Rectangle{
                     id: listPeople
-                    // model * (width + spacing + 1)
-                    height: 50
-                    spacing: -20
-                    clip: true
-                    Repeater{
-                        model: peopleInt
-                        Rectangle{
-                            width: 40
-                            height: 40
-                            radius: 20
-                            color: peopleImgs[index];
-                            anchors{
-                                // verticalCenter: parent.verticalCenter
+
+                    implicitWidth: peopleInt === 0 ? 0 : listPep.implicitWidth + 5
+                    height: parent.height
+                    border{
+                        width: 1
+                        color: style.border
+                    }
+                    color: style.detail
+                    Row{
+                        id: listPep
+                        anchors{centerIn: parent}
+                        // model * (width + spacing + 1)
+                        height: 40
+                        spacing: -20
+                        Repeater{
+                            model: peopleInt
+                            Rectangle{
+                                width: 40
+                                height: 40
+                                radius: 20
+                                color: peopleImgs[index];
+                                anchors{
+                                    // verticalCenter: parent.verticalCenter
+                                }
                             }
                         }
                     }
@@ -79,10 +140,17 @@ Item{
                 // list
                 Rectangle{
                     id: listList
-                    width: 150
+                    implicitWidth: listlistText.implicitWidth + 5
                     height: parent.height
-                    color: "cyan"
+                    color: style.detail
+                    border{
+                        width: 1
+                        color: style.border
+                    }
                     Text{
+                        id: listlistText
+                        anchors{centerIn: parent}
+                        height: parent.height
                         text: taskType
                         font.pointSize: parent.height / 2
                     }
@@ -90,10 +158,16 @@ Item{
                 //date
                 Rectangle{
                     id: listDate
-                    implicitWidth: childrenRect.width
+                    implicitWidth: listDA.implicitWidth + 5
                     height: parent.height
-                    color: "blue"
+                    border{
+                        width: 1
+                        color: style.border
+                    }
+                    color: style.detail
                     Text{
+                        id: listDA
+                        anchors{centerIn: parent}
                         text: taskDate
                         font.pointSize: parent.height / 2
                     }
@@ -101,16 +175,65 @@ Item{
                 // drop down
                 Button{
                     id: listButton
+                    checkable: true
                     width: 50
                     height: parent.height
                     background: Rectangle{
-                        anchors{
-                            fill: parent
+                        anchors{fill: parent}
+                        border{
+                            width: 1
+                            color: style.border
+                        }
+                        color: style.detail
+                        Rectangle{
+                            anchors{
+                                fill: parent
+                                margins: 5
+                            }
+                            border{
+                                width: 1
+                                color: style.border
+                            }
+                            color: parent.parent.checked ? style.check :
+                                parent.parent.down ? style.down :
+                                    parent.parent.hovered ? style.hover: style.button
+                            Image{
+                                id: drop
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                source: "https://img.icons8.com/?size=100&id=kHqsQPiFpGjM&format=png&color=000000"
+                                property bool close: true
+                                state: close ? "colosed" : "open"
+                                states: [
+                                    State{
+                                        name: "colosed"
+                                        PropertyChanges{
+                                            target: drop; rotation: -90
+                                        }
+                                    },
+                                    State{
+                                        name: "open"
+                                        PropertyChanges{
+                                            target: drop; rotation: 0
+                                        }
+                                    }
+                                ]
+                                transitions: Transition{
+                                    NumberAnimation{
+                                        properties: "rotation"
+                                        duration: 250
+                                        easing.type: Easing.InOutQuad
+                                    }
+                                }
+                            }
                         }
                     }
                     onClicked:{
                         // text = listItemDes.isClosed
                         listItemDes.isClosed = !listItemDes.isClosed
+                        drop.close = listItemDes.isClosed
                         engin.editClose()
                         // listItemDes.visible = true
                     }
@@ -121,7 +244,11 @@ Item{
                 width: parent.width
                 implicitHeight: Math.max(taskDesText.implicitHeight, taskDesButton.implicitHeight)
                 // visible: false
-                color: "red"
+                color: style.detail
+                border{
+                    width: 1
+                    color: style.border
+                }
                 clip: true
                 property bool isClosed: true
                 state: isClosed ? "closed" : "open"
@@ -175,6 +302,16 @@ Item{
                             anchors{
                                 fill: parent
                                 margins: 5
+                            }
+                            color: parent.down ? style.down :
+                                parent.hovered ? style.hover : style.button
+                            Image{
+                                anchors{
+                                    fill: parent
+                                    margins: 2.5
+                                }
+                                source: "https://img.icons8.com/?size=100&id=kCViyr9hZtLX&format=png&color=000000"
+
                             }
                         }
                         onClicked:{
