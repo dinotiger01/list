@@ -1,4 +1,4 @@
-name: MacOS Qt/CMake Build
+name: Windows Qt/CMake Build
 
 on:
   push:
@@ -7,53 +7,61 @@ on:
     branches: [ main ]
 
 jobs:
-  build-macos:
-    runs-on: macos-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Qt6 and Dependencies via Homebrew
-        run: |
-          brew update
-          # Installs native macOS Qt6 (includes Core, Gui, Quick, Sql, Svg, etc.)
-          brew install cmake qt@6 sqlite
-          
-          # Add Qt binaries to the runner environment path for macdeployqt
-          echo "/opt/homebrew/opt/qt@6/bin" >> $GITHUB_PATH
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.2'
+          modules: 'qtdeclarative'
+          arch: 'win64_msvc2022_64'
 
       - name: Configure CMake
         run: |
           mkdir build
-          cmake -S . -B build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/qt@6
+          cd build
+          cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}"
 
       - name: Build Application
         run: |
-          cmake --build build --config Release
-
-      - name: Deploy and Bundle Qt Dependencies
-        run: |
-          # 1. Create a workspace right inside the Homebrew cellar prefix
-          cp -R build/List.app /opt/homebrew/opt/qt@6/List.app
-
-          # 2. Run macdeployqt directly in that environment layout
-          /opt/homebrew/opt/qt@6/bin/macdeployqt /opt/homebrew/opt/qt@6/List.app -qmldir=QML -always-overwrite
-
-          # 3. Move the fully bundled standalone app back out to your build directory
-          mv /opt/homebrew/opt/qt@6/List.app build/List.app
-      
-      
-
-      - name: Archive macOS Build
-        run: |
           cd build
-          zip -r List-macOS.zip List.app
+          cmake --build . --config Release
+
+      - name: Deploy and Bundle Qt Dependencies (windeployqt)
+        shell: pwsh
+        run: |
+          $exePath = "build/Release/List.exe"
+          $windeployqtPath = "${{ env.QT_ROOT_DIR }}/bin/windeployqt.exe"
+          
+          # Run windeployqt to copy DLLs, QML modules, and plugins automatically
+          & $windeployqtPath --release --qml_dir QML --compiler-runtime $exePath
+
+      - name: Copy Assets (SQL & SVG)
+        shell: pwsh
+        run: |
+          # Ensure targeted release directory structure exists
+          New-Item -ItemType Directory -Force -Path "build/Release/SQL"
+          New-Item -ItemType Directory -Force -Path "build/Release/SVG"
+          
+          # Copy asset contents into the executable runtime directory
+          if (Test-Path "SQL") { Copy-Item -Path "SQL\*" -Destination "build\Release\SQL" -Recurse -Force }
+          if (Test-Path "SVG") { Copy-Item -Path "SVG\*" -Destination "build\Release\SVG" -Recurse -Force }
+
+      - name: Archive Windows Build
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "build/Release/*" -DestinationPath "build/List-Windows.zip"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: List-macOS
-          path: build/List-macOS.zip
+          name: List-Windows
+          path: build/List-Windows.zip
