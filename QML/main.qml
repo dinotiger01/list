@@ -862,7 +862,7 @@ Window {
                                                         assSelect.model = engin.getPersonSize()
 
                                                         typeSelect.model = 0
-                                                        typeSelect.model = engin.getTypeSize()-1
+                                                        typeSelect.model = engin.getTypeSize()
 
                                                         prySelect.model = 0
                                                         prySelect.model = engin.getPrySize()

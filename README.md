@@ -3,6 +3,9 @@ this is a task list ment for simple house hold use that doesnt have alll the cor
 
 <img src="src/Screenshot_20260901_025114.png" width="750">
 
+
+demo/totorial https://youtu.be/bYeSo8YZb2s
+
 ## index
 * task data
 * task item
