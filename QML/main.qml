@@ -413,6 +413,7 @@ Window {
                                             Repeater{
                                                 id: typeMod
                                                 CheckBox{
+                                                    property string name:
                                                     width: parent.width
                                                     height: 40
                                                     indicator: Rectangle{
@@ -462,7 +463,7 @@ Window {
                                                                         }
                                                                         verticalAlignment: Text.AlignVCenter
                                                                         font.pixelSize: parent.height / 2
-                                                                        text: engin.getTypeName(index, null)
+                                                                        text: parent.parent.parent.name
                                                                     }
                                                                 }
                                                             }
@@ -473,7 +474,7 @@ Window {
                                                     }
                                                     onClicked: {
                                                         if(this.checked){
-                                                            searchButton.typ[index] = this.text;
+                                                            searchButton.typ[index] = text;
                                                         }else{
                                                             searchButton.typ[index] = "";
                                                         }
