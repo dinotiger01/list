@@ -37,14 +37,13 @@ jobs:
       - name: Deploy and Bundle Qt Dependencies
         run: |
           APP_PATH="build/List.app"
+        
           macdeployqt "$APP_PATH" \
           -qmldir=QML \
           -always-overwrite \
           -libpath=/opt/homebrew/opt/qt@6/lib \
           -libpath=/opt/homebrew/Frameworks \
-          -skip-plugin=qt3d \
-          -skip-plugin=qtpdf \
-          -skip-plugin=qtvirtualkeyboard
+          -libpath=/opt/homebrew/Cellar
 
 
       - name: Archive macOS Build
