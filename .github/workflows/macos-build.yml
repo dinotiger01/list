@@ -36,15 +36,16 @@ jobs:
 
       - name: Deploy and Bundle Qt Dependencies
         run: |
-          APP_PATH="build/List.app"
-        
-          macdeployqt "$APP_PATH" \
-          -qmldir=QML \
-          -always-overwrite \
-          -libpath=/opt/homebrew/opt/qt@6/lib \
-          -libpath=/opt/homebrew/Frameworks \
-          -libpath=/opt/homebrew/Cellar
+          # 1. Create a workspace right inside the Homebrew cellar prefix
+          cp -R build/List.app /opt/homebrew/opt/qt@6/List.app
 
+          # 2. Run macdeployqt directly in that environment layout
+          /opt/homebrew/opt/qt@6/bin/macdeployqt /opt/homebrew/opt/qt@6/List.app -qmldir=QML -always-overwrite
+
+          # 3. Move the fully bundled standalone app back out to your build directory
+          mv /opt/homebrew/opt/qt@6/List.app build/List.app
+      
+      
 
       - name: Archive macOS Build
         run: |
