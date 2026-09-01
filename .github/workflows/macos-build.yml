@@ -24,7 +24,6 @@ jobs:
           # Ensure the cache workspace directory exists physically
           New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/vcpkg-cache"
           
-          # Explicitly instruct vcpkg to track this folder layout
           $env:VCPKG_DEFAULT_BINARY_CACHE="${{ github.workspace }}/vcpkg-cache"
           
           # Compile/Restore SQLite3 using the preinstalled system path tool
@@ -39,7 +38,9 @@ jobs:
           # Dynamically inject the precise global path to the vcpkg.cmake module
           $vcpkgToolchain = "$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
           
-          cmake .. -G "Visual Studio 17 2022" -A x64 `
+          # REMOVED: -G "Visual Studio 17 2022" -A x64 
+          # This allows CMake to auto-detect the native compiler available on windows-latest
+          cmake .. `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="C:/tools/Qt6" `
             -DCMAKE_TOOLCHAIN_FILE="$vcpkgToolchain"

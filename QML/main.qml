@@ -463,7 +463,7 @@ Window {
                                                                         }
                                                                         verticalAlignment: Text.AlignVCenter
                                                                         font.pixelSize: parent.height / 2
-                                                                        text: parent.parent.parent.parent.name
+                                                                        text: parent.parent.parent.parent.parent.name
                                                                     }
                                                                 }
                                                             }
