@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql OpenGL Concurrent Svg)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Widgets Sql Concurrent Svg)
 find_package(SQLite3 REQUIRED)
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -95,7 +95,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Svg
         SQLite3::SQLite3
 )
-target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
 
 if(NOT APPLE)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
