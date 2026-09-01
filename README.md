@@ -7,6 +7,7 @@ this is a task list ment for simple house hold use that doesnt have alll the cor
 demo/totorial https://youtu.be/bYeSo8YZb2s
 
 ## index
+* data base
 * task data
 * task item
 * repeting typep
@@ -18,6 +19,10 @@ demo/totorial https://youtu.be/bYeSo8YZb2s
 * create/edit tasks
 * tetings
 * futer goals
+***
+## data base
+* it uses sqlite3 to edit a database
+* the database is stored in you appdata folder under appdata/List/SQL/data.db
 ***
 ## task data
 * name
