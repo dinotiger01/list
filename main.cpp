@@ -22,14 +22,13 @@ int main(int argc, char *argv[]) {
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url, &Engine](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl) {
-            qCritical() << "ERROR: QML Engine failed to load the root object!";
+            // qCritical() << "ERROR: QML Engine failed to load the root object!";
             QCoreApplication::exit(-1);
             return;
         }
 
-        std::cout << "QML root object successfully loaded!" << std::endl;
+        std::cout << "QML should load ykyk" << std::endl;
 
-        // This must handle macOS file paths safely!
         Engine.refrechAll();
     }, Qt::QueuedConnection);
 

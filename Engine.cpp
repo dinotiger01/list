@@ -247,7 +247,87 @@ namespace  Engine {
         dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QDir().mkpath(dbPath);
 
+        bool dbExists = QFileInfo::exists(dbPath);
+
+
         dbPath += "/SQL/data.db";
+        if (true) {
+            char* errorM = nullptr;
+            sqlite3_open(dbPath.toUtf8().constData(), &DB);
+
+            string sql;
+            sql = "create table IF NOT EXISTS TASKS("
+                    "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    "NAME text,"
+                    "PRY int,"
+                    "REPEATE int,"
+                    "HOWLONG int,"
+                    "WHE text,"
+                    "NOTE text,"
+                    "PEOPLE text,"
+                    "TYPE text"
+                    ");";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql = "DROP TABLE PRY";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql = "create table IF NOT EXISTS PRY("
+                    "DEX int PRIMARY KEY,"
+                    "NAME text,"
+                    "COLOR text"
+                    ");";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql  = "create table IF NOT EXISTS TYPE("
+                    "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    "NAME TEXT"
+                    ");";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql =   "create table IF NOT EXISTS FILTER ("
+                    "ID INT PRIMARY KEY,"
+                    "NAME TEXT,"
+                    "PEOPLE TEXT,"
+                    "TYPE TEXT,"
+                    "DATE TEXT);";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql = "create table IF NOT EXISTS PEOPLE ("
+                    "ID int PRIMARY KEY,"
+                    "NAME text,"
+                    " PFP TEXT,"
+                    " REQHR text);";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+            sql = "INSERT INTO PRY VALUES(0,'High','#bd2e95');";
+
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+            sql = "INSERT INTO PRY VALUES(1,'Medium','#835ce0');";
+
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+            sql = "INSERT INTO PRY VALUES(2,'Low','#31bacd');";
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
+        }
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
@@ -845,7 +925,7 @@ namespace  Engine {
         //       "INSERT INTO FILTER VALUES (0, '' , '' , '', '')";
         // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
 
-        // sql = "INSERT INTO PRY VALUES(2,'low','blue')";
+        sql = "INSERT INTO PRY VALUES(2,'low','blue')";
         // sql = "update PRY set COLOR = '#835ce0' where DEX = 1";
 
         // sql = "create table PEOPLE (ID int PRIMARY KEY,NAME text, PFP TEXT, REQHR text)";
