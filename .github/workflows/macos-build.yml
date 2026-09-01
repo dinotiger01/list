@@ -31,7 +31,10 @@ jobs:
 
       - name: Install SQLite via vcpkg
         run: |
-          # Only compile light, dependency-free sqlite3 to bypass the heavy qtdeclarative build wall
+          # Force create the cache folder so vcpkg doesn't crash
+          mkdir -Force "${{ github.workspace }}/vcpkg-cache"
+
+          # Run the installation safely
           vcpkg install sqlite3 --triplet x64-windows
 
       - name: Install Pre-compiled Qt6 via Official Alternative Pipeline
