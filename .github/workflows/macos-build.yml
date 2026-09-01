@@ -13,7 +13,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      - name: Check available Qt modules
+        shell: pwsh
+        run: |
+          pip install aqtinstall
+          aqt list-qt windows desktop --modules 6.8.3 win64_msvc2022_64
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -21,7 +25,6 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2022_64
-          modules: qtdeclarative
           cache: true
 
       - name: Install SQLite via vcpkg
