@@ -14,28 +14,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up MSVC Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Install SQLite via vcpkg
-        run: |
-          mkdir -Force "${{ github.workspace }}/vcpkg-cache"
-          vcpkg install sqlite3 --triplet x64-windows
-
       - name: Install Native Qt6 Framework via Chocolatey
         run: |
-          # Pulls verified native open-source Windows components directly into the runner environment
           choco install qt6-base-dev -y
 
-      - name: Configure CMake
+      - name: Install SQLite via vcpkg
+        shell: pwsh
         run: |
-          mkdir build
+          # Ensure the cache workspace directory exists physically
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/vcpkg-cache"
+          
+          # Explicitly instruct vcpkg to track this folder layout
+          $env:VCPKG_DEFAULT_BINARY_CACHE="${{ github.workspace }}/vcpkg-cache"
+          
+          # Compile/Restore SQLite3 using the preinstalled system path tool
+          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install sqlite3 --triplet x64-windows
+
+      - name: Configure CMake
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "build"
           cd build
-          # Point CMAKE_PREFIX_PATH to Chocolatey's standard installation target for Qt6
+          
+          # Dynamically inject the precise global path to the vcpkg.cmake module
+          $vcpkgToolchain = "$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          
           cmake .. -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_PREFIX_PATH="C:/tools/Qt6" `
-            -DCMAKE_TOOLCHAIN_FILE="C:/hostedtoolcache/windows/vcpkg/vcpkg.cmake"
+            -DCMAKE_TOOLCHAIN_FILE="$vcpkgToolchain"
 
       - name: Build Application
         run: |
@@ -48,7 +55,7 @@ jobs:
           $exePath = "build/Release/List.exe"
           $windeployqtPath = "C:/tools/Qt6/bin/windeployqt.exe"
           
-          # Package Windows DLL dependencies seamlessly
+          # Package and copy Windows DLL dependencies next to your .exe automatically
           & $windeployqtPath --release --qml_dir QML --compiler-runtime $exePath
 
       - name: Copy Assets (SQL & SVG)
