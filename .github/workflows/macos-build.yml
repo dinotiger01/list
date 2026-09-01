@@ -14,63 +14,82 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Native Qt6 Framework via Chocolatey
-        run: |
-          choco install qt6-base-dev -y
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          modules: qtdeclarative
+          cache: true
 
       - name: Install SQLite via vcpkg
         shell: pwsh
         run: |
-          # Ensure the cache workspace directory exists physically
           New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/vcpkg-cache"
-          
+
           $env:VCPKG_DEFAULT_BINARY_CACHE="${{ github.workspace }}/vcpkg-cache"
-          
-          # Compile/Restore SQLite3 using the preinstalled system path tool
-          & "$env:VCPKG_INSTALLATION_ROOT/vcpkg.exe" install sqlite3 --triplet x64-windows
+
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install sqlite3:x64-windows
 
       - name: Configure CMake
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "build"
-          cd build
-          
-          # Dynamically inject the precise global path to the vcpkg.cmake module
-          $vcpkgToolchain = "$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
-          
-          # REMOVED: -G "Visual Studio 17 2022" -A x64 
-          # This allows CMake to auto-detect the native compiler available on windows-latest
-          cmake .. `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_PREFIX_PATH="C:/tools/Qt6" `
-            -DCMAKE_TOOLCHAIN_FILE="$vcpkgToolchain"
+          cmake -S . -B build `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
 
       - name: Build Application
-        run: |
-          cd build
-          cmake --build . --config Release
-
-      - name: Deploy and Bundle Dependencies (windeployqt)
         shell: pwsh
         run: |
-          $exePath = "build/Release/List.exe"
-          $windeployqtPath = "C:/tools/Qt6/bin/windeployqt.exe"
-          
-          # Package and copy Windows DLL dependencies next to your .exe automatically
-          & $windeployqtPath --release --qml_dir QML --compiler-runtime $exePath
+          cmake --build build --config Release --parallel
 
-      - name: Copy Assets (SQL & SVG)
+      - name: Deploy Qt
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "build/Release/SQL"
-          New-Item -ItemType Directory -Force -Path "build/Release/SVG"
-          if (Test-Path "SQL") { Copy-Item -Path "SQL\*" -Destination "build\Release\SQL" -Recurse -Force }
-          if (Test-Path "SVG") { Copy-Item -Path "SVG\*" -Destination "build\Release\SVG" -Recurse -Force }
+          $exePath = "${{ github.workspace }}/build/Release/List.exe"
+
+          if (!(Test-Path $exePath)) {
+            Write-Error "Could not find $exePath"
+            Get-ChildItem -Path build -Recurse -Filter "*.exe"
+            exit 1
+          }
+
+          windeployqt `
+            --release `
+            --qmldir "${{ github.workspace }}/QML" `
+            --compiler-runtime `
+            "$exePath"
+
+      - name: Copy Assets
+        shell: pwsh
+        run: |
+          if (Test-Path "SQL") {
+            Copy-Item `
+              -Path "SQL" `
+              -Destination "build/Release" `
+              -Recurse `
+              -Force
+          }
+
+          if (Test-Path "SVG") {
+            Copy-Item `
+              -Path "SVG" `
+              -Destination "build/Release" `
+              -Recurse `
+              -Force
+          }
 
       - name: Archive Windows Build
         shell: pwsh
         run: |
-          Compress-Archive -Path "build/Release/*" -DestinationPath "build/List-Windows.zip"
+          Compress-Archive `
+            -Path "build/Release/*" `
+            -DestinationPath "build/List-Windows.zip" `
+            -Force
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
