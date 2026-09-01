@@ -10,6 +10,10 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
+    env:
+      # Direct vcpkg to use binary cache folders to prevent recompiles on subsequent pushes
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-cache
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,18 +21,36 @@ jobs:
       - name: Set up MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install Qt6 & SQLite via vcpkg
+      - name: Enable GitHub vcpkg Binary Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/vcpkg-cache
+          key: vcpkg-windows-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            vcpkg-windows-
+
+      - name: Install SQLite via vcpkg
         run: |
-          # Use vcpkg (pre-installed on the runner) to explicitly install required packages
-          vcpkg install qtbase qtdeclarative qtsvg sqlite3 --triplet x64-windows
+          # Only compile light, dependency-free sqlite3 to bypass the heavy qtdeclarative build wall
+          vcpkg install sqlite3 --triplet x64-windows
+
+      - name: Install Pre-compiled Qt6 via Official Alternative Pipeline
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.2'
+          modules: 'qtdeclarative qtsvg'
+          arch: 'win64_msvc2022_64'
+          # Force a fallback public open-source mirror to completely bypass the crashing XML index
+          mirror: 'https://berkeley.edu'
 
       - name: Configure CMake
         run: |
           mkdir build
           cd build
-          # Pass the vcpkg toolchain file so CMake locates everything automatically
+          # We hook up BOTH vcpkg (for SQLite3) and QT_ROOT_DIR (for pre-compiled Qt6)
           cmake .. -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}" `
             -DCMAKE_TOOLCHAIN_FILE="C:/hostedtoolcache/windows/vcpkg/vcpkg.cmake"
 
       - name: Build Application
@@ -40,14 +62,9 @@ jobs:
         shell: pwsh
         run: |
           $exePath = "build/Release/List.exe"
+          $windeployqtPath = "${{ env.QT_ROOT_DIR }}/bin/windeployqt.exe"
           
-          # Locate where vcpkg built the windeployqt tool
-          $windeployqtPath = "C:/hostedtoolcache/windows/vcpkg/installed/x64-windows/tools/qt5/windeployqt.exe"
-          if (-not (Test-Path $windeployqtPath)) {
-              $windeployqtPath = "C:/hostedtoolcache/windows/vcpkg/installed/x64-windows/tools/qt6/windeployqt.exe"
-          }
-          
-          # Bundle DLLs, modules, and plugins
+          # Bundle DLLs, modules, and plugins seamlessly using the precompiled binary tool
           & $windeployqtPath --release --qml_dir QML --compiler-runtime $exePath
 
       - name: Copy Assets (SQL & SVG)

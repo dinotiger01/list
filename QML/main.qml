@@ -3357,7 +3357,7 @@ to delete a task type simply cilck the task then click the garbage button
                                     let pep = ""//
                                     for(let i = 0; i < creater.peps.length; i++){
                                         if(creater.peps[i] !== 0){
-                                            pep += (peps[i]).toString() + ","
+                                            pep += (peps[i]) + ","
                                         }
                                     }
                                     let type = creater.type // here

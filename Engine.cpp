@@ -1347,6 +1347,7 @@ namespace  Engine {
             }else if (tempTask.isReturn == 3) {
                 // get date rn
                 newDate.tm_mday = currentDate.tm_mday + tempTask.delay;
+                newDate.tm_mon = currentDate.tm_mon;
             }else if (tempTask.isReturn == 4 || tempTask.isReturn == 5) {
                 bitset<7> binary(tempTask.delay);
                 newDate.tm_mday++;
