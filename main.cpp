@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QDebug>
 #include "Engine.h"
 
 using namespace Qt::StringLiterals;
@@ -12,26 +13,27 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     Engine::EngineMod Engine;
 
-
     engine.rootContext()->setContextProperty("engin", &Engine);
     Engine.setEng(&engine);
 
+    // Track if loading fails completely
+    const QUrl url(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml"));
 
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated, &engine, [&engine, &Engine](QObject *obj, const QUrl) {
-        if (!obj) {
-            qCritical() <<  "everything is broke ¯\\_(ツ)_/¯ ";
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url, &Engine](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl) {
+            qCritical() << "ERROR: QML Engine failed to load the root object!";
+            QCoreApplication::exit(-1);
+            return;
         }
-        std::cout << "qml sould be loaded idk" << std::endl;
 
+        std::cout << "QML root object successfully loaded!" << std::endl;
+
+        // This must handle macOS file paths safely!
         Engine.refrechAll();
-
     }, Qt::QueuedConnection);
 
-
-    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml")));
-
-
-    
+    engine.load(url);
 
     return app.exec();
 }

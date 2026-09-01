@@ -244,7 +244,10 @@ namespace  Engine {
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
-        dbPath = QCoreApplication::applicationDirPath() + "/SQL/data.db";
+        dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        QDir().mkpath(dbPath);
+
+        dbPath += "/SQL/data.db";
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
@@ -912,7 +915,7 @@ namespace  Engine {
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "createType : " << sqlite3_errmsg(DB) << endl;
 
-        sql = "update Tasks set TYPE = '" + name.toStdString();
+        sql = "update TASKS set TYPE = '" + name.toStdString();
         sql += "' where TYPE = '" + old.toStdString();
         sql += "'";
         cout << sql << "\n";
