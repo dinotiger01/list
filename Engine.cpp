@@ -312,6 +312,12 @@ namespace  Engine {
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
             sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
 
+            sql = "INSERT INTO FILTER VALUES(0,'','','','');";
+
+
+            cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+
             sql = "INSERT INTO PRY VALUES(0,'High','#bd2e95');";
 
 

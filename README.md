@@ -1,5 +1,8 @@
 # list
 this is a task list ment for simple house hold use that doesnt have alll the corpo slop most task list have
+
+<img src="src/Screenshot_20260901_025114.png" width="750">
+
 ## index
 * task data
 * task item
@@ -128,6 +131,9 @@ the pryoritys will order the list to help you see what is the most importent
   * i want to make it so that you can cusomize pryoritys inside the app 
 ***
 ## people
+
+<img src="src/Screenshot_20260901_025225.png" width="750">
+
 people are used in the list to easily assine tasks to people
 
 * data
@@ -154,6 +160,8 @@ people are used in the list to easily assine tasks to people
 if you enter a ; or a ' in either text box it will not work so the code warns you if you try
 ***
 ## type
+
+<img src="src/Screenshot_20260901_025235.png" width="750">
 types are used to filter between difrent types of task like work,peronal,hobby,household,etc
 these are like stupid simple in the back end btw
 
@@ -167,6 +175,8 @@ these are like stupid simple in the back end btw
 
 ***
 ## filter
+
+<img src="src/Screenshot_20260901_025213.png" width="750">
 the filters are veary usefull for sorting tasks
 * backend
   * how it works
@@ -217,6 +227,8 @@ the filters are veary usefull for sorting tasks
       * this works in the back end by replaceing the date with an X
 *** 
 ## create/edit tasks
+
+<img src="src/Screenshot_20260901_025145.png" width="750">
 * create
   * there is a giant plus button in the top right
   * this will open a menu at the bottom

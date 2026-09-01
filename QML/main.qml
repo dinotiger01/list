@@ -351,7 +351,7 @@ Window {
                                                         searchButton.pep.push(null)
                                                     }
                                                     onClicked: {
-                                                        searchButton.pep[index] = this.checked;
+                                                        searchButton.pep[index] = checked;
                                                     }
                                                 }
                                             }
