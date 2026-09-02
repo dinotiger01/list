@@ -14,8 +14,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -26,25 +29,25 @@ jobs:
           arch: win64_mingw
           cache: true
 
+
+
       - name: Install MinGW
         shell: pwsh
         run: |
           choco install mingw -y
 
-          # Make sure MinGW is available
           $env:PATH = "C:\mingw64\bin;$env:PATH"
 
-          Write-Host "GCC:"
-          gcc --version
+          Write-Host "========================================"
+          Write-Host "Compiler"
+          Write-Host "========================================"
 
-          Write-Host "G++:"
+          gcc --version
           g++ --version
 
-          Write-Host "CMake:"
-          cmake --version
 
 
-      - name: Restore vcpkg Binary Cache
+      - name: Restore vcpkg cache
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/vcpkg-cache
@@ -56,17 +59,76 @@ jobs:
       - name: Install SQLite
         shell: pwsh
         run: |
-          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install sqlite3:x64-mingw-static
+
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            -Path "${{ github.workspace }}/vcpkg-cache"
+
+          $env:VCPKG_DEFAULT_BINARY_CACHE = `
+            "${{ github.workspace }}/vcpkg-cache"
+
+          Write-Host "========================================"
+          Write-Host "Installing SQLite"
+          Write-Host "========================================"
+
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" `
+            install sqlite3:x64-mingw-static
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "SQLite installation failed!"
+            exit 1
+          }
+
+          Write-Host "SQLite installed."
+
+      - name: Show vcpkg packages
+        shell: pwsh
+        run: |
+
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" list
+
+
       - name: Configure CMake
         shell: pwsh
         run: |
-          cmake -S . -B build `
+
+          Write-Host "========================================"
+          Write-Host "CMake configuration"
+          Write-Host "========================================"
+
+          Write-Host "CMake:"
+          cmake --version
+
+          Write-Host ""
+          Write-Host "Qt directory:"
+          Write-Host $env:Qt6_DIR
+
+          Write-Host ""
+          Write-Host "vcpkg:"
+          Write-Host $env:VCPKG_INSTALLATION_ROOT
+
+          cmake `
+            -S . `
+            -B build `
             -G "MinGW Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_CXX_STANDARD=20 `
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "CMake configuration failed!"
+            exit 1
+          }
+
       - name: Build Application
         shell: pwsh
         run: |
+
+          Write-Host "========================================"
+          Write-Host "Building List"
+          Write-Host "========================================"
 
           cmake `
             --build build `
@@ -76,11 +138,14 @@ jobs:
             Write-Error "Build failed!"
             exit 1
           }
+
       - name: Find executable
         shell: pwsh
         run: |
 
-          Write-Host "Searching for executable..."
+          Write-Host "========================================"
+          Write-Host "Searching for executable"
+          Write-Host "========================================"
 
           Get-ChildItem `
             -Path build `
@@ -92,8 +157,8 @@ jobs:
             exit 1
           }
 
-          Write-Host "Found:"
-          Get-Item "build/List.exe"
+          Write-Host ""
+          Write-Host "List.exe found!"
 
       - name: Deploy Qt dependencies
         shell: pwsh
@@ -102,12 +167,13 @@ jobs:
           $exePath = "${{ github.workspace }}/build/List.exe"
 
           if (!(Test-Path $exePath)) {
-            Write-Error "Executable not found:"
-            Write-Error $exePath
+            Write-Error "Executable not found!"
             exit 1
           }
 
-          Write-Host "Running windeployqt..."
+          Write-Host "========================================"
+          Write-Host "Deploying Qt"
+          Write-Host "========================================"
 
           windeployqt `
             --release `
@@ -119,22 +185,6 @@ jobs:
             exit 1
           }
 
-
-      - name: Copy SQLite
-        shell: pwsh
-        run: |
-
-          Write-Host "Searching for SQLite files..."
-
-          $sqliteFiles = Get-ChildItem `
-            -Path "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-static" `
-            -Recurse `
-            -Include "*.dll","*.a","*.lib" `
-            -ErrorAction SilentlyContinue
-
-          $sqliteFiles | ForEach-Object {
-            Write-Host $_.FullName
-          }
       - name: Copy SQL assets
         shell: pwsh
         run: |
@@ -154,12 +204,12 @@ jobs:
               -Recurse `
               -Force
 
-          } else {
+          }
+          else {
 
             Write-Host "No SQL directory found."
 
           }
-
 
       - name: Copy SVG assets
         shell: pwsh
@@ -180,25 +230,30 @@ jobs:
               -Recurse `
               -Force
 
-          } else {
+          }
+          else {
 
             Write-Host "No SVG directory found."
 
           }
-      - name: Show final build contents
+
+
+
+      - name: Show final build
         shell: pwsh
         run: |
 
-          Write-Host ""
-          Write-Host "======================================"
-          Write-Host "FINAL BUILD"
-          Write-Host "======================================"
+          Write-Host "========================================"
+          Write-Host "FINAL BUILD CONTENTS"
+          Write-Host "========================================"
 
           Get-ChildItem `
             -Path build `
             -Recurse
 
-      - name: Archive Windows build
+
+
+      - name: Create Windows ZIP
         shell: pwsh
         run: |
 
@@ -212,10 +267,13 @@ jobs:
             -DestinationPath "build/List-Windows.zip" `
             -Force
 
-          Write-Host "Created:"
-          Get-Item "build/List-Windows.zip"
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "ZIP CREATED"
+          Write-Host "========================================"
 
-      - name: Upload Windows artifact
+          Get-Item "build/List-Windows.zip"
+      - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
           name: List-Windows

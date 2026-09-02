@@ -19,7 +19,7 @@ find_package(Qt6 REQUIRED COMPONENTS
         Svg
 )
 
-find_package(unofficial-sqlite3 CONFIG REQUIRED)
+find_package(SQLite3 REQUIRED)
 
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -108,12 +108,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Sql
         Qt6::Concurrent
         Qt6::Svg
-        unofficial::sqlite3::sqlite3
+        SQLite3::SQLite3
 )
 
 if(NOT APPLE)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${CMAKE_CURRENT_SOURCE_DIR}/SQL"
             "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SQL"
