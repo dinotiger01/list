@@ -19,7 +19,7 @@ find_package(Qt6 REQUIRED COMPONENTS
         Svg
 )
 
-find_package(SQLite3 REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -108,7 +108,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Sql
         Qt6::Concurrent
         Qt6::Svg
-        SQLite3::SQLite3
+        unofficial::sqlite3::sqlite3
 )
 
 if(NOT APPLE)

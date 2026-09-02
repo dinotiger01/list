@@ -53,46 +53,16 @@ jobs:
             vcpkg-windows-mingw-
 
 
-      - name: Install SQLite via vcpkg
+      - name: Install SQLite
         shell: pwsh
         run: |
-          New-Item `
-            -ItemType Directory `
-            -Force `
-            -Path "${{ github.workspace }}/vcpkg-cache"
-
-          $env:VCPKG_DEFAULT_BINARY_CACHE = `
-            "${{ github.workspace }}/vcpkg-cache"
-
-          Write-Host "Installing SQLite..."
-
-          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" `
-            install sqlite3:x64-mingw-static
-
-          if ($LASTEXITCODE -ne 0) {
-            Write-Error "vcpkg SQLite installation failed!"
-            exit 1
-          }
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install sqlite3:x64-mingw-static
       - name: Configure CMake
         shell: pwsh
         run: |
-
-          Write-Host "Qt installation:"
-          Write-Host $env:Qt6_DIR
-
-          Write-Host "Qt prefix:"
-          Write-Host $env:Qt6_DIR
-
-          Write-Host "vcpkg:"
-          Write-Host $env:VCPKG_INSTALLATION_ROOT
-
-          cmake `
-            -S . `
-            -B build `
+          cmake -S . -B build `
             -G "MinGW Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_CXX_STANDARD=20 `
-            -DCMAKE_CXX_STANDARD_REQUIRED=ON `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
       - name: Build Application
         shell: pwsh
