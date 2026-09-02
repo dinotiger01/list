@@ -84,7 +84,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/QML
         ${CMAKE_CURRENT_SOURCE_DIR}/SVG
 )
-
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Core
         Qt6::Gui
@@ -93,8 +93,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Sql
         Qt6::Concurrent
         Qt6::Svg
-        SQLite3::SQLite3
+        unofficial::sqlite3::sqlite3
 )
+
 
 if(NOT APPLE)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

@@ -2,9 +2,12 @@ name: Windows Qt/CMake Build
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-windows:
@@ -28,77 +31,223 @@ jobs:
         run: |
           choco install mingw -y
 
+          # Make sure MinGW is available
+          $env:PATH = "C:\mingw64\bin;$env:PATH"
+
+          Write-Host "GCC:"
+          gcc --version
+
+          Write-Host "G++:"
+          g++ --version
+
+          Write-Host "CMake:"
+          cmake --version
+
+
+      - name: Restore vcpkg Binary Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/vcpkg-cache
+          key: vcpkg-windows-mingw-${{ hashFiles('**/vcpkg.json') }}
+          restore-keys: |
+            vcpkg-windows-mingw-
+
+
       - name: Install SQLite via vcpkg
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/vcpkg-cache"
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            -Path "${{ github.workspace }}/vcpkg-cache"
 
-          $env:VCPKG_DEFAULT_BINARY_CACHE="${{ github.workspace }}/vcpkg-cache"
+          $env:VCPKG_DEFAULT_BINARY_CACHE = `
+            "${{ github.workspace }}/vcpkg-cache"
 
-          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install sqlite3:x64-mingw-dynamic
+          Write-Host "Installing SQLite..."
 
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" `
+            install sqlite3:x64-mingw-static
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "vcpkg SQLite installation failed!"
+            exit 1
+          }
       - name: Configure CMake
         shell: pwsh
         run: |
-          cmake -S . -B build `
+
+          Write-Host "Qt installation:"
+          Write-Host $env:Qt6_DIR
+
+          Write-Host "Qt prefix:"
+          Write-Host $env:Qt6_DIR
+
+          Write-Host "vcpkg:"
+          Write-Host $env:VCPKG_INSTALLATION_ROOT
+
+          cmake `
+            -S . `
+            -B build `
             -G "MinGW Makefiles" `
             -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_CXX_STANDARD=20 `
+            -DCMAKE_CXX_STANDARD_REQUIRED=ON `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
-
       - name: Build Application
         shell: pwsh
         run: |
-          cmake --build build --parallel
 
+          cmake `
+            --build build `
+            --parallel
+
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Build failed!"
+            exit 1
+          }
       - name: Find executable
         shell: pwsh
         run: |
-          Get-ChildItem -Path build -Recurse -Filter "*.exe"
 
-      - name: Deploy Qt
-        shell: pwsh
-        run: |
-          $exePath = "${{ github.workspace }}/build/List.exe"
+          Write-Host "Searching for executable..."
 
-          if (!(Test-Path $exePath)) {
+          Get-ChildItem `
+            -Path build `
+            -Recurse `
+            -Filter "*.exe"
+
+          if (!(Test-Path "build/List.exe")) {
             Write-Error "List.exe was not found!"
             exit 1
           }
+
+          Write-Host "Found:"
+          Get-Item "build/List.exe"
+
+      - name: Deploy Qt dependencies
+        shell: pwsh
+        run: |
+
+          $exePath = "${{ github.workspace }}/build/List.exe"
+
+          if (!(Test-Path $exePath)) {
+            Write-Error "Executable not found:"
+            Write-Error $exePath
+            exit 1
+          }
+
+          Write-Host "Running windeployqt..."
 
           windeployqt `
             --release `
             --qmldir "${{ github.workspace }}/QML" `
             "$exePath"
 
-      - name: Copy Assets
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "windeployqt failed!"
+            exit 1
+          }
+
+
+      - name: Copy SQLite
         shell: pwsh
         run: |
+
+          Write-Host "Searching for SQLite files..."
+
+          $sqliteFiles = Get-ChildItem `
+            -Path "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-static" `
+            -Recurse `
+            -Include "*.dll","*.a","*.lib" `
+            -ErrorAction SilentlyContinue
+
+          $sqliteFiles | ForEach-Object {
+            Write-Host $_.FullName
+          }
+      - name: Copy SQL assets
+        shell: pwsh
+        run: |
+
           if (Test-Path "SQL") {
+
+            Write-Host "Copying SQL directory..."
+
+            New-Item `
+              -ItemType Directory `
+              -Force `
+              -Path "build/SQL"
+
             Copy-Item `
-              -Path "SQL" `
+              -Path "SQL/*" `
               -Destination "build/SQL" `
               -Recurse `
               -Force
+
+          } else {
+
+            Write-Host "No SQL directory found."
+
           }
 
+
+      - name: Copy SVG assets
+        shell: pwsh
+        run: |
+
           if (Test-Path "SVG") {
+
+            Write-Host "Copying SVG directory..."
+
+            New-Item `
+              -ItemType Directory `
+              -Force `
+              -Path "build/SVG"
+
             Copy-Item `
-              -Path "SVG" `
+              -Path "SVG/*" `
               -Destination "build/SVG" `
               -Recurse `
               -Force
-          }
 
-      - name: Archive Windows Build
+          } else {
+
+            Write-Host "No SVG directory found."
+
+          }
+      - name: Show final build contents
         shell: pwsh
         run: |
+
+          Write-Host ""
+          Write-Host "======================================"
+          Write-Host "FINAL BUILD"
+          Write-Host "======================================"
+
+          Get-ChildItem `
+            -Path build `
+            -Recurse
+
+      - name: Archive Windows build
+        shell: pwsh
+        run: |
+
+          if (!(Test-Path "build/List.exe")) {
+            Write-Error "List.exe is missing!"
+            exit 1
+          }
+
           Compress-Archive `
             -Path "build/*" `
             -DestinationPath "build/List-Windows.zip" `
             -Force
 
-      - name: Upload Artifact
+          Write-Host "Created:"
+          Get-Item "build/List-Windows.zip"
+
+      - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
           name: List-Windows
           path: build/List-Windows.zip
+          if-no-files-found: error
