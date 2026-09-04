@@ -13,16 +13,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # ------------------------------------------------------------
-      # Checkout
-      # ------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
-
-
-      # ------------------------------------------------------------
-      # Install Qt
-      # ------------------------------------------------------------
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -31,11 +23,6 @@ jobs:
           target: desktop
           arch: win64_mingw
           cache: true
-
-
-      # ------------------------------------------------------------
-      # Install MinGW
-      # ------------------------------------------------------------
       - name: Install MinGW
         shell: pwsh
         run: |
@@ -48,11 +35,6 @@ jobs:
 
           Write-Host "G++:"
           g++ --version
-
-
-      # ------------------------------------------------------------
-      # vcpkg cache
-      # ------------------------------------------------------------
       - name: Restore vcpkg cache
         uses: actions/cache@v4
         with:
@@ -60,11 +42,6 @@ jobs:
           key: vcpkg-windows-mingw-${{ hashFiles('**/vcpkg.json') }}
           restore-keys: |
             vcpkg-windows-mingw-
-
-
-      # ------------------------------------------------------------
-      # Install SQLite
-      # ------------------------------------------------------------
       - name: Install SQLite
         shell: pwsh
         run: |
@@ -83,11 +60,6 @@ jobs:
             Write-Error "SQLite installation failed!"
             exit 1
           }
-
-
-      # ------------------------------------------------------------
-      # Verify SQLite
-      # ------------------------------------------------------------
       - name: Verify SQLite installation
         shell: pwsh
         run: |
@@ -119,11 +91,6 @@ jobs:
           Get-ChildItem `
             "$root/bin" `
             -ErrorAction SilentlyContinue
-
-
-      # ------------------------------------------------------------
-      # Configure CMake
-      # ------------------------------------------------------------
       - name: Configure CMake
         shell: pwsh
         run: |
@@ -170,11 +137,6 @@ jobs:
             Write-Error "CMake configuration failed!"
             exit 1
           }
-
-
-      # ------------------------------------------------------------
-      # Build
-      # ------------------------------------------------------------
       - name: Build Application
         shell: pwsh
         run: |
@@ -191,11 +153,6 @@ jobs:
             Write-Error "Build failed!"
             exit 1
           }
-
-
-      # ------------------------------------------------------------
-      # Verify executable
-      # ------------------------------------------------------------
       - name: Verify executable
         shell: pwsh
         run: |
@@ -211,11 +168,6 @@ jobs:
             Write-Error "List.exe was not found!"
             exit 1
           }
-
-
-      # ------------------------------------------------------------
-      # Deploy Qt
-      # ------------------------------------------------------------
       - name: Deploy Qt dependencies
         shell: pwsh
         run: |
@@ -239,11 +191,36 @@ jobs:
             Write-Error "windeployqt failed!"
             exit 1
           }
+         - name: Copy SQLite DLL
+                shell: pwsh
+                run: |
+  
+                  $sqliteDll = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin/libsqlite3.dll"
+  
+                  Write-Host "Looking for SQLite DLL:"
+                  Write-Host $sqliteDll
+  
+                  if (!(Test-Path $sqliteDll)) {
+                    Write-Error "libsqlite3.dll was not found!"
+  
+                    Write-Host ""
+                    Write-Host "Contents of vcpkg SQLite bin directory:"
+  
+                    Get-ChildItem `
+                      "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin" `
+                      -ErrorAction SilentlyContinue
+  
+                    exit 1
+                  }
+  
+                  Copy-Item `
+                    -Path $sqliteDll `
+                    -Destination "build/libsqlite3.dll" `
+                    -Force
+  
+                  Write-Host "SQLite DLL copied successfully."
 
-
-      # ------------------------------------------------------------
-      # Copy SQL
-      # ------------------------------------------------------------
+                Get-Item "build/libsqlite3.dll"
       - name: Copy SQL assets
         shell: pwsh
         run: |
@@ -262,11 +239,6 @@ jobs:
               -Force
 
           }
-
-
-      # ------------------------------------------------------------
-      # Copy SVG
-      # ------------------------------------------------------------
       - name: Copy SVG assets
         shell: pwsh
         run: |
@@ -285,11 +257,6 @@ jobs:
               -Force
 
           }
-
-
-      # ------------------------------------------------------------
-      # Show final files
-      # ------------------------------------------------------------
       - name: Show build
         shell: pwsh
         run: |
@@ -301,11 +268,6 @@ jobs:
           Get-ChildItem `
             -Path build `
             -Recurse
-
-
-      # ------------------------------------------------------------
-      # ZIP
-      # ------------------------------------------------------------
       - name: Create ZIP
         shell: pwsh
         run: |
@@ -319,11 +281,6 @@ jobs:
             -Path "build/*" `
             -DestinationPath "build/List-Windows.zip" `
             -Force
-
-
-      # ------------------------------------------------------------
-      # Upload
-      # ------------------------------------------------------------
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
