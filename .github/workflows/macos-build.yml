@@ -171,7 +171,6 @@ jobs:
       - name: Deploy Qt dependencies
         shell: pwsh
         run: |
-
           $exe = "${{ github.workspace }}/build/List.exe"
 
           if (!(Test-Path $exe)) {
@@ -191,6 +190,8 @@ jobs:
             Write-Error "windeployqt failed!"
             exit 1
           }
+
+
       - name: Copy SQLite DLL
         shell: pwsh
         run: |
@@ -220,38 +221,41 @@ jobs:
           Write-Host "SQLite DLL copied successfully."
 
           Get-Item "build/libsqlite3.dll"
-          - name: Verify runtime dependencies
-            shell: pwsh
-            run: |
-              Write-Host "========================================"
-              Write-Host "Runtime dependency check"
-              Write-Host "========================================"
 
-              if (!(Test-Path "build/List.exe")) {
-                Write-Error "List.exe is missing!"
-                exit 1
-              }
 
-              if (!(Test-Path "build/libsqlite3.dll")) {
-                Write-Error "libsqlite3.dll is missing!"
-                exit 1
-              }
+      - name: Verify runtime dependencies
+        shell: pwsh
+        run: |
+          Write-Host "========================================"
+          Write-Host "Runtime dependency check"
+          Write-Host "========================================"
 
-              Write-Host "List.exe:"
-              Get-Item "build/List.exe"
+          if (!(Test-Path "build/List.exe")) {
+            Write-Error "List.exe is missing!"
+            exit 1
+          }
 
-              Write-Host ""
-              Write-Host "SQLite:"
-              Get-Item "build/libsqlite3.dll"
+          if (!(Test-Path "build/libsqlite3.dll")) {
+            Write-Error "libsqlite3.dll is missing!"
+            exit 1
+          }
 
-              Write-Host ""
-              Write-Host "Runtime dependencies OK."
+          Write-Host ""
+          Write-Host "List.exe:"
+          Get-Item "build/List.exe"
+
+          Write-Host ""
+          Write-Host "SQLite:"
+          Get-Item "build/libsqlite3.dll"
+
+          Write-Host ""
+          Write-Host "Runtime dependencies OK."
+
+
       - name: Copy SQL assets
         shell: pwsh
         run: |
-
           if (Test-Path "SQL") {
-
             New-Item `
               -ItemType Directory `
               -Force `
@@ -262,14 +266,13 @@ jobs:
               -Destination "build/SQL" `
               -Recurse `
               -Force
-
           }
+
+
       - name: Copy SVG assets
         shell: pwsh
         run: |
-
           if (Test-Path "SVG") {
-
             New-Item `
               -ItemType Directory `
               -Force `
@@ -280,12 +283,12 @@ jobs:
               -Destination "build/SVG" `
               -Recurse `
               -Force
-
           }
+
+
       - name: Show build
         shell: pwsh
         run: |
-
           Write-Host "========================================"
           Write-Host "FINAL BUILD"
           Write-Host "========================================"
@@ -293,6 +296,25 @@ jobs:
           Get-ChildItem `
             -Path build `
             -Recurse
+
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          if (!(Test-Path "build/List.exe")) {
+            Write-Error "List.exe is missing!"
+            exit 1
+          }
+
+          if (!(Test-Path "build/libsqlite3.dll")) {
+            Write-Error "libsqlite3.dll is missing!"
+            exit 1
+          }
+
+          Compress-Archive `
+            -Path "build/*" `
+            -DestinationPath "build/List-Windows.zip" `
+            -Force
       - name: Create ZIP
         shell: pwsh
         run: |
