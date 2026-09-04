@@ -244,13 +244,15 @@ namespace  Engine {
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
-        dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        QDir().mkpath(dbPath);
+
+        dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
+        // dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        // QDir().mkpath(dbPath);
 
         bool dbExists = QFileInfo::exists(dbPath);
 
 
-        dbPath += "/SQL/data.db";
+        // dbPath += "/SQL/data.db";
         if (true) {
             char* errorM = nullptr;
             sqlite3_open(dbPath.toUtf8().constData(), &DB);
