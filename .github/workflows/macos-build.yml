@@ -191,36 +191,61 @@ jobs:
             Write-Error "windeployqt failed!"
             exit 1
           }
-         - name: Copy SQLite DLL
-                shell: pwsh
-                run: |
-  
-                  $sqliteDll = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin/libsqlite3.dll"
-  
-                  Write-Host "Looking for SQLite DLL:"
-                  Write-Host $sqliteDll
-  
-                  if (!(Test-Path $sqliteDll)) {
-                    Write-Error "libsqlite3.dll was not found!"
-  
-                    Write-Host ""
-                    Write-Host "Contents of vcpkg SQLite bin directory:"
-  
-                    Get-ChildItem `
-                      "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin" `
-                      -ErrorAction SilentlyContinue
-  
-                    exit 1
-                  }
-  
-                  Copy-Item `
-                    -Path $sqliteDll `
-                    -Destination "build/libsqlite3.dll" `
-                    -Force
-  
-                  Write-Host "SQLite DLL copied successfully."
+      - name: Copy SQLite DLL
+        shell: pwsh
+        run: |
+          $sqliteDll = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin/libsqlite3.dll"
 
-                Get-Item "build/libsqlite3.dll"
+          Write-Host "Looking for SQLite DLL:"
+          Write-Host $sqliteDll
+
+          if (!(Test-Path $sqliteDll)) {
+            Write-Error "libsqlite3.dll was not found!"
+
+            Write-Host ""
+            Write-Host "Contents of vcpkg SQLite bin directory:"
+
+            Get-ChildItem `
+              "$env:VCPKG_INSTALLATION_ROOT/installed/x64-mingw-dynamic/bin" `
+              -ErrorAction SilentlyContinue
+
+            exit 1
+          }
+
+          Copy-Item `
+            -Path $sqliteDll `
+            -Destination "build/libsqlite3.dll" `
+            -Force
+
+          Write-Host "SQLite DLL copied successfully."
+
+          Get-Item "build/libsqlite3.dll"
+          - name: Verify runtime dependencies
+            shell: pwsh
+            run: |
+              Write-Host "========================================"
+              Write-Host "Runtime dependency check"
+              Write-Host "========================================"
+
+              if (!(Test-Path "build/List.exe")) {
+                Write-Error "List.exe is missing!"
+                exit 1
+              }
+
+              if (!(Test-Path "build/libsqlite3.dll")) {
+                Write-Error "libsqlite3.dll is missing!"
+                exit 1
+              }
+
+              Write-Host "List.exe:"
+              Get-Item "build/List.exe"
+
+              Write-Host ""
+              Write-Host "SQLite:"
+              Get-Item "build/libsqlite3.dll"
+
+              Write-Host ""
+              Write-Host "Runtime dependencies OK."
       - name: Copy SQL assets
         shell: pwsh
         run: |
