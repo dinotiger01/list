@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 
         std::cout << "QML should load ykyk" << std::endl;
 
-        Engine.refrechAll();
+        // Engine.refrechAll();
     }, Qt::QueuedConnection);
 
     engine.load(url);
