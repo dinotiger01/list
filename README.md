@@ -1,5 +1,5 @@
 # list
-this is a task list ment for simple house hold use that doesnt have alll the corpo slop most task list have
+this is a task list ment for simple house hold use that doesnt have alll the corpo slop most task list have test test
 
 <img src="src/Screenshot_20260901_025114.png" width="750">
 
