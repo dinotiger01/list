@@ -15,7 +15,6 @@
 // #include <chrono>
 // #include <thread>
 #include <sqlite3.h>
-#include <QtConcurrent>
 #include  <bitset>
 
 using namespace std;

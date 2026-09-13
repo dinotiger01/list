@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Layouts
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import EngineMod
 
 Window {
@@ -1112,7 +1112,7 @@ Window {
                                                 TextArea{
                                                     id: setFitName
                                                     placeholderText: "Name"
-                                                    placeholderTextColor: style.color
+                                                    placeholderTextColor: style.text
                                                     font.pointSize: 25
                                                     verticalAlignment: Text.AlignVCenter
                                                     anchors{
@@ -1334,7 +1334,7 @@ Window {
                                                         TextArea{
                                                             id: setPast
                                                             placeholderText: "Past"
-                                                            placeholderTextColor: style.color
+                                                            placeholderTextColor: style.text
                                                             font.pointSize: 15
                                                             anchors{
                                                                 fill: parent
@@ -1374,7 +1374,7 @@ Window {
                                                         TextArea{
                                                             id: setFut
                                                             placeholderText: "Future"
-                                                            placeholderTextColor: style.color
+                                                            placeholderTextColor: style.text
                                                             font.pointSize: 15
                                                             anchors{
                                                                 fill: parent
@@ -1730,7 +1730,7 @@ Window {
                                                     TextArea{
                                                         id: setPerName
                                                         placeholderText: "Name"
-                                                        placeholderTextColor: style.color
+                                                        placeholderTextColor: style.text
                                                         font.pointSize: 15
                                                         anchors{
                                                             fill: parent
@@ -1772,7 +1772,7 @@ Window {
                                                     TextArea{
                                                         id: setPerPHP
                                                         placeholderText: "Color"
-                                                        placeholderTextColor: style.color
+                                                        placeholderTextColor: style.text
                                                         font.pointSize: 15
                                                         anchors{
                                                             fill: parent
@@ -2060,7 +2060,7 @@ to delete a person type simply cilck the task then click the garbage button
                                                     TextArea{
                                                         id: setTypeName
                                                         placeholderText: "Name"
-                                                        placeholderTextColor: style.color
+                                                        placeholderTextColor: style.text
                                                         font.pointSize: 15
                                                         anchors{
                                                             fill: parent
@@ -2341,7 +2341,7 @@ to delete a task type simply cilck the task then click the garbage button
                             TextArea{
                                 id: newName
                                 placeholderText: "Name"
-                                placeholderTextColor: style.color
+                                placeholderTextColor: style.text
                                 font.pointSize: 15
                                 anchors{
                                     fill: parent
@@ -3254,7 +3254,7 @@ to delete a task type simply cilck the task then click the garbage button
                             TextArea{
                                 id: newNotes
                                 placeholderText: "Notes"
-                                placeholderTextColor: style.color
+                                placeholderTextColor: style.text
                                 font.pointSize: 15
                                 anchors{
                                     fill: parent
