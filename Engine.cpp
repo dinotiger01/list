@@ -318,7 +318,6 @@ namespace  Engine {
             sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
             sql = "INSERT INTO PRY VALUES(1,'Medium','#835ce0');";
 
-
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
             sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
             sql = "INSERT INTO PRY VALUES(2,'Low','#31bacd');";
@@ -510,11 +509,12 @@ namespace  Engine {
                 string tring = argv[i];
                 string sub = "";
                 for (char& j: tring) {
+                    cout << "fuck: " << j;
                     if (j == ',') {
                         try {
                             temp.push_back(stoi(sub));
                         }catch(exception e) {
-                            cerr << e.what();
+                            cerr << e.what() << "?";
                         }
                         sub = "";
                         continue;
@@ -696,7 +696,7 @@ namespace  Engine {
             cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
 
         }else {
-            cout << "it is open" << endl;
+            cout << "it is open?" << endl;
         }
         // close
         sqlite3_close(DB);
