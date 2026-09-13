@@ -3,12 +3,10 @@
 //
 
 #include "Engine.h"
-#include <sstream>
 #include <fstream>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQuickItem>
-#include <QVariantMap>
 #include <ctime>
 #include <QString>
 #include <string>
@@ -18,7 +16,6 @@
 // #include <thread>
 #include <sqlite3.h>
 #include <QtConcurrent>
-#include <QEventLoop>
 #include  <bitset>
 
 using namespace std;
@@ -91,7 +88,7 @@ namespace  Engine {
     QObject* filterType;
     QObject* filterPer;
     // sql
-    sqlite3* DB;
+    // sqlite3* DB;
 
     // quick test
     int ind = 2;
@@ -244,6 +241,7 @@ namespace  Engine {
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         eng = engin;
+        sqlite3* DB;
 
         dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
         // dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -506,7 +504,7 @@ namespace  Engine {
     }
 
     static int callbackFit(void* data, int argc, char** argv, char** azColName) {
-        typeST newtype;
+        // typeST newtype;
         for (int i = 0; i< argc; i++) {
             string tempName = azColName[i];
             if (tempName == "NAME") {
@@ -563,10 +561,9 @@ namespace  Engine {
                     }
                     sub+= j;
                 }
-                time_t date1;
-                time_t date2;
+                time_t date1 = 0;
+                time_t date2 = 0;
                 if (!middle.empty()) {
-                    cout << middle[0] << " : " << middle[1] << "\n";
                     if (middle[0] != "") {
                         filter_use_date_past = true;
                         if (middle[0] == "x") {
@@ -605,7 +602,7 @@ namespace  Engine {
                 filter_date = temp;
             }
         }
-        all_type.push_back(newtype);
+        // all_type.push_back(newtype);
 
 
         return 0;
@@ -613,6 +610,7 @@ namespace  Engine {
 
     void EngineMod::sqlPullPeople() {
         // define stuff
+        sqlite3* DB;
         int exit = 0;
         // open
         cout << dbPath.toUtf8().constData() << "\n";
@@ -635,6 +633,7 @@ namespace  Engine {
     int EngineMod::sqlPullTask() {
         // define stuff
         int exit = 0;
+        sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
@@ -650,6 +649,7 @@ namespace  Engine {
 
     void EngineMod::sqlPullPry() {
         int exit = 0;
+        sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
@@ -670,6 +670,7 @@ namespace  Engine {
 
     void EngineMod::sqlPullType() {
         int exit = 0;
+        sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
@@ -690,6 +691,7 @@ namespace  Engine {
 
     void EngineMod::sqlPullFilt() {
         int exit = 0;
+        sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         // sql sertch
@@ -710,6 +712,7 @@ namespace  Engine {
 
     void back_dup(task dup, struct tm newtime, bool oveRide) {
         int exit = 0;
+        sqlite3* DB;
         char* errorM;
 
         string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
@@ -886,6 +889,7 @@ namespace  Engine {
     void EngineMod::sqlComd() {
         int exit = 0;
         char* errorM;
+        sqlite3* DB;
         // open
         exit = sqlite3_open(".//data.db", &DB);
 
@@ -948,7 +952,7 @@ namespace  Engine {
         cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
         int exit = 0;
         char* errorM;
-
+        sqlite3* DB;
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
         string newdue = due.toStdString();
         string fixeddue = newdue.substr(6, 4) + "/" + newdue.substr(0, 2) + "/" + newdue.substr(3, 2);
@@ -985,7 +989,7 @@ namespace  Engine {
     }
 
     void EngineMod::createType(QString name, int dex, QString old) {
-
+        sqlite3* DB;
         char* errorM;
         int exit = 0;
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
@@ -1019,6 +1023,7 @@ namespace  Engine {
 
     void EngineMod::createPerson(int dex, QString name, QString php, QString reqHr) {
         int exit = 0;
+        sqlite3* DB;
         char* errorM;
 
         exit = sqlite3_open(dbPath.toUtf8().constData() , &DB);
@@ -1338,7 +1343,6 @@ namespace  Engine {
 
     void EngineMod::deleter(QObject *taskToDelete, int delDex) {
         taskToDelete->deleteLater();
-
         task tempTask;
         for (auto& i: all_tasks) {
             if (i.dex == delDex) {
@@ -1383,6 +1387,7 @@ namespace  Engine {
             back_dup(tempTask, newDate, true);
         }else {
             // sql stuff
+            sqlite3* DB;
             int exit = 0;
             char* errorM;
             string sql = "delete from TASKS where ID =";
@@ -1410,6 +1415,7 @@ namespace  Engine {
                 break;
             }
         }
+        sqlite3* DB;
         ty += "';";
         string sql = "delete from TYPE where ID = " + to_string(dex);
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
@@ -1426,6 +1432,7 @@ namespace  Engine {
     void EngineMod::deletePerson(int dex) {
         int exit = 0;
         char* errorM;
+        sqlite3* DB;
         string sql = "delete from PEOPLE where ID = " + to_string(dex);
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
@@ -1459,6 +1466,7 @@ namespace  Engine {
     void EngineMod::permDel() {
         int exit = 0;
         char* errorM;
+        sqlite3* DB;
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
         string sql = "delete from TASKS where ID =";
@@ -1546,6 +1554,7 @@ namespace  Engine {
         // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
         int exit = 0;
         char* errorM;
+        sqlite3* DB;
 
         exit = sqlite3_open(dbPath.toUtf8().constData() , &DB);
 
