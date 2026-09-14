@@ -252,7 +252,7 @@ namespace  Engine {
         // dbPath += "/SQL/data.db";
         if (true) {
             char* errorM = nullptr;
-            sqlite3_open(dbPath.toUtf8().constData(), &DB);
+            // sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
             string sql;
             /*sql = "create table IF NOT EXISTS TASKS("
@@ -606,7 +606,7 @@ namespace  Engine {
         int exit = 0;
         // open
         cout << dbPath.toUtf8().constData() << "\n";
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd1";
         // sql sertch
         string query = "select * from PEOPLE ORDER BY ID;";
         sqlite3_exec(DB, query.c_str(), callbackP, NULL , NULL);
@@ -627,7 +627,7 @@ namespace  Engine {
         int exit = 0;
         sqlite3* DB;
         // open
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd2";
         // sql sertch
         string query = "select * from TASKS ORDER BY WHE DESC";
         sqlite3_exec(DB, query.c_str(), callback, NULL , NULL);
@@ -643,7 +643,7 @@ namespace  Engine {
         int exit = 0;
         sqlite3* DB;
         // open
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd3";
         // sql sertch
         string query = "select * from PRY "
                        "ORDER BY DEX";
@@ -664,7 +664,7 @@ namespace  Engine {
         int exit = 0;
         sqlite3* DB;
         // open
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd4";
         // sql sertch
         string query = "select * from TYPE "
                        "ORDER BY ID";
@@ -685,10 +685,10 @@ namespace  Engine {
         int exit = 0;
         sqlite3* DB;
         // open
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        // exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd5";
         // sql sertch
         string query = "select * from filter";
-        sqlite3_exec(DB, query.c_str(), callbackFit, NULL , NULL);
+        // sqlite3_exec(DB, query.c_str(), callbackFit, NULL , NULL);
 
         // debog stuff
         if (exit != SQLITE_OK) {
@@ -698,7 +698,7 @@ namespace  Engine {
             cout << "it is open?" << endl;
         }
         // close
-        sqlite3_close(DB);
+        // sqlite3_close(DB);
         // refrechAll();
     }
 
@@ -945,7 +945,7 @@ namespace  Engine {
         int exit = 0;
         char* errorM;
         sqlite3* DB;
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd6";
         string newdue = due.toStdString();
         string fixeddue = newdue.substr(6, 4) + "/" + newdue.substr(0, 2) + "/" + newdue.substr(3, 2);
         string start = "INSERT INTO TASKS (NAME, PRY, REPEATE, HOWLONG, WHE, NOTE, PEOPLE, TYPE)VALUES (";
@@ -984,7 +984,7 @@ namespace  Engine {
         sqlite3* DB;
         char* errorM;
         int exit = 0;
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB);
+        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd8";
         string sql;
         if (dex == -1) {
             // create
