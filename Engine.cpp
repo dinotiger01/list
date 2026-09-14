@@ -14,7 +14,7 @@
 #include <QObject>
 // #include <chrono>
 // #include <thread>
-#include <sqlite3.h>
+// #include <sqlite3.h>
 #include  <bitset>
 
 using namespace std;
