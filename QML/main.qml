@@ -5,11 +5,11 @@ import QtQuick
 // import EngineMod
 
 Window {
-    // id : root
-    // width: 1000
-    // height: 1250
-    // visible: true
-    // title: "List"
+    id : root
+    width: 1000
+    height: 1250
+    visible: true
+    title: "List"
     /*Item{
         id: style
         property string main: "#682bd7"
