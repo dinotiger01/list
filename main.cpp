@@ -12,13 +12,13 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     Engine::EngineMod Engine;
 
-    engine.rootContext()->setContextProperty("engin", &Engine);
-    Engine.setEng(&engine);
+    // engine.rootContext()->setContextProperty("engin", &Engine);
+    // Engine.setEng(&engine);
 
     // Track if loading fails completely
     const QUrl url(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml"));
 
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+    /*QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url, &Engine](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl) {
             // qCritical() << "ERROR: QML Engine failed to load the root object!";
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         std::cout << "QML should load ykyk" << std::endl;
 
         // Engine.refrechAll();
-    }, Qt::QueuedConnection);
+    }, Qt::QueuedConnection);*/
 
     engine.load(url);
 
