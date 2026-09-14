@@ -28,8 +28,6 @@ qt_add_qml_module(${PROJECT_NAME}
         main.qml
         SOURCES
         main.cpp
-        controlls.cpp
-        controlls.h
         Engine.cpp
         Engine.h
         RESOURCES
