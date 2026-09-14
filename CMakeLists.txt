@@ -21,14 +21,15 @@ qt_add_executable(${PROJECT_NAME}
 )
 
 qt_add_qml_module(${PROJECT_NAME}
-        URI MainApplication
+        URI EngineMod
         VERSION 1.0
+#        RESOURCE_PREFIX "/qt/qml"
         QML_FILES
         main.qml
         SOURCES
         main.cpp
-        controlls.cpp
-        controlls.h
+        Engine.cpp
+        Engine.h
         RESOURCES
         cat.jpg
         kitty.jpg
