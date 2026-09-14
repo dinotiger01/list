@@ -15,7 +15,6 @@ find_package(Qt6 REQUIRED COMPONENTS
         Quick
         Widgets
         Sql
-        Concurrent
         Svg
 )
 
@@ -106,7 +105,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Quick
         Qt6::Widgets
         Qt6::Sql
-        Qt6::Concurrent
         Qt6::Svg
         SQLite3::SQLite3
 )
