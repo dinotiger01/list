@@ -174,7 +174,7 @@ namespace MTG_size_editer {
                 tring += ss[i];
             }
             if (ss[i] == '\n') {
-                skiper == false;
+                skiper = false;
                 temp.first = 0;
                 temp.second = "";
                 tring = "";
