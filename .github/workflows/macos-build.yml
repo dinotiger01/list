@@ -37,7 +37,7 @@ jobs:
         shell: pwsh
         run: |
           mkdir release
-          Copy-Item "build/Qt6QmlApp.exe" "release/"
+          Copy-Item "build/List.exe" "release/"
           Copy-Item "scryfall-card-image-urls.csv" "release/"
           
           windeployqt `
