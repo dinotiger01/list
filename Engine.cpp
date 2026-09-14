@@ -95,83 +95,95 @@ namespace  Engine {
 
     //returns
     QString EngineMod::getCurrentDate() {
-        char cDate[50];;
+        /*char cDate[50];;
         strftime(cDate, 50, "%m/%d/%Y", &currentDate);
-        return QString::fromStdString(cDate);
+        return QString::fromStdString(cDate);*/
+        return "";
     }
 
     QString EngineMod::getPersonName(int i, QObject* obj) {
-        if (obj != nullptr) {
+        /*if (obj != nullptr) {
             peopleKidHold[i] = obj;
         }
-        return QString::fromStdString(all_people[i].name);
+        return QString::fromStdString(all_people[i].name);*/
+        return "";
     }
     int EngineMod::getPersonSize() {
-        if (peopleKidHold.empty()) {
+        /*if (peopleKidHold.empty()) {
             for (int i=0; i < all_people.size(); i++) {
                 peopleKidHold.push_back(NULL);
             }
         }
-        return all_people.size();
+        return all_people.size();*/
+        return 0;
     }
     int EngineMod::getPersonDex(int i) {
-        return all_people[i].dex;
+        /*return all_people[i].dex;*/
+        return 0;
     }
     QString EngineMod::getPersonPhp(int i) {
-        return QString::fromStdString(all_people[i].php);
+        /*return QString::fromStdString(all_people[i].php);*/
+        return "";
     }
 
     QString EngineMod::getTypeName(int i, QObject* obj) {
-        cout << "type name: " << i << "\n";
+        /*cout << "type name: " << i << "\n";
 
         if (obj != nullptr) {
             typeKidHold[i] = obj;
         }
 
-        return QString::fromStdString(all_type[i].name);
+        return QString::fromStdString(all_type[i].name);*/
+        return "";
     }
     int EngineMod::getTypeSize() {
-        if (typeKidHold.empty()) {
+        /*if (typeKidHold.empty()) {
             for (int i=0; i < all_type.size(); i++) {
                 typeKidHold.push_back(NULL);
             }
         }
         cout << "type size: " << all_type.size()<< "\n";
-        return all_type.size();
+        return all_type.size();*/
+        return 0;
     }
     int EngineMod::getTypeDex(int i) {
-        return all_type[i].dex;
+        /*return all_type[i].dex;*/
+        return 0;
     }
 
     QString EngineMod::getPryName(int i, QObject* obj) {
-        if (obj != nullptr) {
+        /*if (obj != nullptr) {
             pryKidHold.at(i) = obj;
         }
-        return QString::fromStdString(all_pry[i].name);
+        return QString::fromStdString(all_pry[i].name);*/
+        return "";
     }
     int EngineMod::getPrySize() {
-        if (pryKidHold.empty()) {
+        /*if (pryKidHold.empty()) {
             for (int i=0; i < all_pry.size(); i++) {
                 pryKidHold.push_back(NULL);
             }
         }
-        return all_pry.size();
+        return all_pry.size();*/
+        return 0;
     }
 
     bool isPrev(time_t test) {
-        time_t rn = curentTime;
+        /*time_t rn = curentTime;
         if((difftime(rn, test )/ 60*60*24) > -1){
             return true;
         }else {
             return false;
-        }
+        }*/
+        return false;
     }
     bool isPrev(tm testDate) {
-        time_t test = mktime(&testDate);
-        return isPrev(test);
+        /*time_t test = mktime(&testDate);
+        return isPrev(test);*/
+        return false;
     }
     bool isFilter(task temp) {
-        // cout << "111" << "\n";
+        /*// cout << "111" << "\n";
         if (filter_use_person) {
             // cout << "22" << "\n";
             bool personfound = false;
@@ -234,12 +246,13 @@ namespace  Engine {
             }
         }
 
-        return true;
+        return true;*/
+        return false;
     }
 
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
-        eng = engin;
+        /*eng = engin;
         sqlite3* DB;
 
         dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
@@ -322,31 +335,31 @@ namespace  Engine {
             sql = "INSERT INTO PRY VALUES(2,'Low','#31bacd');";
 
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
-            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);*/
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);#1#
 
-        }
+        }*/
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
-        bulkCreate[type.toStdString()] = obj;
+        /*bulkCreate[type.toStdString()] = obj;*/
     }
 
     // start
     void EngineMod::setPar(QObject *par, QObject* crat, QObject* tot) {
-        listPar = par;
+        /*listPar = par;
         crate = crat;
-        tota = tot;
+        tota = tot;*/
 
     }
 
     void EngineMod::initFilter(QObject *typ, QObject *pe) {
 
-        sqlPullFilt();
+        /*sqlPullFilt();
 
 
 
         filterPer = pe;
-        filterType = typ;
+        filterType = typ;*/
     }
 
 
@@ -366,7 +379,7 @@ namespace  Engine {
 
     static int callback(void* data, int argc, char** argv, char** azColName)
     {
-        //this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
+        /*//this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
         //it was edited to conver to c++ variables
         //data - idk
         // argc - how many data per thing
@@ -433,11 +446,12 @@ namespace  Engine {
             }
         }
         all_tasks.push_back(newTask);
+        return 0;*/
         return 0;
     }
 
     static int callbackP(void* data, int argc, char** argv, char** azColName) {
-        people newperson;
+        /*people newperson;
         for (int i = 0; i < argc;i++) {
             // cout << azColName[i] << " : " << argv[i] << endl;
             string tempName = azColName[i];
@@ -455,11 +469,12 @@ namespace  Engine {
         }
         all_people.push_back(newperson);
 
+        return 0;*/
         return 0;
     }
 
     static int callbackPRY(void* data, int argc, char** argv, char** azColName) {
-        pryority newPry;
+        /*pryority newPry;
         for (int i = 0; i < argc;i++) {
             cout << azColName[i] << " : " << argv[i] << endl;
             string tempName = azColName[i];
@@ -475,11 +490,12 @@ namespace  Engine {
         }
         all_pry.push_back(newPry);
 
+        return 0;*/
         return 0;
     }
 
     static int callbackTYPE(void* data, int argc, char** argv, char** azColName) {
-        typeST newtype;
+        /*typeST newtype;
         for (int i = 0; i< argc; i++) {
             string tempName = azColName[i];
             if (tempName == "ID") {
@@ -491,11 +507,12 @@ namespace  Engine {
         all_type.push_back(newtype);
 
 
+        return 0;*/
         return 0;
     }
 
     static int callbackFit(void* data, int argc, char** argv, char** azColName) {
-        // typeST newtype;
+        /*// typeST newtype;
         for (int i = 0; i< argc; i++) {
             string tempName = azColName[i];
             if (tempName == "NAME") {
@@ -597,11 +614,12 @@ namespace  Engine {
         // all_type.push_back(newtype);
 
 
+        return 0;*/
         return 0;
     }
 
     void EngineMod::sqlPullPeople() {
-        // define stuff
+        /*// define stuff
         sqlite3* DB;
         int exit = 0;
         // open
@@ -619,11 +637,11 @@ namespace  Engine {
             cout << "it is open" << endl;
         }
         // close
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
     }
 
     int EngineMod::sqlPullTask() {
-        // define stuff
+        /*// define stuff
         int exit = 0;
         sqlite3* DB;
         // open
@@ -636,11 +654,12 @@ namespace  Engine {
         cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
         // close
         sqlite3_close(DB);
+        return 0;*/
         return 0;
     }
 
     void EngineMod::sqlPullPry() {
-        int exit = 0;
+        /*int exit = 0;
         sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd3";
@@ -657,11 +676,11 @@ namespace  Engine {
             cout << "it is open" << endl;
         }
         // close
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
     }
 
     void EngineMod::sqlPullType() {
-        int exit = 0;
+        /*int exit = 0;
         sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd4";
@@ -678,11 +697,11 @@ namespace  Engine {
             cout << "it is open" << endl;
         }
         // close
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
     }
 
     void EngineMod::sqlPullFilt() {
-        int exit = 0;
+        /*int exit = 0;
         sqlite3* DB;
         // open
         // exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd5";
@@ -699,11 +718,11 @@ namespace  Engine {
         }
         // close
         // sqlite3_close(DB);
-        // refrechAll();
+        // refrechAll();*/
     }
 
     void back_dup(task dup, struct tm newtime, bool oveRide) {
-        int exit = 0;
+        /*int exit = 0;
         sqlite3* DB;
         char* errorM;
 
@@ -739,12 +758,12 @@ namespace  Engine {
 
         cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
 
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
 
     }
 
     bool dup_fromC(task id) {
-        task& dupTask = id;
+        /*task& dupTask = id;
         bool needed = false;
         // time rn
 
@@ -814,11 +833,12 @@ namespace  Engine {
         if (needed) {
             back_dup(dupTask, testDate, false);
         }
-        return needed;
+        return needed;*/
+        return false;
     };
 
     void EngineMod::refrechAll() {
-        //clear
+        /*//clear
         // sqlComd();
 
         all_tasks.clear();
@@ -875,11 +895,11 @@ namespace  Engine {
                 cout << i.dir->children().size() << "\n";
             }
             tota->setProperty("tot", total);
-        }
+        }*/
     }
 
     void EngineMod::sqlComd() {
-        int exit = 0;
+        /*int exit = 0;
         char* errorM;
         sqlite3* DB;
         // open
@@ -937,11 +957,11 @@ namespace  Engine {
 
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "sqlcmd: " << sqlite3_errmsg(DB) << endl;
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
     }
 
     void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type, bool edit) {
-        cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
+        /*cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
         int exit = 0;
         char* errorM;
         sqlite3* DB;
@@ -977,11 +997,11 @@ namespace  Engine {
         cerr << "create task : " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
         crate->setProperty("createIsClosed", true);
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::createType(QString name, int dex, QString old) {
-        sqlite3* DB;
+        /*sqlite3* DB;
         char* errorM;
         int exit = 0;
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd8";
@@ -1010,11 +1030,11 @@ namespace  Engine {
         sqlite3_close(DB);
 
 
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::createPerson(int dex, QString name, QString php, QString reqHr) {
-        int exit = 0;
+        /*int exit = 0;
         sqlite3* DB;
         char* errorM;
 
@@ -1057,11 +1077,11 @@ namespace  Engine {
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::addTask(int addtask) {
-        // cout << "qml: " << all_tasks[addtask].name << endl;
+        /*// cout << "qml: " << all_tasks[addtask].name << endl;
         task& temp = all_tasks[addtask];
         if (isFilter(temp)) {
             // if filter here
@@ -1137,11 +1157,11 @@ namespace  Engine {
             }
         }
         // cout << childItem->parent() << endl;
-        // ind++;
+        // ind++;*/
     }
 
     void EngineMod::addPry(int addedPry) {
-        pryority& temp = all_pry[addedPry];
+        /*pryority& temp = all_pry[addedPry];
 
         QQmlComponent component(eng, QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/pryQml.qml")));
 
@@ -1172,7 +1192,7 @@ namespace  Engine {
         }
 
         // find dir
-        temp.dir = childItem;
+        temp.dir = childItem;*/
 
     }
 
@@ -1193,7 +1213,7 @@ namespace  Engine {
     // engin.setBulkCreate(repWeek, "repWeek")
     // engin.setBulkCreate(creatDate, "date")
     void EngineMod::editOpen(int dex) {
-        curLook = dex;
+        /*curLook = dex;
         task temp;
         for (auto& i : all_tasks) {
             if (i.dex == dex) {
@@ -1314,11 +1334,11 @@ namespace  Engine {
         bulkCreate["creator"]->setProperty("peps", qmlPep);//check
 
 
-        crate->setProperty("createIsClosed", false);
+        crate->setProperty("createIsClosed", false);*/
     }
 
     void EngineMod::editClose() {
-        crate->setProperty("createIsClosed", true);
+        /*crate->setProperty("createIsClosed", true);*/
     }
 
     void EngineMod::testing() {
@@ -1334,7 +1354,7 @@ namespace  Engine {
     }
 
     void EngineMod::deleter(QObject *taskToDelete, int delDex) {
-        taskToDelete->deleteLater();
+        /*taskToDelete->deleteLater();
         task tempTask;
         for (auto& i: all_tasks) {
             if (i.dex == delDex) {
@@ -1393,12 +1413,12 @@ namespace  Engine {
             sqlite3_close(DB);
 
         }
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::deleteType(int dex) {
 
-        int exit = 0;
+        /*int exit = 0;
         char* errorM;
         string ty;
         for (auto& i : all_type) {
@@ -1418,11 +1438,11 @@ namespace  Engine {
         cout << sql << "\n";
         cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::deletePerson(int dex) {
-        int exit = 0;
+        /*int exit = 0;
         char* errorM;
         sqlite3* DB;
         string sql = "delete from PEOPLE where ID = " + to_string(dex);
@@ -1452,11 +1472,11 @@ namespace  Engine {
 
 
         sqlite3_close(DB);
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::permDel() {
-        int exit = 0;
+        /*int exit = 0;
         char* errorM;
         sqlite3* DB;
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
@@ -1468,11 +1488,11 @@ namespace  Engine {
         cerr << "perm: " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-        refrechAll();
+        refrechAll();*/
     }
 
     void EngineMod::setFilter(QString name, QVariantList pep, QStringList type, QStringList dates) {
-        filter_use_person = false;
+        /*filter_use_person = false;
         for (auto& i: pep) {
             if (i.toBool() == 1) {
                 filter_use_person = true;
@@ -1538,12 +1558,12 @@ namespace  Engine {
 
         filter_name = name.toStdString();
 
-        refrechAll();
+        refrechAll();*/
 
     }
 
     void EngineMod::updateFilter(QString name, QString peps, QString types, QString dates) {
-        // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
+        /*// sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
         int exit = 0;
         char* errorM;
         sqlite3* DB;
@@ -1561,7 +1581,7 @@ namespace  Engine {
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
-        sqlite3_close(DB);
+        sqlite3_close(DB);*/
 
     }
 };
