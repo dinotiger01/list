@@ -43,10 +43,10 @@ jobs:
           windeployqt `
             --release `
             --qmldir . `
-            "release/Qt6QmlApp.exe"
+            "release/List.exe"
 
       - name: Upload Windows application
         uses: actions/upload-artifact@v4
         with:
-          name: Qt6QmlApp-Windows
+          name: List-Windows
           path: release/
