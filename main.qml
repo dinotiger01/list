@@ -97,7 +97,7 @@ Window {
                                         fill: parent
                                         margins: 2.5
                                     }
-                                    source: "../SVG/home.svg"
+                                    // source: "../SVG/home.svg"
                                     // color: style.text //mark
                                 }
                             }
@@ -182,7 +182,7 @@ Window {
                                         fill: parent
                                         margins: 2.5
                                     }
-                                    source: "../SVG/settings.svg"
+                                    // source: "../SVG/settings.svg"
                                     // color: style.text //mark
                                 }
                             }
@@ -648,7 +648,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "../SVG/search.svg"
+                                                // source: "../SVG/search.svg"
                                             }
                                         }
                                         property var pep: []
@@ -708,7 +708,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "../SVG/restart.svg"
+                                                // source: "../SVG/restart.svg"
                                             }
                                         }
                                         onClicked: {
@@ -738,7 +738,7 @@ Window {
                                                     fill: parent
                                                     margins: 2.5
                                                 }
-                                                source: "../SVG/X.svg"
+                                                // source: "../SVG/X.svg"
                                             }
                                         }
                                         onClicked: {
@@ -823,7 +823,7 @@ Window {
                                                                 fill: parent
                                                                 margins: 5
                                                             }
-                                                            source: "../SVG/sync.svg"
+                                                            // source: "../SVG/sync.svg"
                                                         }
 
                                                     }
@@ -852,7 +852,7 @@ Window {
                                                                 fill: parent
                                                                 margins: 5
                                                             }
-                                                            source: "../SVG/plus.svg"
+                                                            // source: "../SVG/plus.svg"
                                                         }
                                                     }
                                                     onClicked: {
@@ -1550,7 +1550,7 @@ Window {
                                                     fill: parent
                                                     margins: 5
                                                 }
-                                                source: "../SVG/plus.svg"
+                                                // source: "../SVG/plus.svg"
                                             }
                                         }
                                         onClicked:{
@@ -1816,7 +1816,7 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/up-arrow2.svg"
+                                                                // source: "../SVG/up-arrow2.svg"
                                                                 // rotation: 90
                                                             }
                                                         }
@@ -1845,7 +1845,7 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/plus.svg"
+                                                                // source: "../SVG/plus.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -1891,7 +1891,7 @@ Window {
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/garbage.svg"
+                                                                // source: "../SVG/garbage.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2105,7 +2105,7 @@ to delete a person type simply cilck the task then click the garbage button
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/up-arrow2.svg"
+                                                                // source: "../SVG/up-arrow2.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2133,7 +2133,7 @@ to delete a person type simply cilck the task then click the garbage button
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/plus.svg"
+                                                                // source: "../SVG/plus.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2170,7 +2170,7 @@ to delete a person type simply cilck the task then click the garbage button
                                                                     fill: parent
                                                                     margins: 5
                                                                 }
-                                                                source: "../SVG/garbage.svg"
+                                                                // source: "../SVG/garbage.svg"
                                                             }
                                                         }
                                                         onClicked: {
@@ -2709,7 +2709,7 @@ to delete a task type simply cilck the task then click the garbage button
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            source: "../SVG/plus.svg"
+                                                            // source: "../SVG/plus.svg"
                                                         }
                                                     }
                                                 }
@@ -2730,7 +2730,7 @@ to delete a task type simply cilck the task then click the garbage button
                                                                 fill: parent
                                                                 margins: 2.5
                                                             }
-                                                            source: "../SVG/minus.svg"
+                                                            // source: "../SVG/minus.svg"
                                                         }
                                                     }
                                                 }
@@ -3305,7 +3305,7 @@ to delete a task type simply cilck the task then click the garbage button
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "../SVG/garbage.svg"
+                                        // source: "../SVG/garbage.svg"
                                         // color: style.text //mark
                                     }
                                 }
@@ -3333,7 +3333,7 @@ to delete a task type simply cilck the task then click the garbage button
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "../SVG/plus.svg"
+                                        // source: "../SVG/plus.svg"
                                         // color: style.text //mark
                                     }
                                 }
@@ -3455,7 +3455,7 @@ to delete a task type simply cilck the task then click the garbage button
                                             fill: parent
                                             margins: 2.5
                                         }
-                                        source: "../SVG/minus.svg"
+                                        // source: "../SVG/minus.svg"
                                         // color: style.text //mark
                                     }
                                 }
