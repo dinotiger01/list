@@ -1,8 +1,8 @@
 import QtQuick
-import QtQuick.Window
-import QtQuick.Layouts
-import QtQuick.Controls.Basic
-import EngineMod
+// import QtQuick.Window
+// import QtQuick.Layouts
+// import QtQuick.Controls.Basic
+// import EngineMod
 
 Window {
     id : root
@@ -10,7 +10,7 @@ Window {
     height: 1250
     visible: true
     title: "List"
-    Item{
+   /* Item{
         id: style
         property string main: "#682bd7"
         property string text: "#010101"
@@ -18,8 +18,8 @@ Window {
         property string back: "#e6ddd6"
         property string detail: "#d6cdc6"
 
-        /*color: parent.down ? style.down :
-            parent.hovered ? style.hover : style.button*/
+        /!*color: parent.down ? style.down :
+            parent.hovered ? style.hover : style.button*!/
         property string textBox: "#86d9fe"
         property string total: "#fc7b54"
 
@@ -59,7 +59,7 @@ Window {
 
         }
     }
-    /*Item{
+    Item{
         id: pageer
         anchors{fill: parent}
         //main

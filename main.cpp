@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "Engine.h"
+#include "controlls.h"
 
 using namespace Qt::StringLiterals;
 
@@ -16,11 +16,8 @@ int main(int argc, char *argv[]) {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
-
-    Engine::EngineMod Engine;
-    engine.rootContext()->setContextProperty("engin", &Engine);
-    Engine.setEng(&engine);
-
+    MTG_size_editer::controlls controll;
+    engine.rootContext()->setContextProperty("controlls", &controll);
     engine.load(url);
 
     return app.exec();
