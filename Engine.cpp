@@ -255,7 +255,7 @@ namespace  Engine {
             sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
             string sql;
-            sql = "create table IF NOT EXISTS TASKS("
+            /*sql = "create table IF NOT EXISTS TASKS("
                     "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
                     "NAME text,"
                     "PRY int,"
@@ -313,7 +313,6 @@ namespace  Engine {
 
             sql = "INSERT INTO PRY VALUES(0,'High','#bd2e95');";
 
-
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
             sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
             sql = "INSERT INTO PRY VALUES(1,'Medium','#835ce0');";
@@ -323,7 +322,7 @@ namespace  Engine {
             sql = "INSERT INTO PRY VALUES(2,'Low','#31bacd');";
 
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
-            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);*/
 
         }
     }
