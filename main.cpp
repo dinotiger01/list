@@ -1,20 +1,15 @@
 #include <QGuiApplication>
-#include <iostream>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include "Engine.h"
-// #include <QQuickStyle>
+#include <QQmlContext> // <--- CRITICAL: Required for rootContext()
+#include "controlls.h"
 
 using namespace Qt::StringLiterals;
 
 int main(int argc, char *argv[]) {
-    // QQuickStyle::setStyle("Basic");
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-
-    // Track if loading fails completely
-    const QUrl url(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml"));
+    const QUrl url(u"qrc:/qt/qml/MainApplication/main.qml"_s);
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -22,24 +17,13 @@ int main(int argc, char *argv[]) {
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    /*QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url, &Engine](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl) {
-            // qCritical() << "ERROR: QML Engine failed to load the root object!";
-            QCoreApplication::exit(-1);
-            return;
-        }
+    // 1. Instantiate your C++ controller class
+    MTG_size_editer::controlls controll;
 
-        std::cout << "QML should load ykyk" << std::endl;
+    // 2. REGISTER the property FIRST so QML knows it exists before parsing
+    engine.rootContext()->setContextProperty("controlls", &controll);
 
-        // Engine.refrechAll();
-    }, Qt::QueuedConnection);*/
-
-
-    Engine::EngineMod Engine;
-    engine.rootContext()->setContextProperty("engin", &Engine);
-    Engine.setEng(&engine);
-
+    // 3. LOAD the UI last
     engine.load(url);
 
     return app.exec();
