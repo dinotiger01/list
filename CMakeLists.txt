@@ -23,7 +23,7 @@ qt_add_executable(${PROJECT_NAME}
 qt_add_qml_module(${PROJECT_NAME}
         URI EngineMod
         VERSION 1.0
-#        RESOURCE_PREFIX "/qt/qml"
+        RESOURCE_PREFIX "/qt/qml"
         QML_FILES
         main.qml
         SOURCES
