@@ -14,6 +14,7 @@ find_package(Qt6 REQUIRED COMPONENTS
         Gui
         Quick
         Widgets
+        Qml
         Sql
         Svg
 )
@@ -106,6 +107,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         Qt6::Widgets
         Qt6::Sql
         Qt6::Svg
+        Qt6::Qml
         SQLite3::SQLite3
 )
 
