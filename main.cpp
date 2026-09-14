@@ -1,5 +1,7 @@
 #include <QGuiApplication>
 #include <iostream>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include "Engine.h"
 // #include <QQuickStyle>
 
@@ -10,13 +12,15 @@ int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    Engine::EngineMod Engine;
-
-    // engine.rootContext()->setContextProperty("engin", &Engine);
-    // Engine.setEng(&engine);
 
     // Track if loading fails completely
     const QUrl url(QStringLiteral("qrc:/qt/qml/EngineMod/QML/main.qml"));
+
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
 
     /*QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url, &Engine](QObject *obj, const QUrl &objUrl) {
@@ -30,6 +34,11 @@ int main(int argc, char *argv[]) {
 
         // Engine.refrechAll();
     }, Qt::QueuedConnection);*/
+
+
+    Engine::EngineMod Engine;
+    engine.rootContext()->setContextProperty("engin", &Engine);
+    Engine.setEng(&engine);
 
     engine.load(url);
 
