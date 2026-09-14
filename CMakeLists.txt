@@ -30,6 +30,8 @@ qt_add_qml_module(${PROJECT_NAME}
         main.cpp
         controlls.cpp
         controlls.h
+        Engine.cpp
+        Engine.h
         RESOURCES
         cat.jpg
         kitty.jpg
