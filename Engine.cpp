@@ -239,7 +239,6 @@ namespace  Engine {
 
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
-        cout << ";klajf;kajf;kajf;kjas;flkj;flkjad;fkjad;kfja;dkfjad;lkfja;ldkfja;dkfj;aksdlf;akdjf;akdfjda;kfj";
 
         eng = engin;
         /*pryority high;
@@ -249,12 +248,13 @@ namespace  Engine {
         all_pry.push_back(high);*/
         sqlite3* DB;
 
-        dbPath =QCoreApplication::applicationDirPath() + "/data.db";
-        dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        QDir().mkpath(dbPath);
+        dbPath =QCoreApplication::applicationDirPath();
+        // dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        // QDir().mkpath(dbPath);
 
 
-        dbPath += "/SQL/data.db";
+        dbPath += "/data.db";
+        cout << dbPath.toStdString();
         if (true) {
             char* errorM = nullptr;
             sqlite3_open(dbPath.toUtf8().constData(), &DB);
