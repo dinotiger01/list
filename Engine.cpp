@@ -249,7 +249,7 @@ namespace  Engine {
         all_pry.push_back(high);*/
         sqlite3* DB;
 
-        dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
+        dbPath =QCoreApplication::applicationDirPath() + "/data.db";
         dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QDir().mkpath(dbPath);
 
