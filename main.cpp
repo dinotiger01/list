@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
     }, Qt::QueuedConnection);
     Engine::EngineMod Engine;
     engine.rootContext()->setContextProperty("engin", &Engine);
+    Engine.setEng(&engine);
     engine.load(url);
 
     return app.exec();

@@ -252,6 +252,8 @@ namespace  Engine {
 
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
+        cout << ";klajf;kajf;kajf;kjas;flkj;flkjad;fkjad;kfja;dkfjad;lkfja;ldkfja;dkfj;aksdlf;akdjf;akdfjda;kfj";
+
         /*eng = engin;
         sqlite3* DB;
 
