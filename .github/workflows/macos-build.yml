@@ -29,13 +29,32 @@ jobs:
 
       - name: Download SQLite3 Windows Binaries
         run: |
-            mkdir -p ./build/windows
-            curl -L -o sqlite.zip https://sqlite.org
-            unzip -j sqlite.zip "*.exe" -d ./build/windows/
-            rm sqlite.zip
+          # 1. Create a dedicated directory for SQLite binaries and headers
+          New-Item -ItemType Directory -Force -Path "C:\sqlite3"
+          
+          # 2. Download the 64-bit Windows SQLite DLL and Amalgamation (for headers)
+          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite-dll.zip"
+          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite-amal.zip"
+          
+          # 3. Extract the contents using native Windows PowerShell utility
+          Expand-Archive -Path "C:\sqlite3\sqlite-dll.zip" -DestinationPath "C:\sqlite3" -Force
+          Expand-Archive -Path "C:\sqlite3\sqlite-amal.zip" -DestinationPath "C:\sqlite3\temp" -Force
+          
+          # 4. Clean up folder structure: move .h headers out of subfolder to root C:\sqlite3
+          Move-Item -Path "C:\sqlite3\temp\sqlite-amalgamation-*\*.h" -Destination "C:\sqlite3" -Force
+          Remove-Item -Recurse -Force "C:\sqlite3\temp", "C:\sqlite3\*.zip"
+          
+          # 5. Generate the essential sqlite3.lib file using the MSVC tools initialized earlier
+          cd C:\sqlite3
+          lib /def:sqlite3.def /machine:x64 /out:sqlite3.lib
 
       - name: Configure CMake
-        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: >
+          cmake -B build -S . -G Ninja 
+          -DCMAKE_BUILD_TYPE=Release 
+          -DSQLITE3_INCLUDE_DIR="C:/sqlite3" 
+          -DSQLITE3_LIBRARY="C:/sqlite3/sqlite3.lib"
+#        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build
