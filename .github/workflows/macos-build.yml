@@ -27,6 +27,13 @@ jobs:
         with:
           arch: x64
 
+      - name: Download SQLite3 Windows Binaries
+        run: |
+            mkdir -p ./build/windows
+            curl -L -o sqlite.zip https://sqlite.org
+            unzip -j sqlite.zip "*.exe" -d ./build/windows/
+            rm sqlite.zip
+
       - name: Configure CMake
         run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
 
