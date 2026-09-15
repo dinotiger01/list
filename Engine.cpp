@@ -346,12 +346,12 @@ namespace  Engine {
 
     void EngineMod::initFilter(QObject *typ, QObject *pe) {
 
-        /*sqlPullFilt();
+        sqlPullFilt();
 
 
 
         filterPer = pe;
-        filterType = typ;*/
+        filterType = typ;
     }
 
 
@@ -371,7 +371,7 @@ namespace  Engine {
 
     static int callback(void* data, int argc, char** argv, char** azColName)
     {
-        /*//this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
+        //this code was coped from https://www.geeksforgeeks.org/cpp/sql-using-c-c-and-sqlite/
         //it was edited to conver to c++ variables
         //data - idk
         // argc - how many data per thing
@@ -438,12 +438,12 @@ namespace  Engine {
             }
         }
         all_tasks.push_back(newTask);
-        return 0;*/
+        return 0;
         return 0;
     }
 
     static int callbackP(void* data, int argc, char** argv, char** azColName) {
-        /*people newperson;
+        people newperson;
         for (int i = 0; i < argc;i++) {
             // cout << azColName[i] << " : " << argv[i] << endl;
             string tempName = azColName[i];
@@ -461,7 +461,7 @@ namespace  Engine {
         }
         all_people.push_back(newperson);
 
-        return 0;*/
+        return 0;
         return 0;
     }
 
@@ -486,7 +486,7 @@ namespace  Engine {
     }
 
     static int callbackTYPE(void* data, int argc, char** argv, char** azColName) {
-        /*typeST newtype;
+        typeST newtype;
         for (int i = 0; i< argc; i++) {
             string tempName = azColName[i];
             if (tempName == "ID") {
@@ -498,12 +498,12 @@ namespace  Engine {
         all_type.push_back(newtype);
 
 
-        return 0;*/
+        return 0;
         return 0;
     }
 
     static int callbackFit(void* data, int argc, char** argv, char** azColName) {
-        /*// typeST newtype;
+        // typeST newtype;
         for (int i = 0; i< argc; i++) {
             string tempName = azColName[i];
             if (tempName == "NAME") {
@@ -605,12 +605,12 @@ namespace  Engine {
         // all_type.push_back(newtype);
 
 
-        return 0;*/
+        return 0;
         return 0;
     }
 
     void EngineMod::sqlPullPeople() {
-        /*// define stuff
+        // define stuff
         sqlite3* DB;
         int exit = 0;
         // open
@@ -628,11 +628,11 @@ namespace  Engine {
             cout << "it is open" << endl;
         }
         // close
-        sqlite3_close(DB);*/
+        sqlite3_close(DB);
     }
 
     int EngineMod::sqlPullTask() {
-        /*// define stuff
+        // define stuff
         int exit = 0;
         sqlite3* DB;
         // open
@@ -645,7 +645,7 @@ namespace  Engine {
         cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
         // close
         sqlite3_close(DB);
-        return 0;*/
+        return 0;
         return 0;
     }
 
@@ -671,7 +671,7 @@ namespace  Engine {
     }
 
     void EngineMod::sqlPullType() {
-        /*int exit = 0;
+        int exit = 0;
         sqlite3* DB;
         // open
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd4";
@@ -688,11 +688,11 @@ namespace  Engine {
             cout << "it is open" << endl;
         }
         // close
-        sqlite3_close(DB);*/
+        sqlite3_close(DB);
     }
 
     void EngineMod::sqlPullFilt() {
-        /*int exit = 0;
+        int exit = 0;
         sqlite3* DB;
         // open
         // exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd5";
@@ -709,11 +709,11 @@ namespace  Engine {
         }
         // close
         // sqlite3_close(DB);
-        // refrechAll();*/
+        // refrechAll();
     }
 
     void back_dup(task dup, struct tm newtime, bool oveRide) {
-        /*int exit = 0;
+        int exit = 0;
         sqlite3* DB;
         char* errorM;
 
@@ -749,12 +749,12 @@ namespace  Engine {
 
         cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
 
-        sqlite3_close(DB);*/
+        sqlite3_close(DB);
 
     }
 
     bool dup_fromC(task id) {
-        /*task& dupTask = id;
+        task& dupTask = id;
         bool needed = false;
         // time rn
 
@@ -824,7 +824,7 @@ namespace  Engine {
         if (needed) {
             back_dup(dupTask, testDate, false);
         }
-        return needed;*/
+        return needed;
         return false;
     };
 
@@ -832,7 +832,7 @@ namespace  Engine {
         //clear
         // sqlComd();
 
-        /*all_tasks.clear();
+        all_tasks.clear();
         all_people.clear();
         all_pry.clear();
         all_type.clear();
@@ -886,16 +886,11 @@ namespace  Engine {
                 cout << i.dir->children().size() << "\n";
             }
             tota->setProperty("tot", total);
-        }*/
-        all_pry.clear();
-        sqlPullPry();
-        for (int i = 0; i < all_pry.size();i++) {
-            addPry(i);
         }
     }
 
     void EngineMod::sqlComd() {
-        /*int exit = 0;
+        int exit = 0;
         char* errorM;
         sqlite3* DB;
         // open
@@ -953,11 +948,11 @@ namespace  Engine {
 
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "sqlcmd: " << sqlite3_errmsg(DB) << endl;
-        sqlite3_close(DB);*/
+        sqlite3_close(DB);
     }
 
     void EngineMod::creatTask(QString name, int pry, int rep, int delay, QString due, QString notes, QString people, QString type, bool edit) {
-        /*cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
+        cout << name.toStdString() << " " << pry << " " << rep << " " << delay << " " << due.toStdString() << " " << notes.toStdString() << " " << people.toStdString() << " " << type.toStdString() << edit << "\n";
         int exit = 0;
         char* errorM;
         sqlite3* DB;
@@ -993,11 +988,11 @@ namespace  Engine {
         cerr << "create task : " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
         crate->setProperty("createIsClosed", true);
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::createType(QString name, int dex, QString old) {
-        /*sqlite3* DB;
+        sqlite3* DB;
         char* errorM;
         int exit = 0;
         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd8";
@@ -1026,11 +1021,11 @@ namespace  Engine {
         sqlite3_close(DB);
 
 
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::createPerson(int dex, QString name, QString php, QString reqHr) {
-        /*int exit = 0;
+        int exit = 0;
         sqlite3* DB;
         char* errorM;
 
@@ -1073,7 +1068,7 @@ namespace  Engine {
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::addTask(int addtask) {
@@ -1350,7 +1345,7 @@ namespace  Engine {
     }
 
     void EngineMod::deleter(QObject *taskToDelete, int delDex) {
-        /*taskToDelete->deleteLater();
+        taskToDelete->deleteLater();
         task tempTask;
         for (auto& i: all_tasks) {
             if (i.dex == delDex) {
@@ -1409,12 +1404,12 @@ namespace  Engine {
             sqlite3_close(DB);
 
         }
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::deleteType(int dex) {
 
-        /*int exit = 0;
+        int exit = 0;
         char* errorM;
         string ty;
         for (auto& i : all_type) {
@@ -1434,11 +1429,11 @@ namespace  Engine {
         cout << sql << "\n";
         cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::deletePerson(int dex) {
-        /*int exit = 0;
+        int exit = 0;
         char* errorM;
         sqlite3* DB;
         string sql = "delete from PEOPLE where ID = " + to_string(dex);
@@ -1468,11 +1463,11 @@ namespace  Engine {
 
 
         sqlite3_close(DB);
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::permDel() {
-        /*int exit = 0;
+        int exit = 0;
         char* errorM;
         sqlite3* DB;
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
@@ -1484,11 +1479,11 @@ namespace  Engine {
         cerr << "perm: " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
-        refrechAll();*/
+        refrechAll();
     }
 
     void EngineMod::setFilter(QString name, QVariantList pep, QStringList type, QStringList dates) {
-        /*filter_use_person = false;
+        filter_use_person = false;
         for (auto& i: pep) {
             if (i.toBool() == 1) {
                 filter_use_person = true;
@@ -1554,12 +1549,12 @@ namespace  Engine {
 
         filter_name = name.toStdString();
 
-        refrechAll();*/
+        refrechAll();
 
     }
 
     void EngineMod::updateFilter(QString name, QString peps, QString types, QString dates) {
-        /*// sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
+        // sql = "UPDATE FILTER SET DATE = ',x,' WHERE ID = 0;";
         int exit = 0;
         char* errorM;
         sqlite3* DB;
@@ -1577,7 +1572,7 @@ namespace  Engine {
         sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
-        sqlite3_close(DB);*/
+        sqlite3_close(DB);
 
     }
 };
