@@ -27,25 +27,16 @@ jobs:
         with:
           arch: x64
 
-      - name: Download SQLite3 Windows Binaries
+      - name: Install SQLite3 Dependency
+        shell: pwsh
         run: |
-          # Create an absolute dependencies directory
-          New-Item -ItemType Directory -Force -Path "C:\sqlite3"
-          
-          # Download the official public source amalgamation code 
-          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite.zip"
-          Expand-Archive -Path "C:\sqlite3\sqlite.zip" -DestinationPath "C:\sqlite3\temp" -Force
-          
-          # Flatten the files cleanly to C:\sqlite3 without running sensitive .exe build commands
-          Move-Item -Path "C:\sqlite3\temp\sqlite-amalgamation-*\*" -Destination "C:\sqlite3" -Force
-          Remove-Item -Recurse -Force "C:\sqlite3\temp", "C:\sqlite3\sqlite.zip"
+            vcpkg install sqlite3:x64-windows
 
       - name: Configure CMake
         run: >
           cmake -B build -S . -G Ninja 
           -DCMAKE_BUILD_TYPE=Release 
-          -DSQLITE3_INCLUDE_DIR="C:/sqlite3" 
-          -DSQLITE3_LIBRARY="C:/sqlite3/sqlite3.lib"
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 #        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build

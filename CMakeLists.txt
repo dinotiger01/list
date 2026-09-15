@@ -12,6 +12,9 @@ find_package(Qt6 COMPONENTS Core Quick REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Widgets)
 find_package(SQLite3 REQUIRED)
 
+if(NOT TARGET SQLite3::SQLite3 AND TARGET SQLite::SQLite3)
+    add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
+endif()
 
 qt_standard_project_setup()
 
