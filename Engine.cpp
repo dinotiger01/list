@@ -242,27 +242,25 @@ namespace  Engine {
         cout << ";klajf;kajf;kajf;kjas;flkj;flkjad;fkjad;kfja;dkfjad;lkfja;ldkfja;dkfj;aksdlf;akdjf;akdfjda;kfj";
 
         eng = engin;
-        pryority high;
+        /*pryority high;
         high.dex = 0;
         high.name = "high";
         high.color = "green";
-        all_pry.push_back(high);
-        /*sqlite3* DB;
+        all_pry.push_back(high);*/
+        sqlite3* DB;
 
         dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
-        // dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        // QDir().mkpath(dbPath);
-
-        bool dbExists = QFileInfo::exists(dbPath);
+        dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        QDir().mkpath(dbPath);
 
 
-        // dbPath += "/SQL/data.db";
+        dbPath += "/SQL/data.db";
         if (true) {
             char* errorM = nullptr;
-            // sqlite3_open(dbPath.toUtf8().constData(), &DB);
+            sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
             string sql;
-            /*sql = "create table IF NOT EXISTS TASKS("
+            sql = "create table IF NOT EXISTS TASKS("
                     "ID INTEGER PRIMARY KEY AUTOINCREMENT,"
                     "NAME text,"
                     "PRY int,"
@@ -329,9 +327,9 @@ namespace  Engine {
             sql = "INSERT INTO PRY VALUES(2,'Low','#31bacd');";
 
             cerr << "intit: " <<  sql <<sqlite3_errmsg(DB) << endl;
-            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);#1#
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
 
-        }*/
+        }
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
