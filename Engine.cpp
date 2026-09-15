@@ -95,95 +95,83 @@ namespace  Engine {
 
     //returns
     QString EngineMod::getCurrentDate() {
-        /*char cDate[50];;
+        char cDate[50];;
         strftime(cDate, 50, "%m/%d/%Y", &currentDate);
-        return QString::fromStdString(cDate);*/
-        return "";
+        return QString::fromStdString(cDate);
     }
 
     QString EngineMod::getPersonName(int i, QObject* obj) {
-        /*if (obj != nullptr) {
+        if (obj != nullptr) {
             peopleKidHold[i] = obj;
         }
-        return QString::fromStdString(all_people[i].name);*/
-        return "";
+        return QString::fromStdString(all_people[i].name);
     }
     int EngineMod::getPersonSize() {
-        /*if (peopleKidHold.empty()) {
+        if (peopleKidHold.empty()) {
             for (int i=0; i < all_people.size(); i++) {
                 peopleKidHold.push_back(NULL);
             }
         }
-        return all_people.size();*/
-        return 0;
+        return all_people.size();
     }
     int EngineMod::getPersonDex(int i) {
-        /*return all_people[i].dex;*/
-        return 0;
+        return all_people[i].dex;
     }
     QString EngineMod::getPersonPhp(int i) {
-        /*return QString::fromStdString(all_people[i].php);*/
-        return "";
+        return QString::fromStdString(all_people[i].php);
     }
 
     QString EngineMod::getTypeName(int i, QObject* obj) {
-        /*cout << "type name: " << i << "\n";
+        cout << "type name: " << i << "\n";
 
         if (obj != nullptr) {
             typeKidHold[i] = obj;
         }
 
-        return QString::fromStdString(all_type[i].name);*/
-        return "";
+        return QString::fromStdString(all_type[i].name);
     }
     int EngineMod::getTypeSize() {
-        /*if (typeKidHold.empty()) {
+        if (typeKidHold.empty()) {
             for (int i=0; i < all_type.size(); i++) {
                 typeKidHold.push_back(NULL);
             }
         }
         cout << "type size: " << all_type.size()<< "\n";
-        return all_type.size();*/
-        return 0;
+        return all_type.size();
     }
     int EngineMod::getTypeDex(int i) {
-        /*return all_type[i].dex;*/
-        return 0;
+        return all_type[i].dex;
     }
 
     QString EngineMod::getPryName(int i, QObject* obj) {
-        /*if (obj != nullptr) {
+        if (obj != nullptr) {
             pryKidHold.at(i) = obj;
         }
-        return QString::fromStdString(all_pry[i].name);*/
-        return "";
+        return QString::fromStdString(all_pry[i].name);
     }
     int EngineMod::getPrySize() {
-        /*if (pryKidHold.empty()) {
+        if (pryKidHold.empty()) {
             for (int i=0; i < all_pry.size(); i++) {
                 pryKidHold.push_back(NULL);
             }
         }
-        return all_pry.size();*/
-        return 0;
+        return all_pry.size();
     }
 
     bool isPrev(time_t test) {
-        /*time_t rn = curentTime;
+        time_t rn = curentTime;
         if((difftime(rn, test )/ 60*60*24) > -1){
             return true;
         }else {
             return false;
-        }*/
-        return false;
+        }
     }
     bool isPrev(tm testDate) {
-        /*time_t test = mktime(&testDate);
-        return isPrev(test);*/
-        return false;
+        time_t test = mktime(&testDate);
+        return isPrev(test);
     }
     bool isFilter(task temp) {
-        /*// cout << "111" << "\n";
+        // cout << "111" << "\n";
         if (filter_use_person) {
             // cout << "22" << "\n";
             bool personfound = false;
@@ -246,16 +234,15 @@ namespace  Engine {
             }
         }
 
-        return true;*/
-        return false;
+        return true;
     }
 
     // declars
     void EngineMod::setEng(QQmlEngine* engin) {
         cout << ";klajf;kajf;kajf;kjas;flkj;flkjad;fkjad;kfja;dkfjad;lkfja;ldkfja;dkfj;aksdlf;akdjf;akdfjda;kfj";
 
-        /*eng = engin;
-        sqlite3* DB;
+        eng = engin;
+        /*sqlite3* DB;
 
         dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
         // dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -343,14 +330,14 @@ namespace  Engine {
     }
 
     void EngineMod::setBulkCreate(QObject* obj, QString type) {
-        /*bulkCreate[type.toStdString()] = obj;*/
+        bulkCreate[type.toStdString()] = obj;
     }
 
     // start
     void EngineMod::setPar(QObject *par, QObject* crat, QObject* tot) {
-        /*listPar = par;
+        listPar = par;
         crate = crat;
-        tota = tot;*/
+        tota = tot;
 
     }
 
@@ -840,12 +827,12 @@ namespace  Engine {
     };
 
     void EngineMod::refrechAll() {
-        /*//clear
+        //clear
         // sqlComd();
 
         all_tasks.clear();
         all_people.clear();
-        all_pry.clear();
+        // all_pry.clear();
         all_type.clear();
         for (auto &i: all_loaded) {
             i->deleteLater();
@@ -897,7 +884,7 @@ namespace  Engine {
                 cout << i.dir->children().size() << "\n";
             }
             tota->setProperty("tot", total);
-        }*/
+        }
     }
 
     void EngineMod::sqlComd() {
@@ -1083,7 +1070,7 @@ namespace  Engine {
     }
 
     void EngineMod::addTask(int addtask) {
-        /*// cout << "qml: " << all_tasks[addtask].name << endl;
+        // cout << "qml: " << all_tasks[addtask].name << endl;
         task& temp = all_tasks[addtask];
         if (isFilter(temp)) {
             // if filter here
@@ -1159,11 +1146,11 @@ namespace  Engine {
             }
         }
         // cout << childItem->parent() << endl;
-        // ind++;*/
+        // ind++;
     }
 
     void EngineMod::addPry(int addedPry) {
-        /*pryority& temp = all_pry[addedPry];
+        pryority& temp = all_pry[addedPry];
 
         QQmlComponent component(eng, QUrl(QStringLiteral("qrc:/qt/qml/EngineMod/QML/pryQml.qml")));
 
@@ -1194,7 +1181,7 @@ namespace  Engine {
         }
 
         // find dir
-        temp.dir = childItem;*/
+        temp.dir = childItem;
 
     }
 
@@ -1215,7 +1202,7 @@ namespace  Engine {
     // engin.setBulkCreate(repWeek, "repWeek")
     // engin.setBulkCreate(creatDate, "date")
     void EngineMod::editOpen(int dex) {
-        /*curLook = dex;
+        curLook = dex;
         task temp;
         for (auto& i : all_tasks) {
             if (i.dex == dex) {
@@ -1336,11 +1323,11 @@ namespace  Engine {
         bulkCreate["creator"]->setProperty("peps", qmlPep);//check
 
 
-        crate->setProperty("createIsClosed", false);*/
+        crate->setProperty("createIsClosed", false);
     }
 
     void EngineMod::editClose() {
-        /*crate->setProperty("createIsClosed", true);*/
+        crate->setProperty("createIsClosed", true);
     }
 
     void EngineMod::testing() {
