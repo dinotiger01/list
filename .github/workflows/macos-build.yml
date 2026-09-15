@@ -29,24 +29,16 @@ jobs:
 
       - name: Download SQLite3 Windows Binaries
         run: |
-          # 1. Create a dedicated directory for SQLite binaries and headers
+          # Create an absolute dependencies directory
           New-Item -ItemType Directory -Force -Path "C:\sqlite3"
           
-          # 2. Download the 64-bit Windows SQLite DLL and Amalgamation (for headers)
-          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite-dll.zip"
-          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite-amal.zip"
+          # Download the official public source amalgamation code 
+          Invoke-WebRequest -Uri "https://sqlite.org" -OutFile "C:\sqlite3\sqlite.zip"
+          Expand-Archive -Path "C:\sqlite3\sqlite.zip" -DestinationPath "C:\sqlite3\temp" -Force
           
-          # 3. Extract the contents using native Windows PowerShell utility
-          Expand-Archive -Path "C:\sqlite3\sqlite-dll.zip" -DestinationPath "C:\sqlite3" -Force
-          Expand-Archive -Path "C:\sqlite3\sqlite-amal.zip" -DestinationPath "C:\sqlite3\temp" -Force
-          
-          # 4. Clean up folder structure: move .h headers out of subfolder to root C:\sqlite3
-          Move-Item -Path "C:\sqlite3\temp\sqlite-amalgamation-*\*.h" -Destination "C:\sqlite3" -Force
-          Remove-Item -Recurse -Force "C:\sqlite3\temp", "C:\sqlite3\*.zip"
-          
-          # 5. Generate the essential sqlite3.lib file using the MSVC tools initialized earlier
-          cd C:\sqlite3
-          lib /def:sqlite3.def /machine:x64 /out:sqlite3.lib
+          # Flatten the files cleanly to C:\sqlite3 without running sensitive .exe build commands
+          Move-Item -Path "C:\sqlite3\temp\sqlite-amalgamation-*\*" -Destination "C:\sqlite3" -Force
+          Remove-Item -Recurse -Force "C:\sqlite3\temp", "C:\sqlite3\sqlite.zip"
 
       - name: Configure CMake
         run: >
