@@ -40,8 +40,20 @@ qt_add_qml_module(${PROJECT_NAME}
         Engine.cpp
         Engine.h
         RESOURCES
-        cat.jpg
-        kitty.jpg
+        RESOURCES
+        SVG/check.svg
+        SVG/edit.svg
+        SVG/garbage.svg
+        SVG/home.svg
+        SVG/minus.svg
+        SVG/plus.svg
+        SVG/restart.svg
+        SVG/search.svg
+        SVG/settings.svg
+        SVG/sync.svg
+        SVG/up-arrow.svg
+        SVG/up-arrow2.svg
+        SVG/X.svg
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
