@@ -1,8 +1,8 @@
 import QtQuick
-// import QtQuick.Window
-// import QtQuick.Layouts
-// import QtQuick.Controls.Basic
-// import EngineMod
+import QtQuick.Window
+import QtQuick.Layouts
+import QtQuick.Controls.Basic
+import EngineMod
 
 Window {
     id : root
@@ -10,7 +10,7 @@ Window {
     height: 1250
     visible: true
     title: "List"
-    /*Item{
+    Item{
         id: style
         property string main: "#682bd7"
         property string text: "#010101"
@@ -18,8 +18,8 @@ Window {
         property string back: "#e6ddd6"
         property string detail: "#d6cdc6"
 
-        /!*color: parent.down ? style.down :
-            parent.hovered ? style.hover : style.button*!/
+        /*color: parent.down ? style.down :
+            parent.hovered ? style.hover : style.button*/
         property string textBox: "#86d9fe"
         property string total: "#fc7b54"
 
@@ -107,7 +107,7 @@ Window {
                             }
                         }
                         // filter presets
-                        /!*Button{
+                        /*Button{
                             width: 50
                             height: 50
                             background: Rectangle{
@@ -119,9 +119,9 @@ Window {
                                     text: "filter"
                                 }
                             }
-                        }*!/
+                        }*/
                         // history
-                        /!*Button{
+                        /*Button{
                             width: 50
                             height: 50
                             background: Rectangle{
@@ -164,7 +164,7 @@ Window {
                                     text: "cal"
                                 }
                             }
-                        }*!/
+                        }*/
                         // settings
                         Button{
                             width: 50
@@ -176,7 +176,7 @@ Window {
                                     margins: 2.5
                                 }
                                 color: parent.down ? style.down : //here
-                                       parent.hovered ? style.hover : style.button
+                                    parent.hovered ? style.hover : style.button
                                 Image{
                                     anchors{
                                         fill: parent
@@ -267,8 +267,8 @@ Window {
                                                 implicitWidth: childrenRect.width + 20
                                                 height: parent.height
                                                 color: parent.checked ? style.check :
-                                                       parent.down ? style.down :
-                                                       parent.hovered ? style.hover: style.button
+                                                    parent.down ? style.down :
+                                                        parent.hovered ? style.hover: style.button
                                                 Text{
                                                     anchors{centerIn: parent}
                                                     text: "PEOPLE"
@@ -289,11 +289,11 @@ Window {
                                                 CheckBox{
                                                     width: parent.width
                                                     height: 40
-                                                    /!*text : engin.getPersonName(index, null)
+                                                    /*text : engin.getPersonName(index, null)
                                                     background: Rectangle{
                                                         anchors{fill: parent}
                                                         color: style.detail
-                                                    }*!/
+                                                    }*/
                                                     indicator: Rectangle{
                                                         anchors{fill: parent}
                                                         color: style.detail
@@ -331,10 +331,10 @@ Window {
                                                                         margins: 1
                                                                     }
                                                                     color: style.detail
-                                                                    /!*border{
+                                                                    /*border{
                                                                         width: 1
                                                                         color: style.border
-                                                                    }*!/
+                                                                    }*/
                                                                     Text{
                                                                         anchors{
                                                                             fill: parent
@@ -453,10 +453,10 @@ Window {
                                                                         margins: 1
                                                                     }
                                                                     color: style.detail
-                                                                    /!*border{
+                                                                    /*border{
                                                                         width: 1
                                                                         color: style.border
-                                                                    }*!/
+                                                                    }*/
                                                                     Text{
                                                                         anchors{
                                                                             fill: parent
@@ -1190,10 +1190,10 @@ Window {
                                                                                 margins: 1
                                                                             }
                                                                             color: style.detail
-                                                                            /!*border{
+                                                                            /*border{
                                                                                 width: 1
                                                                                 color: style.border
-                                                                            }*!/
+                                                                            }*/
                                                                             Text{
                                                                                 anchors{
                                                                                     fill: parent
@@ -1274,10 +1274,10 @@ Window {
                                                                                 margins: 1
                                                                             }
                                                                             color: style.detail
-                                                                            /!*border{
+                                                                            /*border{
                                                                                 width: 1
                                                                                 color: style.border
-                                                                            }*!/
+                                                                            }*/
                                                                             Text{
                                                                                 anchors{
                                                                                     fill: parent
@@ -1437,10 +1437,10 @@ Window {
                                                                             margins: 1
                                                                         }
                                                                         color: style.detail
-                                                                        /!*border{
+                                                                        /*border{
                                                                             width: 1
                                                                             color: style.border
-                                                                        }*!/
+                                                                        }*/
                                                                         Text{
                                                                             anchors{
                                                                                 fill: parent
@@ -1495,10 +1495,10 @@ Window {
                                                                             margins: 1
                                                                         }
                                                                         color: style.detail
-                                                                        /!*border{
+                                                                        /*border{
                                                                             width: 1
                                                                             color: style.border
-                                                                        }*!/
+                                                                        }*/
                                                                         Text{
                                                                             anchors{
                                                                                 fill: parent
@@ -1681,10 +1681,10 @@ Window {
                                                                                 margins: 1
                                                                             }
                                                                             color: style.detail
-                                                                            /!*border{
+                                                                            /*border{
                                                                                 width: 1
                                                                                 color: style.border
-                                                                            }*!/
+                                                                            }*/
                                                                             Text{
                                                                                 anchors{
                                                                                     fill: parent
@@ -2011,10 +2011,10 @@ to delete a person type simply cilck the task then click the garbage button
                                                                                 margins: 1
                                                                             }
                                                                             color: style.detail
-                                                                            /!*border{
+                                                                            /*border{
                                                                                 width: 1
                                                                                 color: style.border
-                                                                            }*!/
+                                                                            }*/
                                                                             Text{
                                                                                 anchors{
                                                                                     fill: parent
@@ -2233,7 +2233,7 @@ to delete a task type simply cilck the task then click the garbage button
             }
         }
         //timers
-        /!*Rectangle{
+        /*Rectangle{
             id: timerBlock
             width: parent.width
             height: 260
@@ -2310,7 +2310,7 @@ to delete a task type simply cilck the task then click the garbage button
                     }
                 }
             }*!/
-        }*!/
+        }*/
         // create task
         Rectangle{
             id: createTask
@@ -2421,10 +2421,10 @@ to delete a task type simply cilck the task then click the garbage button
                                                             margins: 1
                                                         }
                                                         color: style.detail
-                                                        /!*border{
+                                                        /*border{
                                                             width: 1
                                                             color: style.border
-                                                        }*!/
+                                                        }*/
                                                         Text{
                                                             anchors{
                                                                 fill: parent
@@ -2660,10 +2660,10 @@ to delete a task type simply cilck the task then click the garbage button
                                                                     margins: 1
                                                                 }
                                                                 color: style.detail
-                                                                /!*border{
+                                                                /*border{
                                                                     width: 1
                                                                     color: style.border
-                                                                }*!/
+                                                                }*/
                                                                 Text{
                                                                     anchors{
                                                                         fill: parent
@@ -2752,8 +2752,8 @@ to delete a task type simply cilck the task then click the garbage button
                                                         }
                                                         radius: 5
                                                         color: parent.checked ? style.check :
-                                                               parent.down ? style.down :
-                                                               parent.hovered ? style.hover: style.button
+                                                            parent.down ? style.down :
+                                                                parent.hovered ? style.hover: style.button
                                                         Text{
                                                             anchors{centerIn: parent}
                                                             text: "S"
@@ -2884,8 +2884,8 @@ to delete a task type simply cilck the task then click the garbage button
                                             }
                                             state: repSelCon.recType === 1 || repSelCon.recType === 2 ? "number and check" :
                                                     repSelCon.recType === 3  ? "just number" :
-                                                    repSelCon.recType === 4 || repSelCon.recType === 5 ? "week and check" :
-                                                    repSelCon.recType === 6 || repSelCon.recType === 7 ? "number and check" : "null"
+                                                        repSelCon.recType === 4 || repSelCon.recType === 5 ? "week and check" :
+                                                            repSelCon.recType === 6 || repSelCon.recType === 7 ? "number and check" : "null"
                                             states: [
                                                 State{
                                                     name: "null"
@@ -3047,10 +3047,10 @@ to delete a task type simply cilck the task then click the garbage button
                                                                 margins: 1
                                                             }
                                                             color: style.detail
-                                                            /!*border{
+                                                            /*border{
                                                                 width: 1
                                                                 color: style.border
-                                                            }*!/
+                                                            }*/
                                                             Text{
                                                                 anchors{
                                                                     fill: parent
@@ -3131,10 +3131,10 @@ to delete a task type simply cilck the task then click the garbage button
                                                                 margins: 1
                                                             }
                                                             color: style.detail
-                                                            /!*border{
+                                                            /*border{
                                                                 width: 1
                                                                 color: style.border
-                                                            }*!/
+                                                            }*/
                                                             Text{
                                                                 anchors{
                                                                     fill: parent
@@ -3211,10 +3211,10 @@ to delete a task type simply cilck the task then click the garbage button
                                                                 margins: 1
                                                             }
                                                             color: style.detail
-                                                            /!*border{
+                                                            /*border{
                                                                 width: 1
                                                                 color: style.border
-                                                            }*!/
+                                                            }*/
                                                             Text{
                                                                 anchors{
                                                                     fill: parent
@@ -3491,5 +3491,5 @@ to delete a task type simply cilck the task then click the garbage button
                 }
             }
         }
-    }*/
+    }
 }

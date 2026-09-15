@@ -25,7 +25,11 @@ qt_add_qml_module(${PROJECT_NAME}
         VERSION 1.0
         RESOURCE_PREFIX "/qt/qml"
         QML_FILES
-        main.qml
+        QML/main.qml
+        QML/pryQml.qml
+        QML/taskQml.qml
+
+
         SOURCES
         main.cpp
         Engine.cpp

@@ -242,6 +242,11 @@ namespace  Engine {
         cout << ";klajf;kajf;kajf;kjas;flkj;flkjad;fkjad;kfja;dkfjad;lkfja;ldkfja;dkfj;aksdlf;akdjf;akdfjda;kfj";
 
         eng = engin;
+        pryority high;
+        high.dex = 0;
+        high.name = "high";
+        high.color = "green";
+        all_pry.push_back(high);
         /*sqlite3* DB;
 
         dbPath =QCoreApplication::applicationDirPath() + "/SQL/data.db";
@@ -830,9 +835,9 @@ namespace  Engine {
         //clear
         // sqlComd();
 
-        all_tasks.clear();
+        /*all_tasks.clear();
         all_people.clear();
-        // all_pry.clear();
+        all_pry.clear();
         all_type.clear();
         for (auto &i: all_loaded) {
             i->deleteLater();
@@ -884,6 +889,9 @@ namespace  Engine {
                 cout << i.dir->children().size() << "\n";
             }
             tota->setProperty("tot", total);
+        }*/
+        for (int i = 0; i < all_pry.size();i++) {
+            addPry(i);
         }
     }
 

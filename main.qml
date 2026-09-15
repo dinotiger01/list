@@ -28,7 +28,7 @@ Window {
         property string hover: "#b38cf0"
         property string down: "#c39cf0"
     }
-    /*EngineMod {
+    EngineMod {
         id: engin
         Component.onCompleted: {
             // send to c++
@@ -58,7 +58,7 @@ Window {
             }
 
         }
-    }*/
+    }
     Item{
         id: pageer
         anchors{fill: parent}
