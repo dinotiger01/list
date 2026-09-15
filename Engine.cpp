@@ -439,7 +439,6 @@ namespace  Engine {
         }
         all_tasks.push_back(newTask);
         return 0;
-        return 0;
     }
 
     static int callbackP(void* data, int argc, char** argv, char** azColName) {
@@ -461,7 +460,6 @@ namespace  Engine {
         }
         all_people.push_back(newperson);
 
-        return 0;
         return 0;
     }
 
@@ -498,7 +496,6 @@ namespace  Engine {
         all_type.push_back(newtype);
 
 
-        return 0;
         return 0;
     }
 
@@ -606,7 +603,6 @@ namespace  Engine {
 
 
         return 0;
-        return 0;
     }
 
     void EngineMod::sqlPullPeople() {
@@ -645,7 +641,6 @@ namespace  Engine {
         cerr << "sqlPullTask: " << sqlite3_errmsg(DB) << endl;
         // close
         sqlite3_close(DB);
-        return 0;
         return 0;
     }
 
@@ -733,7 +728,7 @@ namespace  Engine {
         string sql;
         sql = start + startquo + dup.name + endquo + com + to_string(dup.pry) + com + to_string(dup.isReturn) + com + to_string(dup.delay) + com + startquo + rn + endquo + com + startquo + dup.notes + endquo + com + startquo + pep + endquo + com + startquo + dup.type + endquo+ end;
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
-        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
 
         cerr << "fromC: " << sqlite3_errmsg(DB) << endl;
 
@@ -825,7 +820,6 @@ namespace  Engine {
             back_dup(dupTask, testDate, false);
         }
         return needed;
-        return false;
     };
 
     void EngineMod::refrechAll() {
@@ -984,7 +978,7 @@ namespace  Engine {
         }
             // seconed task', 0 , 1 , 1, '01/01/2000', 'this note', '2,3,', seconed;
 
-        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "create task : " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
         crate->setProperty("createIsClosed", true);
@@ -1007,7 +1001,7 @@ namespace  Engine {
             string mid = "' WHERE ID = ";
             sql = start + name.toStdString() + mid + to_string(dex);
         }
-        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "createType : " << sqlite3_errmsg(DB) << endl;
 
         sql = "update TASKS set TYPE = '" + name.toStdString();
@@ -1015,7 +1009,7 @@ namespace  Engine {
         sql += "'";
         cout << sql << "\n";
 
-        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "createType : " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
@@ -1064,7 +1058,7 @@ namespace  Engine {
             sql = start + name.toStdString() + que + com + PHP + php.toStdString() + que + com + REQHR + reqHr.toStdString() + que + end;
             cout << sql << "\n";
         }
-        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
@@ -1397,7 +1391,7 @@ namespace  Engine {
             sql += to_string(delDex);
             sqlite3_open(dbPath.toUtf8().constData(), &DB);
 
-            sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+            sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
 
             cerr << "del: " << sqlite3_errmsg(DB) << endl;
 
@@ -1425,7 +1419,7 @@ namespace  Engine {
         sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
         cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
         sql = "update TASKS set TYPE = 'NULL' where TYPE = '" + ty;
-        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cout << sql << "\n";
         cerr << "delleteType: " << sqlite3_errmsg(DB) << endl;
         sqlite3_close(DB);
@@ -1438,7 +1432,7 @@ namespace  Engine {
         sqlite3* DB;
         string sql = "delete from PEOPLE where ID = " + to_string(dex);
         sqlite3_open(dbPath.toUtf8().constData(), &DB);
-        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "deletePerson: " << sqlite3_errmsg(DB) << endl;
         for (auto& i: all_tasks) {
             vector<int> temp = i.peoples;
@@ -1452,7 +1446,7 @@ namespace  Engine {
                     }
                     sql = "UPDATE TASKS SET PEOPLE = '" + newPep;
                     sql += "' WHERE ID = " + to_string(i.dex) ;
-                    sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+                    sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
                     cout << sql << "\n";
                     cerr << "deletePerson: " << sqlite3_errmsg(DB) << endl;
                     break;
@@ -1474,7 +1468,7 @@ namespace  Engine {
 
         string sql = "delete from TASKS where ID =";
         sql += to_string(curLook);
-        sqlite3_exec(DB, sql.c_str(), NULL, 0,  &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
 
         cerr << "perm: " << sqlite3_errmsg(DB) << endl;
 
@@ -1569,7 +1563,7 @@ namespace  Engine {
         string end = "' WHERE ID = 0;";
         string sql = start+ NAME + PEOPLE + TYPE + DATE+ end;
         cout <<  sql << "\n";
-        sqlite3_exec(DB, sql.c_str(), NULL, 0, &errorM);
+        sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &errorM);
         cerr << "createPerson : " << sqlite3_errmsg(DB) << endl;
 
         sqlite3_close(DB);
