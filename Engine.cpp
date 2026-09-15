@@ -466,7 +466,7 @@ namespace  Engine {
     }
 
     static int callbackPRY(void* data, int argc, char** argv, char** azColName) {
-        /*pryority newPry;
+        pryority newPry;
         for (int i = 0; i < argc;i++) {
             cout << azColName[i] << " : " << argv[i] << endl;
             string tempName = azColName[i];
@@ -482,7 +482,6 @@ namespace  Engine {
         }
         all_pry.push_back(newPry);
 
-        return 0;*/
         return 0;
     }
 
@@ -651,24 +650,24 @@ namespace  Engine {
     }
 
     void EngineMod::sqlPullPry() {
-        /*int exit = 0;
-        sqlite3* DB;
-        // open
-        exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd3";
-        // sql sertch
-        string query = "select * from PRY "
-                       "ORDER BY DEX";
-        sqlite3_exec(DB, query.c_str(), callbackPRY, NULL , NULL);
+         int exit = 0;
+         sqlite3* DB;
+         // open
+         exit = sqlite3_open(dbPath.toUtf8().constData(), &DB); cout << "asd3";
+         // sql sertch
+         string query = "select * from PRY "
+                        "ORDER BY DEX";
+         sqlite3_exec(DB, query.c_str(), callbackPRY, NULL , NULL);
 
-        // debog stuff
-        if (exit != SQLITE_OK) {
-            cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
+         // debog stuff
+         if (exit != SQLITE_OK) {
+             cerr << "sqlPullPry: " << sqlite3_errmsg(DB) << endl;
 
-        }else {
-            cout << "it is open" << endl;
-        }
-        // close
-        sqlite3_close(DB);*/
+         }else {
+             cout << "it is open" << endl;
+         }
+         // close
+         sqlite3_close(DB);
     }
 
     void EngineMod::sqlPullType() {
@@ -888,6 +887,8 @@ namespace  Engine {
             }
             tota->setProperty("tot", total);
         }*/
+        all_pry.clear();
+        sqlPullPry();
         for (int i = 0; i < all_pry.size();i++) {
             addPry(i);
         }
